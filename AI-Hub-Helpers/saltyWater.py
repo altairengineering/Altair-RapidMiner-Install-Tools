@@ -13,3 +13,34 @@ def generate_salt():
 #Store a new password
 
 
+#Check if password file already exists
+
+
+#check if target file exists
+
+
+
+#read file
+
+
+
+#decrypt with password
+
+
+
+
+
+
+#encrypt with password
+
+
+
+
+#main operations
+
+
+
+if __name__ == "__main__":
+    main()
+
+
