@@ -4,14 +4,16 @@
 #documentation
 #https://www.geeksforgeeks.org/encrypt-and-decrypt-files-using-python
 #
-#libraries
+#libraries and prereqs
 import os
+import pip
+import sys
+if not 'cryptography' in sys.modules.keys():
+  pip.main(['install', 'cryptography'])
 import cryptography
 from cryptography.fernet import Fernet
 
 #functions
-
-
 
 #create new fernet key, offer default name fernet.key
 def makeFernetKey(fernetKeyFile = 'fernet.key'):
