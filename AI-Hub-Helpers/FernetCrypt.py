@@ -15,6 +15,8 @@ from cryptography.fernet import Fernet
 
 #functions
 
+
+    
 #create new fernet key, offer default name fernet.key
 def makeFernetKey(fernetKeyFile = 'fernet.key'):
   print("Fernet Key Creation:" + fernetKeyFile)
@@ -39,6 +41,7 @@ def decryptTargetFile(decryptTargetFile):
 def main():
   print("FernetCrypt by Anthony Kiehl")
   sleep(1)
+  fernetTargetFile = input
   
 
 if __name__ == "__main__":
