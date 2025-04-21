@@ -18,10 +18,11 @@ from cryptography.fernet import Fernet
 
     
 #create new fernet key, offer default name fernet.key
-def makeFernetKey(fernetKeyFile = 'fernet.key'):
+def makeFernetKey(fernetKeyFile = 'fernet.key')
   print("Fernet Key Creation:" + fernetKeyFile)
 # key generation
   key = Fernet.generate_key()
+  
 
 # string the key in a file
   with open(fernetKeyFile, 'wb') as filekey
@@ -29,7 +30,12 @@ def makeFernetKey(fernetKeyFile = 'fernet.key'):
 
 #encrypt target file with selected fernet.key
 def encryptTargetFile(encryptTargetFile):
+  encryptTargetFile = input("Please enter exact target filename to encrypt:")
   print("Encrypting Target File" + encryptTargetFile)
+  
+#check if an encrypted file and fernet key exists
+def checkFernetFiles(statusFernetKey, statusCryptFile):
+  if 
 
 
 #decrypt target file with selected fernet.key
@@ -41,7 +47,7 @@ def decryptTargetFile(decryptTargetFile):
 def main():
   print("FernetCrypt by Anthony Kiehl")
   sleep(1)
-  fernetTargetFile = input
+  
   
 
 if __name__ == "__main__":
