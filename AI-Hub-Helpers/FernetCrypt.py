@@ -8,6 +8,7 @@
 import os
 import pip
 import sys
+from pathlib import Path
 if not 'cryptography' in sys.modules.keys():
   pip.main(['install', 'cryptography'])
 import cryptography
@@ -34,9 +35,11 @@ def encryptTargetFile(encryptTargetFile):
   print("Encrypting Target File" + encryptTargetFile)
   
 #check if an encrypted file and fernet key exists
-def checkFernetFiles(statusFernetKey, statusCryptFile):
-  if 
-
+def checkFernetKey(fernetPathTarget):
+  fernetPathTarget = input("Please enter exact target filename to encrypt, using absolute filepath:")
+  filepath = Path(fernetPathTarget) 
+  if filepath.is_file():
+    return fernetPathTarget
 
 #decrypt target file with selected fernet.key
 def decryptTargetFile(decryptTargetFile):
@@ -47,7 +50,6 @@ def decryptTargetFile(decryptTargetFile):
 def main():
   print("FernetCrypt by Anthony Kiehl")
   sleep(1)
-  
   
 
 if __name__ == "__main__":
