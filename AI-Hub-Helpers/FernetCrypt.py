@@ -34,8 +34,15 @@ def encryptTargetFile(encryptTargetFile):
   encryptTargetFile = input("Please enter exact target filename to encrypt:")
   print("Encrypting Target File" + encryptTargetFile)
   
-#check if an encrypted file and fernet key exists
-def checkFernetKey(fernetPathTarget):
+#select target file to encrypt or decrypt
+def checkTargetPath(fernetPathTarget):
+  fernetPathTarget = input("Please enter exact target filename to encrypt, using absolute filepath:")
+  filepath = Path(fernetPathTarget) 
+  if filepath.is_file():
+    return fernetPathTarget
+
+#check if fernet key exists
+def checkTargetPath(fernetPathTarget):
   fernetPathTarget = input("Please enter exact target filename to encrypt, using absolute filepath:")
   filepath = Path(fernetPathTarget) 
   if filepath.is_file():
@@ -48,9 +55,32 @@ def decryptTargetFile(decryptTargetFile):
 
 #main operations
 def main():
-  print("FernetCrypt by Anthony Kiehl")
+  print("")
   sleep(1)
-  
+  fernetMenu = '''FernetCrypt by Anthony Kiehl
+  Please Select from the following use-cases:
+  a = Create New Fernet Key
+  b = Load existing Fernet Key
+  c = (!)Encrypt Target File (!)
+  d = (!)Decrypt Target File (!) 
+  Make sure you have backups of everything before using this tool!  Better safe than sorry.
+  #'''
+  input(fernetMenuSelection)
+for case in switch(fernetMenuSelection.lower()):
+    if case('a'):
+        print("Create New Fernet Key")
+        break
+    if case('b'):
+        print("Load existing Fernet Key")
+        break
+    if case('c'):
+        print("(!)Encrypt Target File (!)")
+        break
+    if case('d'):
+        print("(!)Decrypt Target File (!)")
+        break
+    if case(): # default, could also just omit condition or 'if True'
+        print "something else!"
 
 if __name__ == "__main__":
   main()
