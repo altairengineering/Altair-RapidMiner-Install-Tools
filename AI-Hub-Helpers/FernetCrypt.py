@@ -81,7 +81,7 @@ for case in switch(fernetMenuSelection.lower()):
         print("(!)Decrypt Target File (!)")
         break
     if case(): # default, could also just omit condition or 'if True'
-        print "something else!"
+        print("something else!")
 
 if __name__ == "__main__":
   main()
