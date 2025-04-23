@@ -82,6 +82,15 @@ for case in switch(fernetMenuSelection.lower()):
         break
     if case(): # default, could also just omit condition or 'if True'
         print("something else!")
+  if something:
+    print("Create New Fernet Key")
+    return "first thing"
+  elif somethingelse:
+    return "second thing"
+  elif yetanotherthing:
+    return "third thing"
+  else:
+    return "default thing"
 
 if __name__ == "__main__":
   main()
