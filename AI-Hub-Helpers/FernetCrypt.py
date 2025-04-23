@@ -8,6 +8,7 @@
 import os
 import pip
 import sys
+import time
 from pathlib import Path
 if not 'cryptography' in sys.modules.keys():
   pip.main(['install', 'cryptography'])
@@ -56,7 +57,7 @@ def decryptTargetFile(decryptTargetFile):
 #main operations
 def main():
   print("")
-  sleep(1)
+  time.sleep(1)
   fernetMenu = '''FernetCrypt by Anthony Kiehl
   Please Select from the following use-cases:
   a = Create New Fernet Key
