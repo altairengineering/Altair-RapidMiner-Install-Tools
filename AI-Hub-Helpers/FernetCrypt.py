@@ -19,7 +19,7 @@ from cryptography.fernet import Fernet
 
     
 #create new fernet key, offer default name fernet.key
-def makeFernetKey(fernetKeyFile = 'fernet.key')
+def makeFernetKey(fernetKeyFile = 'fernet.key'):
   print("Fernet Key Creation:" + fernetKeyFile)
 # key generation
   key = Fernet.generate_key()
