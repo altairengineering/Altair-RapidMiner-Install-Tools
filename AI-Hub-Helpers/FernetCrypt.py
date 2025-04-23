@@ -26,7 +26,7 @@ def makeFernetKey(fernetKeyFile = 'fernet.key'):
   
 
 # string the key in a file
-  with open(fernetKeyFile, 'wb') as filekey
+  with open(fernetKeyFile, 'wb') as filekey:
     filekey.write(key)
 
 #encrypt target file with selected fernet.key
