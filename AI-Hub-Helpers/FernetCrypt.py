@@ -27,61 +27,53 @@ def createFernetKey(fernetKeyFile = 'fernet.key'):
     filekey.write(key)
 
 
-  
-#select target file to encrypt or decrypt
-def checkTargetPath(fernetPathTarget):
-  fernetPathTarget = input("Please enter exact target filename to encrypt, using absolute filepath:")
-  filepath = Path(fernetPathTarget) 
-  if filepath.is_file():
-    return fernetPathTarget
-
-#check if fernet key exists
-#def checkTargetPath():
-#  fernetPathTarget = input("Please enter exact target filename:")
-#  filepath = Path(fernetPathTarget) 
-#  if filepath.is_file():
-#    return fernetPathTarget
-#  else:
-#    print("Error cannot find target file")
-#    break
 #encrypt target file with selected fernet.key
-def encryptTargetFile(fernetPathTarget):
+def encryptTargetFile(filePathTarget):
   encryptTargetFile = input("Please enter exact target filename to encrypt:")
-  print("Encrypting Target File" + fernetPathTarget)
+  print("Encrypting Target File" + filePathTarget)
 # opening the key
   with open('fernet.key', 'rb') as filekey:
 	key = filekey.read()
 # using the generated key
   fernet = Fernet(key)
 # opening the original file to encrypt
-  with open(fernetPathTarget, 'rb') as file:
+  with open(filePathTarget, 'rb') as file:
 	original = file.read()	
 # encrypting the file
   encrypted = fernet.encrypt(original)
 # opening the file in write mode and 
 # writing the encrypted data
-  with open(fernetPathTarget, 'wb') as encrypted_file:
+  with open(filePathTarget, 'wb') as encrypted_file:
 	encrypted_file.write(encrypted)
 
 
 #decrypt target file with selected fernet.key
-def decryptTargetFile(fernetPathTarget):
-  print("Decrypting Target File" + decryptTargetFile)
+def decryptTargetFile(filePathTarget):
+  print("Decrypting Target File" + filePathTarget)
 # using the key
   fernet = Fernet(key)
-
+  decrypted = fernet.decrypt(encrypted)
 # opening the encrypted file
   with open('nba.csv', 'rb') as enc_file:
 	encrypted = enc_file.read()
 
-# decrypting the file
-  decrypted = fernet.decrypt(encrypted)
 
 # opening the file in write mode and
 # writing the decrypted data
   with open('nba.csv', 'wb') as dec_file:
 	dec_file.write(decrypted)
-  
+
+
+#select target file to encrypt or decrypt
+def checkFilePathTarget(filePathTarget):
+  filePathTarget = input("Please enter exact filename:")
+  filepath = Path(filePathTarget) 
+  if filepath.is_file():
+    return filePathTarget
+  else:
+    print("Not a file.")
+    break
+    
 
 #main operations
 def main():
@@ -100,20 +92,21 @@ def main():
   input(fernetMenuSelection)
   if fernetMenuSelection.lower() == "c":
     print("Create New Fernet Key")
+    checkFilePathTarget()
     createFernetKey()
     return "first thing"
   elif fernetMenuSelection.lower() == "l":
     print("Load existing Fernet Key")
-    checkTargetPath()
+    checkFilePathTarget()   
     return "second thing"
   elif fernetMenuSelection.lower() == "e":
     print("(!)Encrypt Target File (!)")
-    checkTargetPath()
+    checkFilePathTarget()
     encryptTargetFile(fernetPathTarget)
     return "third thing"
   elif fernetMenuSelection.lower() == "d":
     print("(!)Decrypt Target File (!)")
-    checkTargetPath()
+    checkFilePathTarget()
     return "foruth thing"
   elif fernetMenuSelection.lower() == "q":
     print("Quitting, goodbye.")
