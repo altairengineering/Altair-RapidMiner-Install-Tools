@@ -24,8 +24,6 @@ def makeFernetKey(fernetKeyFile = 'fernet.key'):
   print("Fernet Key Creation:" + fernetKeyFile)
 # key generation
   key = Fernet.generate_key()
-  
-
 # string the key in a file
   with open(fernetKeyFile, 'wb') as filekey:
     filekey.write(key)
@@ -70,6 +68,7 @@ def main():
 for case in switch(fernetMenuSelection.lower()):
     if case('a'):
         print("Create New Fernet Key")
+        makeFernetKey()
         break
     if case('b'):
         print("Load existing Fernet Key")
