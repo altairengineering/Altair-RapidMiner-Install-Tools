@@ -255,10 +255,10 @@ sed -i 's%    hostname: panopticon-vizapp$%    hostname: panopticon-vizapp\n    
 
 
 #pano user fix
-sed -i 's%    hostname: panopticon-vizapp$%    hostname: panopticon-vizapp\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
-sed -i 's%    hostname: panopticon-vizapp-python%    hostname: panopticon-vizapp-python\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
-sed -i 's%    hostname: panopticon-monetdb%    hostname: panopticon-monetdb\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
-sed -i 's%    hostname: panopticon-rserve%    hostname: panopticon-rserve\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
+#sed -i 's%    hostname: panopticon-vizapp$%    hostname: panopticon-vizapp\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
+#sed -i 's%    hostname: panopticon-vizapp-python%    hostname: panopticon-vizapp-python\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
+#sed -i 's%    hostname: panopticon-monetdb%    hostname: panopticon-monetdb\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
+#sed -i 's%    hostname: panopticon-rserve%    hostname: panopticon-rserve\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
 
 #suse jupyter fix
 if $(cat /proc/version | grep -qi 'suse'); then
