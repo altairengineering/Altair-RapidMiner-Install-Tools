@@ -271,7 +271,7 @@ if $(cat /proc/version | grep -qi 'suse'); then
 fi
 sleep 1
 #custom cert fix
-sed -i 's%CUSTOM_CA_CERTS_FILE=placeholder.crt%CUSTOM_CA_CERTS_FILE=certificate.crt%g' /home/"$aihubuser"/prod/.env
+sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' /home/"$aihubuser"/prod/.env
 echo "Added custom ca certs file"
 
 #create the ssl directory
