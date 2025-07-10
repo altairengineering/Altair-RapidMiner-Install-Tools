@@ -41,9 +41,10 @@ dnf upgrade -y
 dnf remove -y docker*
 dnf install -y epel-release
 dnf install -y dnf-utils curl wget vim unzip
-dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 dnf update -y --allowerasing
-dnf install -y docker-ce haveged --allowerasing
+dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
+dnf install -y haveged --allowerasing
 systemctl start docker
 systemctl enable docker
 systemctl start haveged
