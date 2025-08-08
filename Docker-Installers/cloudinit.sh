@@ -14,7 +14,7 @@
 #        echo "If you need to set proxy, that could be an issue"
 #        exit 1
 #fi
-
+useradd --system rapidminer -G docker,wheel,root -d /home/rapidminer
 dnf update -y
 dnf upgrade -y
 #{ #try
@@ -25,11 +25,11 @@ dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce
 dnf update -y --allowerasing
 dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
 dnf install -y haveged --allowerasing
-systemctl start docker
+systemctl enable haveged
 systemctl enable docker
 systemctl start haveged
-systemctl enable haveged
-usermod -aG docker $1
+systemctl start docker
+#usermod -aG docker $1
 #curl -L "https://github.com/docker/compose/releases/download/$dockercomposeversion/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 #chmod +x /usr/local/bin/docker-compose
 #ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
