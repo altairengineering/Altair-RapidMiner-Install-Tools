@@ -9,3 +9,7 @@ Get rid of all the temp data in the overlay, and all of the temp data in volumes
 
 The overlay is the design of the image, made up of all the layers.
 Need to be able to target custom docker folders.   Run docker info to get the locations.
+
+
+get all the images with "docker save"
+then drop all the images with "docker system prune"
