@@ -13,3 +13,6 @@ Need to be able to target custom docker folders.   Run docker info to get the lo
 
 get all the images with "docker save"
 then drop all the images with "docker system prune"
+
+Only do this while stopped.
+Make sure to preserve file permissions with either rsync or special tar flags.
