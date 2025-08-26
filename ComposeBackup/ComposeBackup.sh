@@ -21,7 +21,8 @@ else
 fi
 
 
-# use case
+## use case here for args
+
 
 case "$1" in
 
@@ -43,11 +44,6 @@ du -d 1 -c -h .
 
 
 
-# echo instructions if none
-# echo warnings of high hard drive space usage
-# echo warning of deletion of all contents of /var/lib/docker/volumes
-
-# case here for args
 
 
 
@@ -62,4 +58,23 @@ du -d 1 -c -h .
 # deletes all of the /var/lib/docker/ directory and places the appended folders tarball contents
 # use "docker info" to get the docker install folder
 
-# reminds user to fix permissions
+
+#)
+echo "ComposeBackup"
+    echo "Usage: ./ComposeBackup.sh (-a|-b|-r)"
+    echo "-a"
+    echo "audit: will audit the system to assist in planning and to prevent overfilled storage drives."
+    echo "-b <target tarball name>"
+    echo "backup: backs up all files relative to the docker compose, as well as data from Docker backend system and volumes as a (fairly large) tarball.  Expect sizes greater than 10GB."
+    echo "-r <target tarball name>"
+    echo "restore: **DESTRUCTIVELY RESTORES** your Docker backend system and volumes.  If you restore onto existing system, it will DELETE EVERYTHING in the Docker backend including all volumes, then place the archived contents back into place."
+    echo "destroy - will remove all data irrevocably"
+    exit 1
+
+;;
+
+# echo instructions if none
+# echo warnings of high hard drive space usage
+# echo warning of deletion of all contents of /var/lib/docker/volumes
+
+
