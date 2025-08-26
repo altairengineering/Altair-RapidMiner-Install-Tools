@@ -16,3 +16,6 @@ then drop all the images with "docker system prune"
 
 Only do this while stopped.
 Make sure to preserve file permissions with either rsync or special tar flags.
+
+
+https://askubuntu.com/questions/463325/what-does-tars-p-preserve-permissions-flag-actually-preserve
