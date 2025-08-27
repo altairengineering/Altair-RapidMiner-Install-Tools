@@ -2,13 +2,11 @@
 # Compose Backup
 # by Anthony Kiehl
 # 20250825
-
-
 # vars
 # use "docker info" to get the docker install folder
-DockerRootDir=`docker info | grep "Root Dir" | cut -d " " -f 5`
+DockerRootDir=$(docker info | grep "Root Dir" | cut -d " " -f 5)
 TargetFilepath=$2
-DockerRunningContainers=`docker info | grep 'Containers' | cut -d " " -f 3`
+DockerRunningContainers=$(docker info | grep 'Containers' | cut -d " " -f 3)
 # check for root
 if [ "$EUID" -ne 0 ]
   then echo "Please run with root privileges"
@@ -23,7 +21,7 @@ else
   exit 1
 fi
 
-if $DockerRunningContainers > 0; then
+if [ "$DockerRunningContainers" -gt 0 ]; then
   echo "Please do not run script with active, running containers, thank you."
   exit 1
 fi
@@ -45,7 +43,7 @@ a)
 echo "Linux space allocation"
 df -h
 echo "Docker system filesize"
-du -d 1 -c -h -t 10000000 $DockerRootDir
+du -d 1 -c -h -t 10000000 "$DockerRootDir"
 echo "Docker compose folder filesize"
 du -d 1 -c -h .
 
@@ -56,18 +54,18 @@ du -d 1 -c -h .
 
 # -b = backup docker system to target tarball
 b)
-if [[ -z $2]]; then:
+if [[ -z $2 ]]; then
   echo "Backing up a system requires a target directory to store many gigabytes."
   exit 1
 fi
 
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 
-tar -czvf $TargetFilepath/DockerSystem.tar.gz $DockerRootDir/*
-tar -czvf $TargetFilepath/ComposeFolder.tar.gz ./*
+tar -czvf "$TargetFilepath"/DockerSystem.tar.gz "$DockerRootDir"/*
+tar -czvf "$TargetFilepath"/ComposeFolder.tar.gz ./*
 
 
-
+;;
 
 
 
@@ -78,13 +76,13 @@ tar -czvf $TargetFilepath/ComposeFolder.tar.gz ./*
 r)
 
 
-if [[ -z $2]]; then:
+if [[ -z $2 ]]; then
   echo "Restoring docker to system requires a target directory that contains both tarballs created by this tool."
   exit 1
 fi
 
-tar -xzvfp --same-owner --overwrite $TargetFilepath/ComposeFolder.tar.gz ./*
-tar -xzvfp --same-owner --overwrite $TargetFilepath/ComposeFolder.tar.gz /var/lib
+tar -xzvfp --same-owner --overwrite "$TargetFilepath"/ComposeFolder.tar.gz ./*
+tar -xzvfp --same-owner --overwrite "$TargetFilepath"/ComposeFolder.tar.gz /var/lib
 
 
 ;;
@@ -105,9 +103,5 @@ echo "ComposeBackup"
     exit 1
 
 ;;
-
+esac
 exit 0
-
-
-
-
