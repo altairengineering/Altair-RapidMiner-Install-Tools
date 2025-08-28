@@ -2,6 +2,8 @@
 # Compose Backup
 # by Anthony Kiehl
 # 20250825
+
+
 # vars
 # use "docker info" to get the docker install folder
 DockerRootDir=$(docker info | grep "Root Dir" | cut -d " " -f 5)
@@ -39,7 +41,7 @@ case "$1" in
 # run df -h
 # run du on the /var/lib/docker and .
 # warn user that this operation can take 30GB of filespace or even more
-a)
+-a)
 echo "Linux space allocation"
 df -h
 echo "Docker system filesize"
@@ -53,7 +55,7 @@ du -d 1 -c -h .
 
 
 # -b = backup docker system to target tarball
-b)
+-b)
 if [[ -z $2 ]]; then
   echo "Backing up a system requires a target directory to store many gigabytes."
   exit 1
@@ -61,7 +63,7 @@ fi
 
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 
-tar -czvf "$TargetFilepath"/DockerSystem.tar.gz "$DockerRootDir"/*
+tar --exclude=ComposeBackup.sh -czvf "$TargetFilepath"/DockerSystem.tar.gz "$DockerRootDir"/*
 tar -czvf "$TargetFilepath"/ComposeFolder.tar.gz ./*
 
 
@@ -73,7 +75,7 @@ tar -czvf "$TargetFilepath"/ComposeFolder.tar.gz ./*
 #  requires target destination directory
 #  requires target tarball and for the appended volumes tarball as well
 # deletes all of the /var/lib/docker/ directory and places the appended folders tarball contents
-r)
+-r)
 
 
 if [[ -z $2 ]]; then
@@ -81,8 +83,8 @@ if [[ -z $2 ]]; then
   exit 1
 fi
 
-tar -xzvfp --same-owner --overwrite "$TargetFilepath"/ComposeFolder.tar.gz ./*
-tar -xzvfp --same-owner --overwrite "$TargetFilepath"/ComposeFolder.tar.gz /var/lib
+tar --same-owner --overwrite --exclude=ComposeBackup.sh -xzvf "$TargetFilepath"/ComposeFolder.tar.gz
+tar --same-owner --overwrite -xzvf "$TargetFilepath"/DockerSystem.tar.gz -C /var/lib
 
 
 ;;
