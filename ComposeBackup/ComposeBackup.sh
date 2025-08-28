@@ -111,4 +111,4 @@ echo "ComposeBackup"
 
 ;;
 esac
-exit 0gGggg
+exit 0
