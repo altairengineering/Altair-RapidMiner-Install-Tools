@@ -65,8 +65,9 @@ fi
 
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 
-tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir"/*
-tar --create --gzip --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz ./*
+tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir"
+tar --create --gzip --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz .
+
 
 
 ;;
@@ -86,7 +87,7 @@ if [[ -z $2 ]]; then
 fi
 rm -rf /var/lib/docker/*
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
-tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C /var/lib
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C $DockerRootDir
 
 
 ;;
