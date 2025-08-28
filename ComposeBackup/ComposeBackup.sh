@@ -84,7 +84,7 @@ if [[ -z $2 ]]; then
   echo "Restoring docker to system requires a target directory that contains both tarballs created by this tool."
   exit 1
 fi
-
+rm -rf /var/lib/docker/*
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C /var/lib
 
