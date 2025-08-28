@@ -9,6 +9,8 @@
 DockerRootDir=$(docker info | grep "Root Dir" | cut -d " " -f 5)
 TargetFilepath=$2
 DockerRunningContainers=$(docker info | grep 'Containers' | cut -d " " -f 3)
+
+
 # check for root
 if [ "$EUID" -ne 0 ]
   then echo "Please run with root privileges"
@@ -64,7 +66,7 @@ fi
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 
 tar --extract --compress --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir"/*
-tar --extract --compress --exclude=ComposeBackup.sh --verbose --file="$TargetFilepath"ComposeFolder.tar.gz ./*
+tar --extract --compress --exclude="$BASH_SOURCE" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz ./*
 
 
 ;;
@@ -83,7 +85,7 @@ if [[ -z $2 ]]; then
   exit 1
 fi
 
-tar --extract --uncompress --same-owner --preserve-permissions --overwrite --exclude=ComposeBackup.sh --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
+tar --extract --uncompress --same-owner --preserve-permissions --overwrite --exclude="$BASH_SOURCE" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 tar --extract --uncompress --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C /var/lib
 
 
