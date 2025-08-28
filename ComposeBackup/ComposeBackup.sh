@@ -63,8 +63,8 @@ fi
 
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 
-tar --exclude=ComposeBackup.sh -czvf "$TargetFilepath"/DockerSystem.tar.gz "$DockerRootDir"/*
-tar -czvf "$TargetFilepath"/ComposeFolder.tar.gz ./*
+tar --extract --compress --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir"/*
+tar --extract --compress --exclude=ComposeBackup.sh --verbose --file="$TargetFilepath"ComposeFolder.tar.gz ./*
 
 
 ;;
@@ -83,8 +83,8 @@ if [[ -z $2 ]]; then
   exit 1
 fi
 
-tar --same-owner --overwrite --exclude=ComposeBackup.sh -xzvf "$TargetFilepath"/ComposeFolder.tar.gz
-tar --same-owner --overwrite -xzvf "$TargetFilepath"/DockerSystem.tar.gz -C /var/lib
+tar --extract --uncompress --same-owner --preserve-permissions --overwrite --exclude=ComposeBackup.sh --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
+tar --extract --uncompress --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C /var/lib
 
 
 ;;
@@ -98,9 +98,9 @@ echo "ComposeBackup"
     echo "Usage: ./ComposeBackup.sh (-a|-b|-r) [OPTIONS]"
     echo "-a"
     echo "(a)udit: will audit the system to assist in planning and to prevent overfilled storage drives."
-    echo "-b /target/directory/where/to/save"
+    echo "-b /target/directory/where/to/save/"
     echo "(b)ackup: backs up all files relative to the docker compose, as well as data from Docker backend system and volumes as a (fairly large) tarball.  Please use the absolute path for the output of the tarball.  Expect sizes greater than 10GB."
-    echo "-r /target/directory/with/tarballs"
+    echo "-r /target/directory/with/tarballs/"
     echo "(r)estore: **DESTRUCTIVELY RESTORES** your Docker backend system and volumes.  If you restore onto existing system, it will DELETE EVERYTHING in the Docker backend including all volumes, then place the archived contents back into place.  Please use absolute path for the tarball."
     exit 1
 
