@@ -64,8 +64,11 @@ if [[ -z $2 ]]; then
 fi
 
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
-
+echo "archiving docker system installation folder" && sleep 1
 tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir"
+echo "processing hidden .env file" && sleep 1
+mv .env hidden.env
+echo "archiving docker compose folder" && sleep 1
 tar --create --gzip --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz .
 
 
@@ -85,10 +88,14 @@ if [[ -z $2 ]]; then
   echo "Restoring docker to system requires a target directory that contains both tarballs created by this tool."
   exit 1
 fi
+echo "clearing out existing docker installation" && sleep 1
 rm -rf /var/lib/docker/*
+echo "extracting compose folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
+echo "extracting docker system folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C $DockerRootDir
-
+echo "restoring hidden .env file" && sleep 1
+mv hidden.env .env
 
 ;;
 
