@@ -107,7 +107,7 @@ rm -rf "${DockerRootDir:?}"/* || \
 echo "extracting compose folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 echo "extracting docker system folder" && sleep 1
-tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C $DockerRootDir
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir"
 echo "restoring hidden .env file" && sleep 1
 mv -vf hidden.env .env
 echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
@@ -129,7 +129,7 @@ rm -rf "${DockerRootDir:?}"/* || \
 echo "extracting compose folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 echo "extracting docker system folder" && sleep 1
-tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C $DockerRootDir
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir"
 echo "restoring hidden .env file" && sleep 1
 mv -vf hidden.env .env
 echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
