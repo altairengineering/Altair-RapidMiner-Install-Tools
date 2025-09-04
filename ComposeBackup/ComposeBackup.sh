@@ -16,7 +16,6 @@ if [ "$EUID" -ne 0 ]
   then echo "Please run with root privileges"
   exit 1
 fi
-# check for docker compose file relative to this script
 
 
 
@@ -57,6 +56,7 @@ if [[ -z $2 ]]; then
   exit 1
 fi
 
+# check for docker compose file relative to this script
 if test -f ./docker-compose.yml; then
   echo "docker compose file located"
 else
@@ -92,6 +92,8 @@ if [[ -z $2 ]]; then
   echo "Restoring docker to system requires a target directory that contains both tarballs created by this tool."
   exit 1
 fi
+
+# check for docker compose file relative to this script
 if test -f ./docker-compose.yml; then
   echo "docker compose file located"
 else
@@ -114,7 +116,7 @@ mv -vf hidden.env .env
 echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
 ;;
 
-
+#migration, does not check for docker compose file
 -m)
 
 
