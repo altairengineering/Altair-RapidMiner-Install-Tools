@@ -102,7 +102,8 @@ else
 fi
 
 echo "clearing out existing docker installation" && sleep 1
-rm -rf $DockerRootDir/*
+rm -rf "${DockerRootDir:?}"/* || \
+     { echo "The docker root dir variable is empty, please check your docker installation status.  Sorry but I cannot proceed."; exit 1; }
 echo "extracting compose folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 echo "extracting docker system folder" && sleep 1
@@ -123,7 +124,8 @@ fi
 
 
 echo "clearing out existing docker installation" && sleep 1
-rm -rf $DockerRootDir/*
+rm -rf "${DockerRootDir:?}"/* || \
+     { echo "The docker root dir variable is empty, please check your docker installation status.  Sorry but I cannot proceed."; exit 1; }
 echo "extracting compose folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 echo "extracting docker system folder" && sleep 1
