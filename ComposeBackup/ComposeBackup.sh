@@ -18,16 +18,14 @@ if [ "$EUID" -ne 0 ]
 fi
 # check for docker compose file relative to this script
 
-if test -f ./docker-compose.yml; then
-  echo "docker compose file located"
-else
-  echo "Needs to be run in the same directory as the target environment's docker compose file."
-  exit 1
-fi
+
 
 if [ "$DockerRunningContainers" -gt 0 ]; then
   echo "Please do not run script with active, running containers, thank you."
   exit 1
+
+elif [ $0 --eq "*f*" ]; then
+  echo "Forced flag detected, good luck!"
 fi
 
 
@@ -63,6 +61,13 @@ if [[ -z $2 ]]; then
   exit 1
 fi
 
+if test -f ./docker-compose.yml; then
+  echo "docker compose file located"
+else
+  echo "Needs to be run in the same directory as the target environment's docker compose file."
+  exit 1
+fi
+
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 echo "archiving docker system installation folder" && sleep 1
 tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir"
@@ -70,6 +75,7 @@ echo "processing hidden .env file" && sleep 1
 mv -vf .env hidden.env
 echo "archiving docker compose folder" && sleep 1
 tar --create --gzip --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz .
+echo "PLEASE RESTART THE SYSTEM AFTER CREATING THE BACKUP!!!"
 
 
 
@@ -88,6 +94,13 @@ if [[ -z $2 ]]; then
   echo "Restoring docker to system requires a target directory that contains both tarballs created by this tool."
   exit 1
 fi
+if test -f ./docker-compose.yml; then
+  echo "docker compose file located"
+else
+  echo "Needs to be run in the same directory as the target environment's docker compose file."
+  exit 1
+fi
+
 echo "clearing out existing docker installation" && sleep 1
 rm -rf /var/lib/docker/*
 echo "extracting compose folder" && sleep 1
@@ -96,7 +109,7 @@ echo "extracting docker system folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C $DockerRootDir
 echo "restoring hidden .env file" && sleep 1
 mv -vf hidden.env .env
-
+echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
 ;;
 
 
@@ -106,6 +119,7 @@ mv -vf hidden.env .env
 *)
 echo "ComposeBackup"
     echo "Usage: ./ComposeBackup.sh (-a|-b|-r) [OPTION ARG]"
+    echo "add 'f' flag to the arguement to force skip safety checks"
     echo "-----------------------------------"
     echo "-a"
     echo "audit: will audit the system to assist in planning and to help prevent overfilled storage drives by showing the drive storage so the administrator can make a decision to proceed or not with the backup."
