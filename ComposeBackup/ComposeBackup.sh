@@ -24,7 +24,7 @@ if [ "$DockerRunningContainers" -gt 0 ]; then
   echo "Please do not run script with active, running containers, thank you."
   exit 1
 
-elif [ $0 -eq "*f*" ]; then
+elif [[ "$0" = *f* ]]; then
   echo "Forced flag detected, good luck!"
 fi
 
