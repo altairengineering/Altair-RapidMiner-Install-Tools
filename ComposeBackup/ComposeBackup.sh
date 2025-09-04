@@ -102,7 +102,7 @@ else
 fi
 
 echo "clearing out existing docker installation" && sleep 1
-rm -rf /var/lib/docker/*
+rm -rf $DockerRootDir/*
 echo "extracting compose folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 echo "extracting docker system folder" && sleep 1
@@ -113,22 +113,48 @@ echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
 ;;
 
 
+-m)
+
+
+if [[ -z $2 ]]; then
+  echo "Restoring docker to system requires a target directory that contains both tarballs created by this tool."
+  exit 1
+fi
+
+
+echo "clearing out existing docker installation" && sleep 1
+rm -rf $DockerRootDir/*
+echo "extracting compose folder" && sleep 1
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
+echo "extracting docker system folder" && sleep 1
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C $DockerRootDir
+echo "restoring hidden .env file" && sleep 1
+mv -vf hidden.env .env
+echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
+;;
+
+
+
 # echo instructions if none
 # echo warnings of high hard drive space usage
 # echo warning of deletion of all contents of /var/lib/docker/volumes
 *)
 echo "ComposeBackup"
-    echo "Usage: ./ComposeBackup.sh (-a|-b|-r) [OPTION ARG]"
+    echo "Usage: ./ComposeBackup.sh (-a|-b|-r|-m) [OPTION ARG]"
     echo "add 'f' flag to the arguement to force skip safety checks"
     echo "-----------------------------------"
     echo "-a"
     echo "audit: will audit the system to assist in planning and to help prevent overfilled storage drives by showing the drive storage so the administrator can make a decision to proceed or not with the backup."
     echo "-----------------------------------"
-    echo "-b /target/directory/where/to/save/"
+    echo "-b /target/directory/to/save/tarballs/"
     echo "backup: backs up all files relative to the docker compose, as well as data from Docker backend system and volumes as a (fairly large) tarball.  Please use the absolute path for the output of the tarball.  Expect sizes greater than 10GB."
     echo "-----------------------------------"
     echo "-r /target/directory/with/tarballs/"
     echo "restore: **DESTRUCTIVELY RESTORES** your Docker backend system and volumes.  If you restore onto existing system, it will DELETE EVERYTHING in the Docker backend including all volumes, then place the archived contents back into place.  Please use absolute path for the tarball AND PROCEED WITH CAUTION."
+    echo "-----------------------------------"
+    echo "-m /target/directory/with/tarballs/"
+    echo "migrate: functions as restore, but does not search for existing docker-file.  Warning: The current working directory will become the docker compose folder."
+ 
     exit 1
 
 ;;
