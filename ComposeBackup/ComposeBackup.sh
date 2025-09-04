@@ -66,11 +66,13 @@ fi
 
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 echo "archiving docker system installation folder" && sleep 1
-tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir"
+tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir" || \
+     { echo "Something went wrong with the compression, exiting now."; exit 1; }
 echo "processing hidden .env file" && sleep 1
 mv -vf .env hidden.env
 echo "archiving docker compose folder" && sleep 1
-tar --create --gzip --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz .
+tar --create --gzip --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz .  || \
+     { echo "Something went wrong with the compression, exiting now."; exit 1; }
 echo "PLEASE RESTART THE SYSTEM AFTER CREATING THE BACKUP!!!"
 
 
@@ -97,13 +99,16 @@ else
   exit 1
 fi
 
+
+echo "extracting compose folder" && sleep 1
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz || \
+     { echo "Something went wrong with the extration, exiting now."; exit 1; }
 echo "clearing out existing docker installation" && sleep 1
 rm -rf "${DockerRootDir:?}"/* || \
      { echo "The docker root dir variable is empty, please check your docker installation status.  Sorry but I cannot proceed."; exit 1; }
-echo "extracting compose folder" && sleep 1
-tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 echo "extracting docker system folder" && sleep 1
-tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir"
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir" || \
+     { echo "Something went wrong with the extration, exiting now."; exit 1; }
 echo "restoring hidden .env file" && sleep 1
 mv -vf hidden.env .env
 echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
@@ -119,13 +124,16 @@ if [[ -z $2 ]]; then
 fi
 
 
+
+echo "extracting compose folder" && sleep 1
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz  || \
+     { echo "Something went wrong with the extration, exiting now."; exit 1; }
 echo "clearing out existing docker installation" && sleep 1
 rm -rf "${DockerRootDir:?}"/* || \
      { echo "The docker root dir variable is empty, please check your docker installation status.  Sorry but I cannot proceed."; exit 1; }
-echo "extracting compose folder" && sleep 1
-tar --extract --ungzip --same-owner --preserve-permissions --overwrite --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz
 echo "extracting docker system folder" && sleep 1
-tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir"
+tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir" || \
+     { echo "Something went wrong with the extration, exiting now."; exit 1; }
 echo "restoring hidden .env file" && sleep 1
 mv -vf hidden.env .env
 echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
@@ -156,4 +164,5 @@ echo "ComposeBackup"
 
 ;;
 esac
+echo "Script complete, exiting."
 exit 0
