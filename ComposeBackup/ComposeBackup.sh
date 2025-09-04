@@ -22,12 +22,8 @@ fi
 
 if [ "$DockerRunningContainers" -gt 0 ]; then
   echo "Please do not run script with active, running containers, thank you."
-  exit 1
-
-elif [[ "$1" = *f* ]]; then
-  echo "Forced flag detected, good luck!"
+  read -n1 -r -p "Recommend to press Ctrl-C to cancel and stop then stop running containers.  Press Enter to proceed heedless of this warning."
 fi
-
 
 #check for args
 
@@ -143,7 +139,6 @@ echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
 *)
 echo "ComposeBackup"
     echo "Usage: ./ComposeBackup.sh (-a|-b|-r|-m) [OPTION ARG]"
-    echo "add 'f' flag to the arguement to force skip safety checks"
     echo "-----------------------------------"
     echo "-a"
     echo "audit: will audit the system to assist in planning and to help prevent overfilled storage drives by showing the drive storage so the administrator can make a decision to proceed or not with the backup."
