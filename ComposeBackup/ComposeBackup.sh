@@ -8,7 +8,7 @@
 # use "docker info" to get the docker install folder
 DockerRootDir=$(docker info | grep "Root Dir" | cut -d " " -f 5)
 TargetFilepath=$2
-DockerRunningContainers=$(docker info | grep 'Containers' | cut -d " " -f 3)
+DockerRunningContainers=$(docker ps -a --format json)
 
 
 # check for root
@@ -19,9 +19,11 @@ fi
 
 
 
-if [ "$DockerRunningContainers" -gt 0 ]; then
+if [ -z "$DockerRunningContainers" ]; then
+  echo "No running containers detected"
+else
   echo "Please do not run script with active, running containers, thank you."
-  read -n1 -r -p "Recommend to press Ctrl-C to cancel and stop then stop running containers.  Press Enter to proceed heedless of this warning."
+  exit 1
 fi
 
 #check for args
