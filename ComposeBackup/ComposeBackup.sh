@@ -77,7 +77,7 @@ echo "processing hidden .env file" && sleep 1
 echo "archiving docker compose folder" && sleep 1
 tar --create --gzip --exclude="$0" --verbose -f "$TargetFilepath"ComposeFolder.tar.gz . .??* || \
      { echo "Something went wrong with the compression, exiting now."; exit 1; }
-echo "PLEASE RESTART THE SYSTEM AFTER CREATING THE BACKUP!!! YOU MUST ALSO USE \"docker compose pull\" OR OTHERWISE RE-OBTAIN YOUR LOCAL IMAGES!!!""
+echo "PLEASE RESTART THE SYSTEM AFTER CREATING THE BACKUP!!! YOU MUST ALSO USE \"docker compose pull\" OR OTHERWISE RE-OBTAIN YOUR LOCAL IMAGES!!!"
 
 
 
