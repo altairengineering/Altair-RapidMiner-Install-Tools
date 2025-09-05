@@ -71,9 +71,9 @@ echo "archiving docker system installation folder" && sleep 1
 tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir" || \
      { echo "Something went wrong with the compression, exiting now."; exit 1; }
 echo "processing hidden .env file" && sleep 1
-mv -vf .env hidden.env
+#mv -vf .env hidden.env
 echo "archiving docker compose folder" && sleep 1
-tar --create --gzip --exclude="$0" --verbose --file="$TargetFilepath"ComposeFolder.tar.gz .  || \
+tar --create --gzip --exclude="$0" --verbose -f "$TargetFilepath"ComposeFolder.tar.gz . .??* || \
      { echo "Something went wrong with the compression, exiting now."; exit 1; }
 echo "PLEASE RESTART THE SYSTEM AFTER CREATING THE BACKUP!!!"
 
@@ -114,7 +114,7 @@ echo "extracting docker system folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir" || \
      { echo "Something went wrong with the extration, exiting now."; exit 1; }
 echo "restoring hidden .env file" && sleep 1
-mv -vf hidden.env .env
+#mv -vf hidden.env .env
 echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
 ;;
 
@@ -139,7 +139,7 @@ echo "extracting docker system folder" && sleep 1
 tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose --file="$TargetFilepath"DockerSystem.tar.gz -C "$DockerRootDir" || \
      { echo "Something went wrong with the extration, exiting now."; exit 1; }
 echo "restoring hidden .env file" && sleep 1
-mv -vf hidden.env .env
+#mv -vf hidden.env .env
 echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!"
 ;;
 
