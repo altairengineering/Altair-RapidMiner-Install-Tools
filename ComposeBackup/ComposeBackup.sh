@@ -77,7 +77,7 @@ echo "processing hidden .env file" && sleep 1
 echo "archiving docker compose folder" && sleep 1
 tar --create --gzip --exclude="$0" --verbose -f "$TargetFilepath"ComposeFolder.tar.gz . .??* || \
      { echo "Something went wrong with the compression, exiting now."; exit 1; }
-echo "PLEASE RESTART THE SYSTEM AFTER CREATING THE BACKUP!!! YOU MUST ALSO USE \"docker compose pull\" OR OTHERWISE RE-OBTAIN YOUR LOCAL IMAGES!!!"
+echo "PLEASE RESTART THE SYSTEM AFTER CREATING THE BACKUP!!! YOU MUST ALSO USE docker compose pull OR OTHERWISE RE-OBTAIN YOUR LOCAL IMAGES!!!"
 
 
 
@@ -117,7 +117,8 @@ tar --extract --ungzip --same-owner --preserve-permissions --overwrite --verbose
      { echo "Something went wrong with the extration, exiting now."; exit 1; }
 echo "restoring hidden .env file" && sleep 1
 #mv -vf hidden.env .env
-echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!  YOU MUST ALSO USE \"docker compose pull\" OR OTHERWISE RE-OBTAIN YOUR LOCAL IMAGES!!!"
+echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!  YOU MUST ALSO USE docker compose pull OR OTHERWISE RE-OBTAIN YOUR LOCAL IMAGES!!!"
+
 ;;
 
 #migration, does not check for docker compose file
@@ -165,7 +166,7 @@ echo "ComposeBackup"
     echo "-----------------------------------"
     echo "-m /target/directory/with/tarballs/"
     echo "migrate: functions as restore, but does not search for existing docker-file.  Warning: The current working directory will become the docker compose folder."
-    echo "WARNING: This script will clear you local image cache to prevent undesireable behavior from Docker.  You will have to execute \"docker compose pull\" or otherwise get your images back onto the system after BOTH backing up and restoring docker systems with this tool."
+    echo "WARNING: This script will clear you local image cache to prevent undesireable behavior from Docker.  You will have to execute docker compose pull or otherwise get your images back onto the system after BOTH backing up and restoring docker systems with this tool."
  
     exit 1
 
