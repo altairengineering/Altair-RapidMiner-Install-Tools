@@ -67,6 +67,8 @@ else
 fi
 
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
+echo "removing downloaded images to prevent orphan danglers"
+docker image prune -af
 echo "archiving docker system installation folder" && sleep 1
 tar --create --gzip --verbose --file="$TargetFilepath"DockerSystem.tar.gz "$DockerRootDir" || \
      { echo "Something went wrong with the compression, exiting now."; exit 1; }
