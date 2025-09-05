@@ -8,7 +8,7 @@
 # use "docker info" to get the docker install folder
 DockerRootDir=$(docker info | grep "Root Dir" | cut -d " " -f 5)
 TargetFilepath=$2
-DockerRunningContainers=$(docker ps -a --format json)
+DockerRunningContainers=$(docker ps --format json)
 
 
 # check for root
