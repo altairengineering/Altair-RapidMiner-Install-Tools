@@ -153,7 +153,7 @@ echo "PLEASE RESTART THE SYSTEM AFTER RESTORING A BACKUP!!!  YOU MUST ALSO USE \
 # echo warning of deletion of all contents of /var/lib/docker/volumes
 *)
 echo "ComposeBackup"
-    echo "Usage: ./ComposeBackup.sh (-a|-b|-r|-m) [OPTION ARG]"
+    echo "Usage: ./ComposeBackup.sh \(-a|-b|-r|-m\) [OPTION ARG]"
     echo "-----------------------------------"
     echo "-a"
     echo "audit: will audit the system to assist in planning and to help prevent overfilled storage drives by showing the drive storage so the administrator can make a decision to proceed or not with the backup."
