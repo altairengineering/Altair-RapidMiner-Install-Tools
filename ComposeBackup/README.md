@@ -4,7 +4,7 @@ A tool for a local docker snapshot that can be restored to original working cont
 
 
 ComposeBackup
-Usage: ./ComposeBackup.sh (-a|-b|-r) [OPTION ARG]
+Usage: ./ComposeBackup.sh (-a|-b|-r|-m) [OPTION ARG]
 
 
 \-a
