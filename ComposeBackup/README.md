@@ -23,5 +23,5 @@ restore: **DESTRUCTIVELY RESTORES** your Docker backend system and volumes.  If 
 migrate: functions as restore, but does not search for existing docker-file.  Warning: The current working directory will become the docker compose folder.
 
 
-WARNING: This script will clear you local image cache to prevent undesireable behavior from Docker.  You will have to execute docker compose pull or otherwise get your images back onto the system after BOTH backing up and restoring docker systems with this tool.
+WARNING: This script will clear your local image cache to prevent undesireable behavior from Docker.  You will have to execute docker compose pull or otherwise get your images back onto the system after BOTH backing up and restoring docker systems with this tool.
 
