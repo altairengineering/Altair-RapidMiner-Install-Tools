@@ -29,10 +29,7 @@ composever=`docker compose version | cut -d " " -f 4 | sed 's/,$//'`
 echo "Detected Compose $composever"
 sleep 1
 
-echo "If you want to use the configuration file for automated installation choices, press Cntl-C.  Then use the absolute or relative path to the configuration file, after filling it out."
-read -n1 -r -p "Press any key to continue, or Cntl-C to exit without installing"
 
-if [ -z "$1" ]; then
 
 
  #user name
@@ -78,12 +75,7 @@ echo "You must acquire a valid RM license to continue, talk to your sales rep"
  read aihublicense
 
 
-else
-#here we read the config file
 
- source $1
-
-fi
 
 
 #install ai-hub
