@@ -33,10 +33,7 @@ composever=$(docker compose version | cut -d " " -f 4 | sed 's/,$//')
 echo "Detected Compose $composever"
 sleep 1
 
-echo "If you want to use the configuration file for automated installation choices, press Cntl-C.  Then use the absolute or relative path to the configuration file, after filling it out."
-read -n1 -r -p "Press any key to continue, or Cntl-C to exit without installing"
 
-if [ -z "$1" ]; then
 
 
 	#user name
@@ -123,12 +120,7 @@ if [ -z "$1" ]; then
 		esac
 
 
-else
-#here we read the config file
-# shellcheck source=$1
-source "$1"
 
-fi
 
 
 #install ai-hub
@@ -305,3 +297,4 @@ echo "chmod -R o-rwx /home/$aihubuser/prod/ssl/"
 echo "Then restart the cluster using commands mentioned earlier"
 echo "======================================================================"
 exit 0
+
