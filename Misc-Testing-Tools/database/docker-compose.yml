@@ -1,0 +1,20 @@
+services:
+  database:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - ADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    networks:
+      - postgres-network
+    restart: always
+    volumes:
+      #      - ./db-data/:/var/lib/postgresql/
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+networks:
+  postgres-network:
+    driver: bridge
