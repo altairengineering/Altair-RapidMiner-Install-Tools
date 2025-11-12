@@ -5,7 +5,7 @@
 
 
 #test for docker
-command -v docker >/dev/null 2>&1 || { echo >&2 "I require docker but it's not installed."; exit 1; }
+command -v docker >/dev/null 2>&1 || { echo >&2 "Docker is required, but it is not installed."; exit 1; }
 
 dockerver=`docker --version | cut -d " " -f 3 | sed 's/,$//'`
 echo "Detected Docker $dockerver"
