@@ -23,6 +23,6 @@ Connect to that port with a web browser and configure the installation.
 Use docker cp command to stage the zipfile inside the Anzo container
 
 ```
-docker cp ./graphmart.zip CONTAINERID:/opt/Anzo/shared/data
+docker cp ./graphmart.zip CONTAINERID:/opt/Anzo/shared/data/serverGraphStore
 ```
 
