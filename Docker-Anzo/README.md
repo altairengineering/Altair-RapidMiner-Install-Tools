@@ -1,6 +1,6 @@
 # Docker containerized Anzo Graph Lakehouse
 ## A study and research image
-### Not recommended for production usage
+⚠️ Not recommended for production usage ⚠️
 
 ### Minimum requirements:
 Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested.  Docker for Desktop (windows) is untested.
