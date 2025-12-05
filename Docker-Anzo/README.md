@@ -2,13 +2,10 @@
 ## A study and research image
 ⚠️ Not recommended for production usage ⚠️
 
-Special Thanks To:
-
-Lloyd L.
-
-Nigesh P.
-
-Boris S.
+Special Thanks To:  
+Lloyd L.  
+Nigesh P.  
+Boris S.  
 
 
 ### Minimum requirements:
