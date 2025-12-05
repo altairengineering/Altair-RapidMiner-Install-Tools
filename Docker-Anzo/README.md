@@ -2,6 +2,11 @@
 ## A study and research image
 ⚠️ Not recommended for production usage ⚠️
 
+Special Thanks To:
+Lloyd L.
+Nigesh P.
+Boris S.
+
 ### Minimum requirements:
 Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested.  Docker for Desktop (windows) is untested.
 
@@ -14,7 +19,7 @@ cd docker-anzo
 docker compose up -d
 ```
 
-Open ports 8946 on target system.   
+Open ports 8946, 5600, and 5700 on target system.   
 
 Connect to that port with a web browser and configure the installation.
 
