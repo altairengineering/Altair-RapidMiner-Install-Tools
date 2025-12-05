@@ -32,10 +32,10 @@ Connect to 8946 port with a web browser and configure the installation.
 
 ### Creating a Lakehouse
 
-Browse to the Admin settings page.
-Open the "Connections" menu and select "Altair Graph Lakehouse"
-Click "Add new Altair Graph Lakehouse" > "Add new Altair Graph Lakehouse" (not cloud locations)
-Add the anzodb information defaults
+Browse to the Admin settings page.  
+Open the "Connections" menu and select "Altair Graph Lakehouse"  
+Click "Add new Altair Graph Lakehouse" > "Add new Altair Graph Lakehouse" (not cloud locations)  
+Add the anzodb information defaults  
 
 * Title: Name it what you want
 * Host: anzodb
