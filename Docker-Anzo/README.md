@@ -13,7 +13,7 @@ Oliver C. - tester
 * Add Distributed Unstructured
 
 ### Minimum requirements:
-Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested.  Docker for Desktop (windows) is untested.
+Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested as well as Rancher on MacOS desktop.  Docker for Desktop (windows) is yet untested.
 
 ### Installation:
 
