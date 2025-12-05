@@ -3,9 +3,13 @@
 ⚠️ Not recommended for production usage ⚠️
 
 Special Thanks To:
+
 Lloyd L.
+
 Nigesh P.
+
 Boris S.
+
 
 ### Minimum requirements:
 Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested.  Docker for Desktop (windows) is untested.
