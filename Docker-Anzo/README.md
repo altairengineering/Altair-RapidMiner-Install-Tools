@@ -3,9 +3,10 @@
 ⚠️ Not recommended for production usage ⚠️
 
 Special Thanks To:  
-Lloyd L.  
-Nigesh P.  
-Boris S.  
+Lloyd L. - developer
+Nigesh P. - developer
+Boris S. - developer
+Oliver C. - tester
 
 ### Roadmap
 * Add ELK Stack
