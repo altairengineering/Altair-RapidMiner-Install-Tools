@@ -7,6 +7,9 @@ Lloyd L.
 Nigesh P.  
 Boris S.  
 
+### Roadmap
+* Add ELK Stack
+* Add Distributed Unstructured
 
 ### Minimum requirements:
 Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested.  Docker for Desktop (windows) is untested.
