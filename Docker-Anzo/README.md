@@ -13,16 +13,18 @@ Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested.  Docker fo
 
 ### Installation:
 
+Open ports 8946, 5600, and 5700 on target system.   
+
 Unpack the Docker-Anzo code on your VM or system.  
+
+Then enter these commands:
 
 ```
 cd docker-anzo
 docker compose up -d
 ```
 
-Open ports 8946, 5600, and 5700 on target system.   
-
-Connect to that port with a web browser and configure the installation.
+Connect to 8946 port with a web browser and configure the installation.
 
 ### Loading Graphmart zipfile
 
