@@ -40,7 +40,7 @@ dnf upgrade -y
 { #try
 dnf remove -y docker*
 dnf install -y epel-release
-dnf install -y dnf-utils curl wget vim unzip
+dnf install -y dnf-utils curl wget vim unzip openssl
 dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 dnf update -y --allowerasing
 dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
