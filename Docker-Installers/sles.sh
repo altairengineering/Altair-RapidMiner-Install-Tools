@@ -43,7 +43,7 @@ zypper -n remove docker \
                   runc
 zypper -n clean
 #install dependancies, entropy generator, and tools
-zypper -n install unzip curl wget vim ca-certificates gnupg lsb-release haveged
+zypper -n install unzip curl wget vim ca-certificates gnupg lsb-release haveged openssl
 #zypper -n addrepo https://download.docker.com/linux/sles/docker-ce.repo
 zypper -n update
 #install docker ce for suse
@@ -72,3 +72,4 @@ echo 'Docker and Docker compose installed successfully.'
 echo 'YOU MUST RESTART THIS SYSTEM BEFORE USING DOCKER.'
 
 exit 0
+
