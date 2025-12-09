@@ -30,6 +30,7 @@ echo "https://pkgs.org/search/?q=ca-certificates"
 echo "https://pkgs.org/search/?q=gnupg" 
 echo "https://pkgs.org/search/?q=lsb-release"
 echo "https://pkgs.org/search/?q=haveged"
+echo "https://pkgs.org/search/?q=openssl"
 sleep 1
 read -p "Press enter to continue"
 
@@ -89,6 +90,7 @@ sleep 1
 read -p "Press enter to continue"
 echo "Thanks all done!"
 exit 0
+
 
 
 
