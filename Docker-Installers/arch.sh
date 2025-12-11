@@ -12,7 +12,7 @@
 pacman -Sy --noconfirm
 pacman -Syu --noconfirm
 { #try
-pacman -S --noconfirm curl wget vim unzip
+pacman -S --noconfirm curl wget vim unzip openssl certbot
 dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
 dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
