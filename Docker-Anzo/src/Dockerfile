@@ -13,7 +13,8 @@ RUN apt-get update -y \
 	&& apt-get install vim net-tools tuned wget unzip expect software-properties-common supervisor curl xvfb rsync -y
 
 #download latest install script
-RUN wget "https://storage.googleapis.com/csi-cdi-anzo/release-ga/releases/6.1.0/r202507021236/altair_graph_studio_server_linux_amd64_6_1_0_r202507021236.sh" -O anzo_script.sh \
+RUN wget "https://storage.googleapis.com/csi-cdi-anzo/release-ga/hotfix/6.2.1/r202511141311/altair_graph_studio_server_linux_amd64_6_2_1_r202511141311.sh" -O anzo_script.sh \
+#RUN wget "https://storage.googleapis.com/csi-cdi-anzo/release-ga/releases/6.1.0/r202507021236/altair_graph_studio_server_linux_amd64_6_1_0_r202507021236.sh" -O anzo_script.sh \
 	&& chmod +rx anzo_script.sh
 
 #inject files
