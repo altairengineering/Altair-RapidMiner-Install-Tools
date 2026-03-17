@@ -253,6 +253,9 @@ echo "Added custom ca certs file"
 
 #create the ssl directory
 mkdir -p /home/"${aihubuser}"/prod/ssl
+mkdir -p /home/"${aihubuser}"/prod/panopticon
+echo "Created pano and ssl directories"
+
 sleep 1
 #chown and chmod it
 chown -R "${aihubuser}":"${aihubuser}" /home/"${aihubuser}"/prod
@@ -261,7 +264,10 @@ chmod a+rw /home/"${aihubuser}"/prod/.env
 chown -R 2011:0 /home/"${aihubuser}"/prod/ssl/
 chmod -R ug+w /home/"${aihubuser}"/prod/ssl/
 chmod -R o-rwx /home/"${aihubuser}"/prod/ssl/
-echo "Created ssl directory and added permissions."
+chown -R 2011:0 /home/"${aihubuser}"/prod/panopticon/
+chmod -R ug+w /home/"${aihubuser}"/prod/panopticon/
+chmod -R o-rwx /home/"${aihubuser}"/prod/panopticon/
+echo "Modified directory permissions"
 sleep 1
 
 #output document
