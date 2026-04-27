@@ -166,9 +166,16 @@ activemqpassword="$(echo $RANDOM | md5sum | head -c 15)"
 echo "$activemqpassword"
 sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" /home/"$aihubuser"/prod/.env
 
-sed -i "s/KEYCLOAK_PASSWORD=changeit/KEYCLOAK_PASSWORD=${aihubpassword}/g" /home/"$aihubuser"/prod/.env
-echo "Keycloak configured"
+#sed -i "s/KEYCLOAK_PASSWORD=changeit/KEYCLOAK_PASSWORD=${aihubpassword}/g" /home/"$aihubuser"/prod/.env
+#echo "Keycloak configured"
+#sleep 1
+sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=${aihubpassword}/g" /home/"$aihubuser"/prod/.env
+echo "Platform admin creds configured"
 sleep 1
+sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=${aihubpassword}/g" /home/"$aihubuser"/prod/.env
+echo "Keycloak database configured"
+sleep 1
+
 
 #create jupyterhub secret
 #JUPYTERHUB_CRYPT_KEY="<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>"
