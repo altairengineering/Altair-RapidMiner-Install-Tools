@@ -23,7 +23,7 @@ if [[ $? -eq 0 ]]; then
 else
         echo "This script requires internet connectivity to function"
         echo "If you need to set proxy, that could be an issue"
-        exit 1
+        read -n1 -r -p "It is strongly advisable to only run this script if the previous test passed!  Press any key to continue, or Cntl-C to exit without installing"
 fi
 
 zypper -n update
