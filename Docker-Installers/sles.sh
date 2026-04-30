@@ -43,7 +43,7 @@ zypper -n remove docker \
                   runc
 zypper -n clean
 #install dependancies, entropy generator, and tools
-zypper -n install unzip curl wget vim ca-certificates gnupg lsb-release haveged openssl certbot
+zypper -n install unzip curl wget vim ca-certificates gnupg lsb-release haveged openssl certbot git
 #zypper -n addrepo https://download.docker.com/linux/sles/docker-ce.repo
 zypper -n update
 #install docker ce for suse
