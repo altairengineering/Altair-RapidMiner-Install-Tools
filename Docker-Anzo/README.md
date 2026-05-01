@@ -17,6 +17,9 @@ Docker system with 30 GB of RAM.   Ubuntu linux 2404 has been tested as well as 
 
 ### Installation:
 
+Virtualization Note:
+Do not use thin-provisioning or "dynamic" RAM for any virtual machine that will be building the container.
+
 Open ports 8946, 5600, and 5700 on target system.   
 
 Unpack the Docker-Anzo code on your VM or system.  
