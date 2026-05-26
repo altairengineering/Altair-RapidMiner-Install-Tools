@@ -5,7 +5,7 @@ LABEL email="anthony.kiehl@siemens.com"
 
 #setup environment
 ENV TIMEZONE=America/Los_Angeles 
-EXPOSE 8945/tcp 8946/tcp 8022/tcp 61616/tcp 61617/tcp
+EXPOSE 8080/tcp 8443/tcp 8945/tcp 8946/tcp 8022/tcp 61616/tcp 61617/tcp
 SHELL ["/bin/sh", "-c"]
 
 #install tools
