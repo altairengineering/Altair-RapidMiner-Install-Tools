@@ -13,6 +13,8 @@ services:
       - "0.0.0.0:8022:8022"
       - "0.0.0.0:8945:8945"
       - "0.0.0.0:8946:8946"
+      - "0.0.0.0:8080:8080"
+      - "0.0.0.0:8443:8443"
     volumes:
       - anzo_studio_vol:/opt/Anzo
       - anzo_shared_vol:/opt/Anzo/shared
