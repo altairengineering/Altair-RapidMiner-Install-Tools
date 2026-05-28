@@ -929,5 +929,5 @@ Yes \[y, Enter\], No \[n\]\r
 "
 sleep 1
 send -- "n\r"
-expect eof
+sleep 10
 exit 0
