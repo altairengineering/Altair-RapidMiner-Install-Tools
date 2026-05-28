@@ -45,10 +45,7 @@ if {$force_conservative} {
 set timeout -1
 spawn ./anzo_script.sh
 match_max 100000
-expect -exact "Unpacking JRE ...\r
-Starting Installer ...\r
-\[?7hThis will install Graph Studio on your computer.\r
-OK \[o, Enter\], Cancel \[c\]\r
+expect "OK \[o, Enter\], Cancel \[c\]\r
 "
 send -- "o\r"
 expect -exact "o\r
