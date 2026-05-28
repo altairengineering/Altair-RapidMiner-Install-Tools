@@ -921,10 +921,13 @@ The minimum amount currently supported is 1024 MB. 19263 MB are available.\r
 Maximum Memory in MB\r
 \[4816\]\r
 "
+sleep 1
 send -- "18000\r"
 expect -exact "18000\r
 Start Graph Studio services for immediate initial configuration?\r
 Yes \[y, Enter\], No \[n\]\r
 "
+sleep 1
 send -- "n\r"
 expect eof
+exit 0
