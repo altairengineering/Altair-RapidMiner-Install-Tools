@@ -1,12 +1,17 @@
 services:
   anzostudio:
     build: src
-    container_name: anzostudio
+    container_name: anzo-studio
+    hostname: anzo-studio
     depends_on:
       - anzodb
     restart: unless-stopped
     environment:
       - TIMEZONE=America/Los_Angeles
+    networks:
+      graph-net:
+        aliases:
+          - anzo-studio
     ports:
       - "0.0.0.0:61616:61616"
       - "0.0.0.0:61617:61617"
@@ -19,9 +24,14 @@ services:
       - anzo_studio_vol:/opt/Anzo
       - anzo_shared_vol:/opt/Anzo/shared
   anzodb:
-    image: cambridgesemantics/anzograph-db:3.2.1
+    image: cambridgesemantics/anzograph-db:3.3.1
     container_name: anzodb
+    hostname: anzodb
     restart: unless-stopped
+    networks:
+      graph-net:
+        aliases:
+          - anzo-db
     environment:
       - TIMEZONE=America/Los_Angeles
     ports:
@@ -30,6 +40,8 @@ services:
     volumes:
       - anzo_shared_vol:/opt/Anzo/shared
       - anzo_graph_vol:/opt/anzograph
+networks:
+  graph-net:
 volumes:
   anzo_studio_vol:
   anzo_graph_vol:
