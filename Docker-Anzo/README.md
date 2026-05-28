@@ -41,7 +41,7 @@ Click "Add new Altair Graph Lakehouse" > "Add new Altair Graph Lakehouse" (not c
 Add the anzodb information defaults  
 
 * Title: Name it what you want
-* Host: anzodb
+* Host: anzo-db
 * Admin User: admin
 * Admin Password: Passw0rd1
 * Query User: admin
