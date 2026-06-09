@@ -23,3 +23,26 @@ composever=$(docker compose version | cut -d " " -f 4 | sed 's/,$//')
 echo "Detected Compose $composever"
 sleep 1
 
+#check operating system
+OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
+
+case $OperatingSystem in
+  "RED HAT ENTERPRISE LINUX")
+    echo "Detected Red Hat operating system"
+
+  ;;
+
+  "ROCKY")
+    echo "Detected Rocky operating system"
+
+  ;;
+
+  "UBUNTU")
+    echo "Detected Rocky operating system"
+  
+  ;;   
+
+
+  
+
+  
