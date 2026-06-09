@@ -26,13 +26,16 @@ sleep 1
 #check operating system
 OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
 
+
+#execute docker installer scripts with case
 case $OperatingSystem in
+
   "RED HAT ENTERPRISE LINUX")
     echo "Detected Red Hat operating system"
 
   ;;
 
-  "ROCKY")
+  "ROCKY LINUX")
     echo "Detected Rocky operating system"
 
   ;;
@@ -42,7 +45,10 @@ case $OperatingSystem in
   
   ;;   
 
-
+  *)
+    echo "Non-supported operating system detected, please contact administrator."
+    exit 1
+  ;;
   
-
+esac
   
