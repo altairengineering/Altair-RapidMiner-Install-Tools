@@ -14,12 +14,25 @@ echo "Special thanks to Sebastian L., Lloyd L., and Nigesh P."
 echo "Auto-AI-hub version $hubversion"
 echo "======================================================================"
 sleep 1
+echo "Checking installation path"
+sleep 1
+if [ -e "../README.md"]; then
+  echo "Repository readme file present"
+else
+  echo "Repository readme file not present"
+  echo "Please install using git command:"
+  echo "git clone https://github.com/altairengineering/Altair-RapidMiner-Install-Tools.git"
+  echo "bye"
+  exit 1
+fi
 echo "Detecting Docker version"
 sleep 1
-{ #try 
-dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
-} || { #catch
+docker --version
+if [ $? -eq 127 ]; then
+echo "Docker command not detected on path
+
 #check operating system
+echo "Docker not found"
 OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
 
 
