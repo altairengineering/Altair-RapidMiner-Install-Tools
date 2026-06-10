@@ -13,16 +13,11 @@ echo "Special thanks to Sebastian L., Lloyd L., and Nigesh P."
 echo "Auto-AI-hub version $hubversion"
 echo "======================================================================"
 sleep 1
-echo "Detecting Docker and Docker-Compose versions"
+echo "Detecting Docker version"
 sleep 1
+{ #try 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
-echo "Detected Docker $dockerver"
-sleep 1
-
-composever=$(docker compose version | cut -d " " -f 4 | sed 's/,$//')
-echo "Detected Compose $composever"
-sleep 1
-
+echo "Detected Docker $dockerver" } || { #catch
 #check operating system
 OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
 
@@ -32,7 +27,7 @@ case $OperatingSystem in
 
   "RED HAT ENTERPRISE LINUX")
     echo "Detected Red Hat operating system"
-
+    
   ;;
 
   "ROCKY LINUX")
@@ -51,4 +46,4 @@ case $OperatingSystem in
   ;;
   
 esac
-  
+}  
