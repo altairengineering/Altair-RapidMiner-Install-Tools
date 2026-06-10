@@ -4,6 +4,7 @@ hubversion="2026.1.1"
 #main
 [ "$(whoami)" = root ] || { echo 'you must run with sudo'; exit 1; }
 
+
 #promts:
 printf "\n"
 echo "Auto-AI-Hub Setup script"
@@ -17,7 +18,7 @@ echo "Detecting Docker version"
 sleep 1
 { #try 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
-echo "Detected Docker $dockerver" } || { #catch
+} || { #catch
 #check operating system
 OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
 
@@ -46,4 +47,7 @@ case $OperatingSystem in
   ;;
   
 esac
+dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
+
 }  
+echo "Detected Docker $dockerver" 
