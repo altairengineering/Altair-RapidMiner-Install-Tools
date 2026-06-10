@@ -2,6 +2,7 @@
 #config
 hubversion="2026.1.1"
 #main
+[ $# -eq 0 ] && { echo "Usage: $0 username"; exit 1; }
 [ "$(whoami)" = root ] || { echo 'you must run with sudo'; exit 1; }
 
 
@@ -29,29 +30,44 @@ echo "Detecting Docker version"
 sleep 1
 docker --version
 if [ $? -eq 127 ]; then
-echo "Docker command not detected on path
+echo "Docker command not detected on path"
 
 #check operating system
-echo "Docker not found"
 OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
-
-
+echo "$OperatingSystem detected"
+sleep 1
+echo "Attempting to install docker"
 #execute docker installer scripts with case
 case $OperatingSystem in
 
   "RED HAT ENTERPRISE LINUX")
     echo "Detected Red Hat operating system"
-    
+    chmod +x ../Docker-Installers/rhel.sh $1
+    { #try
+    /bin/bash ../Docker-Installers/rhel.sh
+    } || { #catch
+    echo "RHEL Docker installer failed"
+    exit 1}
   ;;
 
   "ROCKY LINUX")
     echo "Detected Rocky operating system"
-
+    chmod +x ../Docker-Installers/rocky.sh $1
+    { #try
+    /bin/bash ../Docker-Installers/rhel.sh
+    } || { #catch
+    echo "RHEL Docker installer failed"
+    exit 1}
   ;;
 
   "UBUNTU")
-    echo "Detected Rocky operating system"
-  
+    echo "Detected Ubuntu operating system"
+    chmod +x ../Docker-Installers/ubuntu.sh $1
+    { #try
+    /bin/bash ../Docker-Installers/rhel.sh
+    } || { #catch
+    echo "RHEL Docker installer failed"
+    exit 1}  
   ;;   
 
   *)
@@ -63,4 +79,9 @@ esac
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 
 }  
-echo "Detected Docker $dockerver" 
+sleep 1
+
+
+#install ai-hub via automation
+
+
