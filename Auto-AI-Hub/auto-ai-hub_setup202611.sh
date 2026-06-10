@@ -20,7 +20,7 @@ if [ -e "../README.md"]; then
   echo "Repository readme file present"
 else
   echo "Repository readme file not present"
-  echo "Please install using git command:"
+  echo "Please install entire repo using git command:"
   echo "git clone https://github.com/altairengineering/Altair-RapidMiner-Install-Tools.git"
   echo "bye"
   exit 1
