@@ -102,16 +102,17 @@ echo "Files staged in prod folder"
 #sed commands
 sleep 1
 
+linuxtimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
 sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" /home/"${aihubuser}"/prod/.env
 echo "Configured TZ"
 sleep 1
 
 #configure hostnames in env
 
-sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${aihubhostname}%g" /home/"$aihubuser"/prod/.env
-#sed -i "s%PUBLIC_URL=http://platform.rapidminer.com%PUBLIC_URL=http://${aihubhostname}%g" /home/"$aihubuser"/prod/.env
-sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${aihubhostname}%g" /home/"$aihubuser"/prod/.env
-#sed -i "s%SSO_PUBLIC_URL=http://platform.rapidminer.com%SSO_PUBLIC_URL=http://${aihubhostname}%g" /home/"$aihubuser"/prod/.env
+sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
+#sed -i "s%PUBLIC_URL=http://platform.rapidminer.com%PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
+sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
+#sed -i "s%SSO_PUBLIC_URL=http://platform.rapidminer.com%SSO_PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
 echo "Configured hostnames"
 sleep 1
 
