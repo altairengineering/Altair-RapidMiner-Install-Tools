@@ -150,6 +150,19 @@ sleep 1
 
 
 #credentials license
+echo "Please enter License Unit Manager User Name (email address for AltairOne):"
+read -r LicenseUser
+echo "Please carefully enter License Unit Manager Password (creds for AltairOne):"
+read -r -s LicenseUserPasswordfirst
+echo "Please re-enter password:"
+read -r -s LicenseUserPasswordsecond
+if [ "$LicenseUserPasswordfirst" == "$LicenseUserPasswordsecond" ]; then
+  			echo "Password recorded"
+				LicenseUserPassword=$LicenseUserPasswordfirst
+else
+				echo "Passwords did not match"
+				exit 1
+fi
 sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" /home/"${aihubuser}"/prod/.env
 sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" /home/"$aihubuser"/prod/.env
 sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" /home/"$aihubuser"/prod/.env
@@ -160,8 +173,6 @@ echo "Machine ID = $LicenseAgentID"
 sleep 1
 sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" /home/"${aihubuser}"/prod/.env
 sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" /home/"${aihubuser}"/prod/.env
-
-
 echo "License configured"
 sleep 1
 
@@ -172,13 +183,6 @@ echo "Panopticon Generated MAC address = $PanoGenMAC"
 sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" /home/"${aihubuser}"/prod/.env
 
 
-
-#suse jupyter fix
-if $(cat /proc/version | grep -qi 'suse'); then
-  sed -i 's%    hostname: jupyterhub$%    hostname: jupyterhub\n    user: root%g' /home/"${aihubuser}"/prod/docker-compose.yml
-  echo "Added fix for SUSE and jupyterhub"
-fi
-sleep 1
 #custom cert fix
 sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' /home/"$aihubuser"/prod/.env
 echo "Added custom ca certs file"
