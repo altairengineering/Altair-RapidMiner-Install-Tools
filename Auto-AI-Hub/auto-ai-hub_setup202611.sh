@@ -54,7 +54,7 @@ case $OperatingSystem in
     echo "Detected Rocky operating system"
     chmod +x ../Docker-Installers/rocky.sh $1
     { #try
-    /bin/bash ../Docker-Installers/rhel.sh
+    /bin/bash ../Docker-Installers/rocky.sh
     } || { #catch
     echo "RHEL Docker installer failed"
     exit 1}
@@ -64,7 +64,7 @@ case $OperatingSystem in
     echo "Detected Ubuntu operating system"
     chmod +x ../Docker-Installers/ubuntu.sh $1
     { #try
-    /bin/bash ../Docker-Installers/rhel.sh
+    /bin/bash ../Docker-Installers/ubuntu.sh
     } || { #catch
     echo "RHEL Docker installer failed"
     exit 1}  
