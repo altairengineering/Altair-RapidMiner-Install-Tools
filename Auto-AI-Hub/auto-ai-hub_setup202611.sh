@@ -108,7 +108,7 @@ echo "Configured TZ"
 sleep 1
 
 #configure hostnames in env
-UniqueHostname=$(tr -dc a-f0-9 </dev/urandom | head -c 4)
+UniqueHostname=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
 #sed -i "s%PUBLIC_URL=http://platform.rapidminer.com%PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
@@ -209,6 +209,10 @@ sleep 1
 
 
 #creating certificate authority
+CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 mkdir -p /home/"${aihubuser}"/my-certs
 openssl genrsa -aes256 -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
-openssl req -x509 -new -nodes -key ca-root.key -sha256 -days 3650 -subj "/C=GB/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local" -out /home/"${aihubuser}"/my-certs/ca-root.crt
+openssl req -x509 -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
+openssl req -new -nodes -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/server.key -subj "$CASharedSubject"
+
+
