@@ -108,10 +108,10 @@ echo "Configured TZ"
 sleep 1
 
 #configure hostnames in env
-
-sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
+UniqueHostname=$(tr -dc a-f0-9 </dev/urandom | head -c 4)
+sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub.$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
 #sed -i "s%PUBLIC_URL=http://platform.rapidminer.com%PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
-sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
+sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub.$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
 #sed -i "s%SSO_PUBLIC_URL=http://platform.rapidminer.com%SSO_PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
 echo "Configured hostnames"
 sleep 1
