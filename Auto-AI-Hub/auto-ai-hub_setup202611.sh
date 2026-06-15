@@ -106,17 +106,19 @@ echo "Configured TZ"
 sleep 1
 
 #configure hostnames in env
-cat >> /home/"${aihubuser}"/my-certs/UniqueID << 'END'
+#check if there is already been a unique id generated to prevent collisions during testing
+if [ ! -f /home/"${aihubuser}"/my-certs/UniqueID ]; then
+	cat >> /home/"${aihubuser}"/my-certs/UniqueID << 'END'
 #UniqueHostnameIdentifier
-target
+UniqueHostname=target
 END
-UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
-sed -i "s/target/$UniqueIdentifier/g" /home/"${aihubuser}"/my-certs/UniqueID
-
+	UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
+	sed -i "s/target/$UniqueIdentifier/g" /home/"${aihubuser}"/my-certs/UniqueID
+fi
+#read the source with the unique id and write it into the config
+source /home/"${aihubuser}"/my-certs/UniqueID
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
-#sed -i "s%PUBLIC_URL=http://platform.rapidminer.com%PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
-#sed -i "s%SSO_PUBLIC_URL=http://platform.rapidminer.com%SSO_PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
 echo "Configured hostnames"
 sleep 1
 
@@ -134,7 +136,6 @@ sleep 1
 activemqpassword="$(echo $RANDOM | md5sum | head -c 15)"
 echo "$activemqpassword"
 sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" /home/"$aihubuser"/prod/.env
-
 sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=rapidminerautoaihub/g" /home/"$aihubuser"/prod/.env
 echo "Platform admin creds configured"
 sleep 1
@@ -207,13 +208,16 @@ sleep 1
 
 #creating certificate authority
 echo "Creating cryptography setup"
+#collect networking data
 MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
 FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
+#create ca cert and key
 CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 mkdir -p /home/"${aihubuser}"/my-certs
 openssl genrsa -aes256 -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
 openssl req -x509 -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
 openssl req -new -nodes -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/server.key -subj "$CASharedSubject"
+#create ca config
 cat >> /home/"${aihubuser}"/my-certs/server.v3.ext << 'END'
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
