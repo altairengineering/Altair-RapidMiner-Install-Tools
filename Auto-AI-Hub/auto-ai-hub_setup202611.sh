@@ -231,5 +231,8 @@ sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" /home/"${a
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" /home/"${aihubuser}"/my-certs/server.v3.ext
 echo "Created CA config"
 sleep 1
+openssl x509 -req -in /home/"${aihubuser}"/my-certs/server.csr -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAkey /home/"${aihubuser}"/my-certs/my-root.key -CAcreateserial -out /home/"${aihubuser}"/my-certs/server.crt -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
+echo "Created server certificate"
+
 
 
