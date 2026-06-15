@@ -106,7 +106,13 @@ echo "Configured TZ"
 sleep 1
 
 #configure hostnames in env
-UniqueHostname=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
+cat >> /home/"${aihubuser}"/my-certs/UniqueID << 'END'
+#UniqueHostnameIdentifier
+target
+END
+UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
+sed -i "s/target/$UniqueIdentifier/g" /home/"${aihubuser}"/my-certs/UniqueID
+
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
 #sed -i "s%PUBLIC_URL=http://platform.rapidminer.com%PUBLIC_URL=http://auto-ai-hub.local%g" /home/"$aihubuser"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
@@ -138,15 +144,10 @@ sleep 1
 
 
 #create jupyterhub secret
-#JUPYTERHUB_CRYPT_KEY="<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>"
 JupyterCryptKey=$(openssl rand -hex 32)
 sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB_CRYPT_KEY=""${JupyterCryptKey}""%g" /home/"$aihubuser"/prod/.env
 echo "Jupyter Hub secret configured"
 sleep 1
-
-#sed -i "s%  jupyterhub:%  jupyterhub:\\n    user: root\n%g" /home/"$aihubuser"/prod/docker-compose.yml
-#echo "Jupyter Hub user: root appended"
-
 
 #credentials license
 echo "Please enter License Unit Manager User Name (email address for AltairOne):"
@@ -165,7 +166,7 @@ fi
 sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" /home/"${aihubuser}"/prod/.env
 sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" /home/"$aihubuser"/prod/.env
 sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" /home/"$aihubuser"/prod/.env
-##at the end of the script, we must pull the auth.json from the security container
+
 
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
 echo "Machine ID = $LicenseAgentID"
@@ -175,12 +176,10 @@ sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICE
 echo "License configured"
 sleep 1
 
-
 #1031 Pano mac address creation for altair one licensing
 PanoGenMAC=$(cat /dev/urandom | tr -d -c '[:digit:]A-F' | fold -w 12 | sed -E -n -e '/^.[26AE]/s/(..)/\1-/gp' | sed -e 's/-$//g' |sed 's/-/:/g'| head -n1 | sed 's/^\S\S/66/g')
 echo "Panopticon Generated MAC address = $PanoGenMAC"
 sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" /home/"${aihubuser}"/prod/.env
-
 
 #custom cert fix
 sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' /home/"$aihubuser"/prod/.env
