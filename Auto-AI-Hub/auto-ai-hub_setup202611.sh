@@ -5,8 +5,6 @@ hubversion="2026.1.1"
 [ $# -eq 0 ] && { echo "Usage: $0 username"; exit 1; }
 [ "$(whoami)" = root ] || { echo 'you must run with sudo'; exit 1; }
 
-
-#promts:
 printf "\n"
 echo "Auto-AI-Hub Setup script"
 echo "SIEMENS - Anthony Kiehl"
@@ -209,6 +207,9 @@ sleep 1
 
 
 #creating certificate authority
+echo "Creating cryptography setup"
+MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
+FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
 CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 mkdir -p /home/"${aihubuser}"/my-certs
 openssl genrsa -aes256 -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
@@ -222,5 +223,10 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
+END
+sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" /home/"${aihubuser}"/my-certs/server.v3.ext
+sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" /home/"${aihubuser}"/my-certs/server.v3.ext
+echo "Created CA config"
+sleep 1
 
 
