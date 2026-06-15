@@ -215,5 +215,12 @@ openssl genrsa -aes256 -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
 openssl req -x509 -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
 openssl req -new -nodes -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/server.key -subj "$CASharedSubject"
 cat >> /home/"${aihubuser}"/my-certs/server.v3.ext << 'END'
-#leaving off here, this should be a config
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = <YOUR-SERVER-HOSTNAME>
+IP.1 = <YOUR-SERVER-IP-ADDRESS>
+
 
