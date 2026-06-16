@@ -47,19 +47,19 @@ echo "Attempting to install docker"
 { #try
 case $OperatingSystem in
 
-  "*RED HAT*")
+  "RED HAT ENTERPRIZE LINUX")
     echo "Detected Red Hat operating system"
     chmod +x ../Docker-Installers/rhel.sh
     /bin/bash ../Docker-Installers/rhel.sh "$1"
   ;;
 
-  "*ROCKY*")
+  "ROCKY LINUX")
     echo "Detected Rocky operating system"
     chmod +x ../Docker-Installers/rocky.sh
     /bin/bash ../Docker-Installers/rocky.sh "$1"
   ;;
 
-  "*UBUNTU*")
+  "UBUNTU")
     echo "Detected Ubuntu operating system"
     chmod +x ../Docker-Installers/ubuntu.sh
     /bin/bash ../Docker-Installers/ubuntu.sh "$1"
