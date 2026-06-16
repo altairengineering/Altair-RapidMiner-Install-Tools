@@ -1,10 +1,11 @@
 #!/bin/bash
 #config
 hubversion="2026.1.1"
-#main
+#startup reqs
 [ $# -eq 0 ] && { echo "Usage: $0 username"; exit 1; }
 [ "$(whoami)" = root ] || { echo 'you must run with sudo'; exit 1; }
 
+#welcome banner
 printf "\n"
 echo "Auto-AI-Hub Setup script"
 echo "SIEMENS - Anthony Kiehl"
@@ -13,10 +14,13 @@ echo "Special thanks to Sebastian L., Lloyd L., and Nigesh P."
 echo "Auto-AI-hub version $hubversion"
 echo "======================================================================"
 sleep 1
-echo "Checking installation path"
+
+#checking necessary requirements
+echo "Checking installation requirements"
 sleep 1
 if [ -e "../README.md" ]; then
   echo "Repository readme file present"
+  sleep 1
 else
   echo "Repository readme file not present"
   echo "Please install entire repo using git command:"
@@ -24,13 +28,16 @@ else
   echo "bye"
   exit 1
 fi
-echo "Detecting Docker version"
-sleep 1
-docker --version
-if [ $? -eq 127 ]; then
-  echo "Docker command not detected on path"
-  exit 1
+#checking if user is real
+aihubuser="$1"
+if [ -d /home/"$aihubuser"/ ]; then
+	echo "Found $aihubuser"
+	sleep 1
+else	
+	echo "$aihubuser is not correct or does not have a home folder"
+	exit 1
 fi
+
 #check operating system
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:upper:]' '[:lower:]')
 echo "$OperatingSystem detected"
