@@ -71,7 +71,7 @@ exit 1
 
 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
-
+echo "Docker version $dockerver"
 
 sleep 1
 
