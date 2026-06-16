@@ -76,7 +76,7 @@ case $OperatingSystem in
 esac
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 
-}  
+
 sleep 1
 
 
