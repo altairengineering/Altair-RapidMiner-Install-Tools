@@ -36,36 +36,25 @@ echo "$OperatingSystem detected"
 sleep 1
 echo "Attempting to install docker"
 #execute docker installer scripts with case
+{ #try
 case $OperatingSystem in
 
   "RED HAT ENTERPRISE LINUX")
     echo "Detected Red Hat operating system"
     chmod +x ../Docker-Installers/rhel.sh $1
-    { #try
     /bin/bash ../Docker-Installers/rhel.sh
-    } || { #catch
-    echo "RHEL Docker installer failed"
-    exit 1}
   ;;
 
   "ROCKY LINUX")
     echo "Detected Rocky operating system"
     chmod +x ../Docker-Installers/rocky.sh $1
-    { #try
     /bin/bash ../Docker-Installers/rocky.sh
-    } || { #catch
-    echo "RHEL Docker installer failed"
-    exit 1}
   ;;
 
   "UBUNTU")
     echo "Detected Ubuntu operating system"
     chmod +x ../Docker-Installers/ubuntu.sh $1
-    { #try
     /bin/bash ../Docker-Installers/ubuntu.sh
-    } || { #catch
-    echo "RHEL Docker installer failed"
-    exit 1}  
   ;;   
 
   *)
@@ -74,6 +63,12 @@ case $OperatingSystem in
   ;;
   
 esac
+} || { #catch
+echo "Docker install case operation failed"
+exit 1
+}
+
+
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 
 
