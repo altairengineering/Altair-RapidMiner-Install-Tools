@@ -233,6 +233,15 @@ echo "Created CA config"
 sleep 1
 openssl x509 -req -in /home/"${aihubuser}"/my-certs/server.csr -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAkey /home/"${aihubuser}"/my-certs/my-root.key -CAcreateserial -out /home/"${aihubuser}"/my-certs/server.crt -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
 echo "Created server certificate"
-
-
+sleep 2
+#echo "STARTING"
+#docker compose -f /home/"${aihubuser}"/prod/docker-compose.yml up -d deployment-init
+#echo "DEPLOYMENT HAS EXITED TO NEXT INSTRUCTIONS"
+#docker compose logs -f | while read -r LOGLINE
+#do
+#    echo "$LOGLINE"
+#    [[ "${LOGLINE}" == *"Successfully finished."* ]] && echo "!!!executing changes based on logs!!!" && docker compose down
+#done
+#echo "Script complete"
+#exit 0
 
