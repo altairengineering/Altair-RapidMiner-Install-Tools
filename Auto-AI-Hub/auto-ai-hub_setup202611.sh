@@ -15,7 +15,7 @@ echo "======================================================================"
 sleep 1
 echo "Checking installation path"
 sleep 1
-if [ -e "../README.md"]; then
+if [ -e "../README.md" ]; then
   echo "Repository readme file present"
 else
   echo "Repository readme file not present"
