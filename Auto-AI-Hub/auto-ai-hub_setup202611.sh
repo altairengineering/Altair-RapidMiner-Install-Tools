@@ -32,7 +32,7 @@ if [ $? -eq 127 ]; then
   exit 1
 fi
 #check operating system
-OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
+OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr a-z A-Z)
 echo "$OperatingSystem detected"
 sleep 1
 echo "Attempting to install docker"
@@ -42,20 +42,20 @@ case $OperatingSystem in
 
   "RED HAT ENTERPRISE LINUX")
     echo "Detected Red Hat operating system"
-    chmod +x ../Docker-Installers/rhel.sh $1
-    /bin/bash ../Docker-Installers/rhel.sh
+    chmod +x ../Docker-Installers/rhel.sh
+    /bin/bash ../Docker-Installers/rhel.sh "$1"
   ;;
 
   "ROCKY LINUX")
     echo "Detected Rocky operating system"
-    chmod +x ../Docker-Installers/rocky.sh $1
-    /bin/bash ../Docker-Installers/rocky.sh
+    chmod +x ../Docker-Installers/rocky.sh
+    /bin/bash ../Docker-Installers/rocky.sh "$1"
   ;;
 
   "UBUNTU")
     echo "Detected Ubuntu operating system"
-    chmod +x ../Docker-Installers/ubuntu.sh $1
-    /bin/bash ../Docker-Installers/ubuntu.sh
+    chmod +x ../Docker-Installers/ubuntu.sh
+    /bin/bash ../Docker-Installers/ubuntu.sh "$1"
   ;;   
 
   *)
