@@ -39,7 +39,7 @@ else
 fi
 
 #check operating system
-OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:upper:]' '[:lower:]')
+OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
 echo "$OperatingSystem detected"
 sleep 1
 echo "Attempting to install docker"
