@@ -146,6 +146,9 @@ sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB
 echo "Jupyter Hub secret configured"
 sleep 1
 
+######################################ADD ON PREM LICENSE SETUP HERE###################################################################
+#
+#
 #credentials license
 echo "Please enter License Unit Manager User Name (email address for AltairOne):"
 read -r LicenseUser
