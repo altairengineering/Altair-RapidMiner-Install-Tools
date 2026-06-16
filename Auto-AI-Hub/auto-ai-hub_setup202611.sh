@@ -32,7 +32,7 @@ if [ $? -eq 127 ]; then
   exit 1
 fi
 #check operating system
-OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr a-z A-Z)
+OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:upper:]' '[:lower:]')
 echo "$OperatingSystem detected"
 sleep 1
 echo "Attempting to install docker"
