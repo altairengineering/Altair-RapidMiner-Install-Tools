@@ -110,6 +110,7 @@ sleep 1
 
 #configure hostnames in env
 #check if there is already been a unique id generated to prevent collisions during testing
+UniqueHostname=""
 if [ ! -f /home/"${aihubuser}"/my-certs/UniqueID ]; then
 	cat >> /home/"${aihubuser}"/my-certs/UniqueID << 'END'
 #UniqueHostnameIdentifier
