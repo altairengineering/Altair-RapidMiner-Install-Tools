@@ -28,8 +28,9 @@ echo "Detecting Docker version"
 sleep 1
 docker --version
 if [ $? -eq 127 ]; then
-echo "Docker command not detected on path"
-
+  echo "Docker command not detected on path"
+  exit 1
+fi
 #check operating system
 OperatingSystem=$(cat /etc/os-release | grep '^NAME=' | cut -f 2 -d '"' | tr a-z A-Z)
 echo "$OperatingSystem detected"
