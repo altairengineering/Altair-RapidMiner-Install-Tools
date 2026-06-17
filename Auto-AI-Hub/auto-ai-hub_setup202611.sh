@@ -109,8 +109,10 @@ echo "Configured TZ"
 sleep 1
 
 #configure hostnames in env
-#check if there is already been a unique id generated to prevent collisions during testing
+#create the folder if its not already there
+mkdir -p /home/"${aihubuser}"/my-certs
 UniqueHostname=""
+#check if there is already been a unique id generated to prevent collisions during testing
 if [ ! -f /home/"${aihubuser}"/my-certs/UniqueID ]; then
 	cat >> /home/"${aihubuser}"/my-certs/UniqueID << 'END'
 #UniqueHostnameIdentifier
@@ -220,7 +222,6 @@ MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
 FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
 #create ca cert and key
 CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
-mkdir -p /home/"${aihubuser}"/my-certs
 openssl genrsa -aes256 -verbose -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
 openssl req -x509 -verbose -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
 openssl req -verbose -new -nodes -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/server.key -subj "$CASharedSubject"
