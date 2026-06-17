@@ -160,23 +160,34 @@ sleep 1
 #
 #
 #credentials license
-echo "Please enter License Unit Manager User Name (email address for AltairOne):"
-read -r LicenseUser
-echo "Please carefully enter License Unit Manager Password (creds for AltairOne):"
-read -r -s LicenseUserPasswordfirst
-echo "Please re-enter password:"
-read -r -s LicenseUserPasswordsecond
-if [ "$LicenseUserPasswordfirst" == "$LicenseUserPasswordsecond" ]; then
-  			echo "Password recorded"
-				LicenseUserPassword=$LicenseUserPasswordfirst
+if [ $2 = "creds" ]; then
+	echo "Please enter License Unit Manager User Name (email address for AltairOne):"
+	read -r LicenseUser
+	echo "Please carefully enter License Unit Manager Password (creds for AltairOne):"
+	read -r -s LicenseUserPasswordfirst
+	echo "Please re-enter password:"
+	read -r -s LicenseUserPasswordsecond
+	if [ "$LicenseUserPasswordfirst" == "$LicenseUserPasswordsecond" ]; then
+  				echo "Password recorded"
+					LicenseUserPassword=$LicenseUserPasswordfirst
+	else
+					echo "Passwords did not match"
+					exit 1
+	fi
+	sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" /home/"${aihubuser}"/prod/.env
+	sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" /home/"$aihubuser"/prod/.env
+	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" /home/"$aihubuser"/prod/.env
 else
-				echo "Passwords did not match"
-				exit 1
+	echo "User did not specify "creds" as a command argument, defaulting to prem license server."
+	sleep 1
+	echo "Please enter Altair License Manager path for on-prem mode pointing to an Altair Lincense Manager endpoint in format of \"port@host\".  Example: 6200@127.0.0.1 (Press control-c to cancel)"
+	read -r LicensePath
+	#Altair On prem License
+	echo "Installing On Prem Altair License"
+	sleep 1
+	#	sed -i "s/LICENSE_PROXY_MODE=altair_one/LICENSE_PROXY_MODE=on_prem/g" /home/$aihubuser/prod/.env
+	sed -i "s/ALTAIR_LICENSE_PATH=/ALTAIR_LICENSE_PATH=${LicensePath}/g" /home/"$aihubuser"/prod/.env
 fi
-sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" /home/"${aihubuser}"/prod/.env
-sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" /home/"$aihubuser"/prod/.env
-sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" /home/"$aihubuser"/prod/.env
-
 
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
 echo "Machine ID = $LicenseAgentID"
@@ -221,13 +232,15 @@ sleep 1
 #collect networking data
 MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
 FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
+echo "Network data:"
 echo $MainAdapter $FunctionalAddress
+sleep 1
 #create ca cert and key
 CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 echo "Shared Subject is $CASharedSubject"
-echo "Generating root trust"
+echo "Creating self signed root trust key and certificate"
 sleep 1
-openssl genpkey -algorithm RSA -out /home/"${aihubuser}"/my-certs/ca-root.key -outpubkey /home/"${aihubuser}"/my-certs/ca-root.crt -pkeyopt rsa_keygen_bits:4096
+openssl genpkey -verbose -algorithm RSA -out /home/"${aihubuser}"/my-certs/ca-root.key -outpubkey /home/"${aihubuser}"/my-certs/ca-root.crt -pkeyopt rsa_keygen_bits:4096
 #openssl  genrsa -aes256 -verbose -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
 #openssl req -x509 -verbose -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
 echo "Generating CSR"
