@@ -224,7 +224,7 @@ FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}
 echo $MainAdapter $FunctionalAddress
 #create ca cert and key
 CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
-echo $CASharedSubject
+echo "Shared Subject is $CASharedSubject"
 echo "Generating root trust"
 sleep 1
 openssl genpkey -algorithm RSA -out /home/"${aihubuser}"/my-certs/ca-root.key -outpubkey /home/"${aihubuser}"/my-certs/ca-root.crt -pkeyopt rsa_keygen_bits:4096
