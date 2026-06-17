@@ -221,7 +221,7 @@ FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}
 #create ca cert and key
 CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 mkdir -p /home/"${aihubuser}"/my-certs
-openssl genrsa -aes256 -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
+openssl genrsa -aes256 -nodes -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
 openssl req -x509 -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
 openssl req -new -nodes -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/server.key -subj "$CASharedSubject"
 #create ca config
@@ -241,6 +241,7 @@ sleep 1
 openssl x509 -req -in /home/"${aihubuser}"/my-certs/server.csr -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAkey /home/"${aihubuser}"/my-certs/my-root.key -CAcreateserial -out /home/"${aihubuser}"/my-certs/server.crt -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
 echo "Created server certificate"
 sleep 2
+#run deployment-init to generate backend
 #echo "STARTING"
 #docker compose -f /home/"${aihubuser}"/prod/docker-compose.yml up -d deployment-init
 #echo "DEPLOYMENT HAS EXITED TO NEXT INSTRUCTIONS"
@@ -251,4 +252,14 @@ sleep 2
 #done
 #echo "Script complete"
 #exit 0
+
+#move certificates to proper folder
+
+
+
+#run prepare_cust_ca.sh
+
+
+
+#finish script with documentation output
 
