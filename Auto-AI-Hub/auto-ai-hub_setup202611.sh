@@ -239,9 +239,9 @@ CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-
 echo "Shared Subject is $CASharedSubject"
 echo "Creating self signed root trust key and certificate"
 sleep 1
-openssl genpkey -verbose -algorithm RSA -outform PEM -out /home/"${aihubuser}"/my-certs/ca-root.key -outpubkey /home/"${aihubuser}"/my-certs/ca-root.crt -pkeyopt rsa_keygen_bits:4096
+openssl genpkey -verbose -out /home/"${aihubuser}"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
 #openssl  genrsa -aes256 -verbose -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
-#openssl req -x509 -verbose -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
+openssl req -x509 -verbose -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
 echo "Generating CSR"
 openssl req -verbose -new -nodes -outform PEM -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/private.key -subj "$CASharedSubject"
 #create ca config
