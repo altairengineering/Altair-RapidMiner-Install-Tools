@@ -243,7 +243,7 @@ openssl genpkey -verbose -algorithm RSA -outform PEM -out /home/"${aihubuser}"/m
 #openssl  genrsa -aes256 -verbose -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
 #openssl req -x509 -verbose -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
 echo "Generating CSR"
-openssl req -verbose -new -nodes -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/private.key -subj "$CASharedSubject"
+openssl req -verbose -new -nodes -outform PEM -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/private.key -subj "$CASharedSubject"
 #create ca config
 echo "Creating ext config"
 sleep 1
@@ -263,7 +263,7 @@ echo "Created ext config"
 sleep 1
 echo "Creating server certificate"
 ls -shalt /home/"${aihubuser}"/my-certs/
-openssl x509 -req -in /home/"${aihubuser}"/my-certs/server.csr -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAkey /home/"${aihubuser}"/my-certs/ca-root.key -CAcreateserial -out /home/"${aihubuser}"/my-certs/certificate.crt -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
+openssl x509 -req -outform PEM -in /home/"${aihubuser}"/my-certs/server.csr -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAkey /home/"${aihubuser}"/my-certs/ca-root.key -CAcreateserial -out /home/"${aihubuser}"/my-certs/certificate.crt -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
 sleep 1
 echo "Cryptography complete"
 #run deployment-init to generate backend
