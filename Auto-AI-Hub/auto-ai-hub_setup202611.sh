@@ -262,6 +262,7 @@ sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" /home/"${aihubuser}"/my
 echo "Created ext config"
 sleep 1
 echo "Creating server certificate"
+ls -shalt /home/"${aihubuser}"/my-certs/
 openssl x509 -req -in /home/"${aihubuser}"/my-certs/server.csr -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAkey /home/"${aihubuser}"/my-certs/ca-root.key -CAcreateserial -out /home/"${aihubuser}"/my-certs/certificate.crt -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
 sleep 1
 echo "Cryptography complete"
