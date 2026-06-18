@@ -158,7 +158,7 @@ sleep 1
 
 
 #credentials license
-if [ $2 = "creds" ]; then
+if [ "$2" == "creds" ]; then
 	echo "Please enter License Unit Manager User Name (email address for AltairOne):"
 	read -r LicenseUser
 	echo "Please carefully enter License Unit Manager Password (creds for AltairOne):"
