@@ -156,9 +156,7 @@ sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB
 echo "Jupyter Hub secret configured"
 sleep 1
 
-######################################ADD ON PREM LICENSE SETUP HERE###################################################################
-#
-#
+
 #credentials license
 if [ $2 = "creds" ]; then
 	echo "Please enter License Unit Manager User Name (email address for AltairOne):"
@@ -178,6 +176,7 @@ if [ $2 = "creds" ]; then
 	sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" /home/"$aihubuser"/prod/.env
 	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" /home/"$aihubuser"/prod/.env
 else
+#on prem license
 	echo "User did not specify "creds" as a command argument, defaulting to prem license server."
 	sleep 1
 	echo "Please enter Altair License Manager path for on-prem mode pointing to an Altair Lincense Manager endpoint in format of \"port@host\".  Example: 6200@127.0.0.1 (Press control-c to cancel)"
