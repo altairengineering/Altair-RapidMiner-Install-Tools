@@ -95,7 +95,7 @@ echo "Extracting data"
 cd "$UserHomeDirectory" && unzip "$UserHomeDirectory"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
 sleep 1
 
-ls /home/"$aihubuser"/prod
+ls "$UserHomeDirectory"/prod
 echo "Files staged in prod folder"
 #sed commands
 sleep 1
