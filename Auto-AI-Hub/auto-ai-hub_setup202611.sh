@@ -32,7 +32,7 @@ fi
 aihubuser="$1"
 if [ -d /home/"$aihubuser"/ ]; then
 	echo "Found $aihubuser"
-	UserHomeDirectory=/home/"${aihubuser}"
+	UserHomeDirectory="/home/${aihubuser}"
 	sleep 1
 else	
 	echo "$aihubuser is not correct or does not have a home folder"
@@ -167,7 +167,7 @@ if [ "$2" == "creds" ]; then
 					echo "Passwords did not match"
 					exit 1
 	fi
-	sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" $UserHomeDirectory/prod/.env
+	sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" "$UserHomeDirectory"/prod/.env
 	sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" "$UserHomeDirectory"/prod/.env
 	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" "$UserHomeDirectory"/prod/.env
 else
@@ -186,36 +186,36 @@ fi
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
 echo "Machine ID = $LicenseAgentID"
 sleep 1
-sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" $UserHomeDirectory/prod/.env
-sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" $UserHomeDirectory/prod/.env
+sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" "$UserHomeDirectory"/prod/.env
+sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" "$UserHomeDirectory"/prod/.env
 echo "License configured"
 sleep 1
 
 #1031 Pano mac address creation for altair one licensing
 PanoGenMAC=$(cat /dev/urandom | tr -d -c '[:digit:]A-F' | fold -w 12 | sed -E -n -e '/^.[26AE]/s/(..)/\1-/gp' | sed -e 's/-$//g' |sed 's/-/:/g'| head -n1 | sed 's/^\S\S/66/g')
 echo "Panopticon Generated MAC address = $PanoGenMAC"
-sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" $UserHomeDirectory/prod/.env
+sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" "$UserHomeDirectory"/prod/.env
 
 #custom cert fix
 sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' "$UserHomeDirectory"/prod/.env
 echo "Added custom ca certs file"
 
 #create the ssl directory
-mkdir -p $UserHomeDirectory/prod/ssl
-mkdir -p $UserHomeDirectory/prod/panopticon
+mkdir -p "$UserHomeDirectory"/prod/ssl
+mkdir -p "$UserHomeDirectory"/prod/panopticon
 echo "Created pano and ssl directories"
 sleep 1
 
 #chown and chmod it
-chown -R "${aihubuser}":"${aihubuser}" $UserHomeDirectory/prod
-chmod -R 750 $UserHomeDirectory/prod
-chmod a+rw $UserHomeDirectory/prod/.env
-chown -R 2011:0 $UserHomeDirectory/prod/ssl/
-chmod -R ug+w $UserHomeDirectory/prod/ssl/
-chmod -R o-rwx $UserHomeDirectory/prod/ssl/
-chown -R 2011:0 $UserHomeDirectory/prod/panopticon/
-chmod -R ug+w $UserHomeDirectory/prod/panopticon/
-chmod -R o-rwx $UserHomeDirectory/prod/panopticon/
+chown -R "${aihubuser}":"${aihubuser}" "$UserHomeDirectory"/prod
+chmod -R 750 "$UserHomeDirectory"/prod
+chmod a+rw "$UserHomeDirectory"/prod/.env
+chown -R 2011:0 "$UserHomeDirectory"/prod/ssl/
+chmod -R ug+w "$UserHomeDirectory"/prod/ssl/
+chmod -R o-rwx "$UserHomeDirectory"/prod/ssl/
+chown -R 2011:0 "$UserHomeDirectory"/prod/panopticon/
+chmod -R ug+w "$UserHomeDirectory"/prod/panopticon/
+chmod -R o-rwx "$UserHomeDirectory"/prod/panopticon/
 echo "Modified directory permissions"
 sleep 1
 
@@ -227,23 +227,23 @@ sleep 1
 MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
 FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
 echo "Network data:"
-echo $MainAdapter $FunctionalAddress
+echo "$MainAdapter $FunctionalAddress"
 sleep 1
 #create ca cert and key
 CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 echo "Shared Subject is $CASharedSubject"
 echo "Creating self signed root trust key and certificate"
 sleep 1
-openssl genpkey -verbose -out $UserHomeDirectory/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
 #openssl  genrsa -aes256 -verbose -out $UserHomeDirectory/my-certs/ca-root.key 4096
-openssl req -x509 -verbose -new -nodes -key $UserHomeDirectory/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out $UserHomeDirectory/my-certs/ca-root.crt
+openssl req -x509 -verbose -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
 echo "Generating CSR"
-openssl req -verbose -new -nodes -outform PEM -out $UserHomeDirectory/my-certs/server.csr -newkey rsa:4096 -keyout $UserHomeDirectory/my-certs/private.key -subj "$CASharedSubject"
+openssl req -verbose -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
 #create ca config
 sleep 1
 echo "Creating ext config"
 sleep 1
-cat >> $UserHomeDirectory/my-certs/server.v3.ext << 'END'
+cat >> "$UserHomeDirectory"/my-certs/server.v3.ext << 'END'
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
@@ -253,21 +253,21 @@ DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
 END
 echo "Updating external config to point to auto-ai-hub-$UniqueHostname.local at $FunctionalAddress"
-sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" $UserHomeDirectory/my-certs/server.v3.ext
-sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" $UserHomeDirectory/my-certs/server.v3.ext
+sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" "$UserHomeDirectory"/my-certs/server.v3.ext
+sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" "$UserHomeDirectory"/my-certs/server.v3.ext
 echo "Created ext config:"
 cat $UserHomeDirectory/my-certs/server.v3.ext
 sleep 1
 echo "Creating server certificate"
-ls -shalt $UserHomeDirectory/my-certs/
-openssl x509 -req -in $UserHomeDirectory/my-certs/server.csr -inform PEM -CA $UserHomeDirectory/my-certs/ca-root.crt -CAform PEM -CAkey $UserHomeDirectory/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out $UserHomeDirectory/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile $UserHomeDirectory/my-certs/server.v3.ext 
+ls -shalt "$UserHomeDirectory"/my-certs/
+openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "$UserHomeDirectory"/my-certs/ca-root.crt -CAform PEM -CAkey "$UserHomeDirectory"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out $UserHomeDirectory/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile $UserHomeDirectory/my-certs/server.v3.ext 
 echo "Cryptography complete"
 sleep 1
 
 #run deployment-init to generate backend
 echo "Starting Auto-AI-Hub deployment-init"
 sleep 1
-docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d deployment-init
+docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml up -d deployment-init
 echo "Deployment exited to next instructions"
 docker compose logs -f | while read -r LOGLINE
 do
@@ -278,15 +278,15 @@ echo "Deployment-init complete"
 
 #move certificates to proper folder
 echo "Staging Certificates"
-cp $UserHomeDirectory/my-certs/certificate.crt $UserHomeDirectory/prod/ssl/
-cp $UserHomeDirectory/my-certs/private.key $UserHomeDirectory/prod/ssl/
+cp "$UserHomeDirectory"/my-certs/certificate.crt "$UserHomeDirectory"/prod/ssl/
+cp "$UserHomeDirectory"/my-certs/private.key "$UserHomeDirectory"/prod/ssl/
 sleep 1
 
 #run prepare-cust-ca.sh
 Echo "Executing "prepare-cust-ca.sh"
 sleep 1
-sh $UserHomeDirectory/prod/prepare-cust-ca.sh
-chown $aihubuser:$aihubuser $UserHomeDirectory/prod/docker-compose.yml
+sh "$UserHomeDirectory"/prod/prepare-cust-ca.sh
+chown $aihubuser:$aihubuser "$UserHomeDirectory"/prod/docker-compose.yml
 sleep 1
 
 
