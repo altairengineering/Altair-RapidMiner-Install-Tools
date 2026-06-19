@@ -256,7 +256,7 @@ echo "Updating external config to point to auto-ai-hub-$UniqueHostname.local at 
 sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" "$UserHomeDirectory"/my-certs/server.v3.ext
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" "$UserHomeDirectory"/my-certs/server.v3.ext
 echo "Created ext config:"
-cat $UserHomeDirectory/my-certs/server.v3.ext
+cat "$UserHomeDirectory"/my-certs/server.v3.ext
 sleep 1
 echo "Creating server certificate"
 ls -shalt "$UserHomeDirectory"/my-certs/
@@ -283,10 +283,10 @@ cp "$UserHomeDirectory"/my-certs/private.key "$UserHomeDirectory"/prod/ssl/
 sleep 1
 
 #run prepare-cust-ca.sh
-Echo "Executing "prepare-cust-ca.sh"
+Echo "Executing prepare-cust-ca.sh"
 sleep 1
 sh "$UserHomeDirectory"/prod/prepare-cust-ca.sh
-chown $aihubuser:$aihubuser "$UserHomeDirectory"/prod/docker-compose.yml
+chown "$aihubuser:$aihubuser $UserHomeDirectory/prod/docker-compose.yml"
 sleep 1
 
 
