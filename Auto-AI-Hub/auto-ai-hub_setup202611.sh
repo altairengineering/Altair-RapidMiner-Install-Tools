@@ -101,7 +101,7 @@ echo "Files staged in prod folder"
 sleep 1
 
 linuxtimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
-sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" "$UserHomeDirectory/prod/.env
+sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" "$UserHomeDirectory"/prod/.env
 echo "Configured TZ"
 sleep 1
 
