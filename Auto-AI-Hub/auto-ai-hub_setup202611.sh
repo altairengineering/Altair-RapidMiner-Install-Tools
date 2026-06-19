@@ -84,10 +84,6 @@ sleep 1
 
 
 #install ai-hub via automation
-
-
-
-#install ai-hub
 #download ai-hub and echo the version
 echo "Downloading and installing AI-Hub"
 sleep 1
@@ -149,13 +145,11 @@ sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=rapid
 echo "Keycloak database configured"
 sleep 1
 
-
 #create jupyterhub secret
 JupyterCryptKey=$(openssl rand -hex 32)
 sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB_CRYPT_KEY=""${JupyterCryptKey}""%g" /home/"$aihubuser"/prod/.env
 echo "Jupyter Hub secret configured"
 sleep 1
-
 
 #credentials license
 if [ "$2" == "creds" ]; then
@@ -177,7 +171,7 @@ if [ "$2" == "creds" ]; then
 	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" /home/"$aihubuser"/prod/.env
 else
 #on prem license
-	echo "User did not specify "creds" as a command argument, defaulting to prem license server."
+	echo "User did not specify \"creds\" as a command argument, defaulting to prem license server."
 	sleep 1
 	echo "Please enter Altair License Manager path for on-prem mode pointing to an Altair Lincense Manager endpoint in format of \"port@host\".  Example: 6200@127.0.0.1 (Press control-c to cancel)"
 	read -r LicensePath
@@ -209,8 +203,8 @@ echo "Added custom ca certs file"
 mkdir -p /home/"${aihubuser}"/prod/ssl
 mkdir -p /home/"${aihubuser}"/prod/panopticon
 echo "Created pano and ssl directories"
-
 sleep 1
+
 #chown and chmod it
 chown -R "${aihubuser}":"${aihubuser}" /home/"${aihubuser}"/prod
 chmod -R 750 /home/"${aihubuser}"/prod
@@ -235,7 +229,7 @@ echo "Network data:"
 echo $MainAdapter $FunctionalAddress
 sleep 1
 #create ca cert and key
-CASharedSubject="/C=US/ST=WA/L=Seattle/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
+CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 echo "Shared Subject is $CASharedSubject"
 echo "Creating self signed root trust key and certificate"
 sleep 1
@@ -245,6 +239,7 @@ openssl req -x509 -verbose -new -nodes -key /home/"${aihubuser}"/my-certs/ca-roo
 echo "Generating CSR"
 openssl req -verbose -new -nodes -outform PEM -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/private.key -subj "$CASharedSubject"
 #create ca config
+sleep 1
 echo "Creating ext config"
 sleep 1
 cat >> /home/"${aihubuser}"/my-certs/server.v3.ext << 'END'
@@ -259,24 +254,26 @@ END
 echo "Updating external config to point to auto-ai-hub-$UniqueHostname.local at $FunctionalAddress"
 sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" /home/"${aihubuser}"/my-certs/server.v3.ext
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" /home/"${aihubuser}"/my-certs/server.v3.ext
-echo "Created ext config"
+echo "Created ext config:"
+cat /home/"${aihubuser}"/my-certs/server.v3.ext
 sleep 1
 echo "Creating server certificate"
 ls -shalt /home/"${aihubuser}"/my-certs/
 openssl x509 -req -in /home/"${aihubuser}"/my-certs/server.csr -inform PEM -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAform PEM -CAkey /home/"${aihubuser}"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out /home/"${aihubuser}"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
-sleep 1
 echo "Cryptography complete"
+sleep 1
+
 #run deployment-init to generate backend
-#echo "STARTING"
-#docker compose -f /home/"${aihubuser}"/prod/docker-compose.yml up -d deployment-init
-#echo "DEPLOYMENT HAS EXITED TO NEXT INSTRUCTIONS"
-#docker compose logs -f | while read -r LOGLINE
-#do
-#    echo "$LOGLINE"
-#    [[ "${LOGLINE}" == *"Successfully finished."* ]] && echo "!!!executing changes based on logs!!!" && docker compose down
-#done
-#echo "Script complete"
-#exit 0
+echo "Starting Auto-AI-Hub deployment-init"
+sleep 1
+docker compose -f /home/"${aihubuser}"/prod/docker-compose.yml up -d deployment-init
+echo "Deployment exited to next instructions"
+docker compose logs -f | while read -r LOGLINE
+do
+    echo "$LOGLINE"
+    [[ "${LOGLINE}" == *"Successfully finished."* || "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && docker compose down
+done
+echo "Deployment-init complete"
 
 #move certificates to proper folder
 
