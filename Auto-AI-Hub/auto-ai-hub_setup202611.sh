@@ -32,6 +32,7 @@ fi
 aihubuser="$1"
 if [ -d /home/"$aihubuser"/ ]; then
 	echo "Found $aihubuser"
+	UserHomeDirectory=/home/"${aihubuser}"
 	sleep 1
 else	
 	echo "$aihubuser is not correct or does not have a home folder"
@@ -89,9 +90,9 @@ echo "Downloading and installing AI-Hub"
 sleep 1
 echo "Downloading $hubversion from https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-2026.1.1-docker-compose-template-prod.zip"
 sleep 1
-wget -P /home/"$aihubuser" https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
+wget -P "$UserHomeDirectory" https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
 echo "Extracting data"
-cd /home/"$aihubuser" && unzip /home/"$aihubuser"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
+cd "$UserHomeDirectory" && unzip "$UserHomeDirectory"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
 sleep 1
 
 ls /home/"$aihubuser"/prod
@@ -100,25 +101,25 @@ echo "Files staged in prod folder"
 sleep 1
 
 linuxtimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
-sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" /home/"${aihubuser}"/prod/.env
+sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" "$UserHomeDirectory/prod/.env
 echo "Configured TZ"
 sleep 1
 
 #configure hostnames in env
 #create the folder if its not already there
-mkdir -p /home/"${aihubuser}"/my-certs
+mkdir -p "$UserHomeDirectory"/my-certs
 UniqueHostname=""
 #check if there is already been a unique id generated to prevent collisions during testing
-if [ ! -f /home/"${aihubuser}"/my-certs/UniqueID ]; then
-	cat >> /home/"${aihubuser}"/my-certs/UniqueID << 'END'
+if [ ! -f "$UserHomeDirectory"/my-certs/UniqueID ]; then
+	cat >> "$UserHomeDirectory"/my-certs/UniqueID << 'END'
 #UniqueHostnameIdentifier
 UniqueHostname=target
 END
 	UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
-	sed -i "s/target/$UniqueIdentifier/g" /home/"${aihubuser}"/my-certs/UniqueID
+	sed -i "s/target/$UniqueIdentifier/g" "$UserHomeDirectory"/my-certs/UniqueID
 fi
 #read the source with the unique id and write it into the config
-source /home/"${aihubuser}"/my-certs/UniqueID
+source "$UserHomeDirectory"/my-certs/UniqueID
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
 echo "Configured hostnames"
@@ -137,17 +138,17 @@ echo "Generating ActiveMQ password..."
 sleep 1
 activemqpassword="$(echo $RANDOM | md5sum | head -c 15)"
 echo "$activemqpassword"
-sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" /home/"$aihubuser"/prod/.env
-sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=rapidminerautoaihub/g" /home/"$aihubuser"/prod/.env
+sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" "$UserHomeDirectory"/prod/.env
+sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=rapidminerautoaihub/g" "$UserHomeDirectory"/prod/.env
 echo "Platform admin creds configured"
 sleep 1
-sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=rapidminerautoaihub/g" /home/"$aihubuser"/prod/.env
+sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=rapidminerautoaihub/g" "$UserHomeDirectory"/prod/.env
 echo "Keycloak database configured"
 sleep 1
 
 #create jupyterhub secret
 JupyterCryptKey=$(openssl rand -hex 32)
-sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB_CRYPT_KEY=""${JupyterCryptKey}""%g" /home/"$aihubuser"/prod/.env
+sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB_CRYPT_KEY=""${JupyterCryptKey}""%g" "$UserHomeDirectory"/prod/.env
 echo "Jupyter Hub secret configured"
 sleep 1
 
@@ -166,9 +167,9 @@ if [ "$2" == "creds" ]; then
 					echo "Passwords did not match"
 					exit 1
 	fi
-	sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" /home/"${aihubuser}"/prod/.env
-	sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" /home/"$aihubuser"/prod/.env
-	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" /home/"$aihubuser"/prod/.env
+	sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" $UserHomeDirectory/prod/.env
+	sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" "$UserHomeDirectory"/prod/.env
+	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" "$UserHomeDirectory"/prod/.env
 else
 #on prem license
 	echo "User did not specify \"creds\" as a command argument, defaulting to prem license server."
@@ -178,43 +179,43 @@ else
 	#Altair On prem License
 	echo "Installing On Prem Altair License"
 	sleep 1
-	#	sed -i "s/LICENSE_PROXY_MODE=altair_one/LICENSE_PROXY_MODE=on_prem/g" /home/$aihubuser/prod/.env
-	sed -i "s/ALTAIR_LICENSE_PATH=/ALTAIR_LICENSE_PATH=${LicensePath}/g" /home/"$aihubuser"/prod/.env
+	#	sed -i "s/LICENSE_PROXY_MODE=altair_one/LICENSE_PROXY_MODE=on_prem/g" "$UserHomeDirectory"/prod/.env
+	sed -i "s/ALTAIR_LICENSE_PATH=/ALTAIR_LICENSE_PATH=${LicensePath}/g" "$UserHomeDirectory"/prod/.env
 fi
 
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
 echo "Machine ID = $LicenseAgentID"
 sleep 1
-sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" /home/"${aihubuser}"/prod/.env
-sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" /home/"${aihubuser}"/prod/.env
+sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" $UserHomeDirectory/prod/.env
+sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" $UserHomeDirectory/prod/.env
 echo "License configured"
 sleep 1
 
 #1031 Pano mac address creation for altair one licensing
 PanoGenMAC=$(cat /dev/urandom | tr -d -c '[:digit:]A-F' | fold -w 12 | sed -E -n -e '/^.[26AE]/s/(..)/\1-/gp' | sed -e 's/-$//g' |sed 's/-/:/g'| head -n1 | sed 's/^\S\S/66/g')
 echo "Panopticon Generated MAC address = $PanoGenMAC"
-sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" /home/"${aihubuser}"/prod/.env
+sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" $UserHomeDirectory/prod/.env
 
 #custom cert fix
-sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' /home/"$aihubuser"/prod/.env
+sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' "$UserHomeDirectory"/prod/.env
 echo "Added custom ca certs file"
 
 #create the ssl directory
-mkdir -p /home/"${aihubuser}"/prod/ssl
-mkdir -p /home/"${aihubuser}"/prod/panopticon
+mkdir -p $UserHomeDirectory/prod/ssl
+mkdir -p $UserHomeDirectory/prod/panopticon
 echo "Created pano and ssl directories"
 sleep 1
 
 #chown and chmod it
-chown -R "${aihubuser}":"${aihubuser}" /home/"${aihubuser}"/prod
-chmod -R 750 /home/"${aihubuser}"/prod
-chmod a+rw /home/"${aihubuser}"/prod/.env
-chown -R 2011:0 /home/"${aihubuser}"/prod/ssl/
-chmod -R ug+w /home/"${aihubuser}"/prod/ssl/
-chmod -R o-rwx /home/"${aihubuser}"/prod/ssl/
-chown -R 2011:0 /home/"${aihubuser}"/prod/panopticon/
-chmod -R ug+w /home/"${aihubuser}"/prod/panopticon/
-chmod -R o-rwx /home/"${aihubuser}"/prod/panopticon/
+chown -R "${aihubuser}":"${aihubuser}" $UserHomeDirectory/prod
+chmod -R 750 $UserHomeDirectory/prod
+chmod a+rw $UserHomeDirectory/prod/.env
+chown -R 2011:0 $UserHomeDirectory/prod/ssl/
+chmod -R ug+w $UserHomeDirectory/prod/ssl/
+chmod -R o-rwx $UserHomeDirectory/prod/ssl/
+chown -R 2011:0 $UserHomeDirectory/prod/panopticon/
+chmod -R ug+w $UserHomeDirectory/prod/panopticon/
+chmod -R o-rwx $UserHomeDirectory/prod/panopticon/
 echo "Modified directory permissions"
 sleep 1
 
@@ -233,16 +234,16 @@ CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.
 echo "Shared Subject is $CASharedSubject"
 echo "Creating self signed root trust key and certificate"
 sleep 1
-openssl genpkey -verbose -out /home/"${aihubuser}"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
-#openssl  genrsa -aes256 -verbose -out /home/"${aihubuser}"/my-certs/ca-root.key 4096
-openssl req -x509 -verbose -new -nodes -key /home/"${aihubuser}"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out /home/"${aihubuser}"/my-certs/ca-root.crt
+openssl genpkey -verbose -out $UserHomeDirectory/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+#openssl  genrsa -aes256 -verbose -out $UserHomeDirectory/my-certs/ca-root.key 4096
+openssl req -x509 -verbose -new -nodes -key $UserHomeDirectory/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out $UserHomeDirectory/my-certs/ca-root.crt
 echo "Generating CSR"
-openssl req -verbose -new -nodes -outform PEM -out /home/"${aihubuser}"/my-certs/server.csr -newkey rsa:4096 -keyout /home/"${aihubuser}"/my-certs/private.key -subj "$CASharedSubject"
+openssl req -verbose -new -nodes -outform PEM -out $UserHomeDirectory/my-certs/server.csr -newkey rsa:4096 -keyout $UserHomeDirectory/my-certs/private.key -subj "$CASharedSubject"
 #create ca config
 sleep 1
 echo "Creating ext config"
 sleep 1
-cat >> /home/"${aihubuser}"/my-certs/server.v3.ext << 'END'
+cat >> $UserHomeDirectory/my-certs/server.v3.ext << 'END'
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
 keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
@@ -252,21 +253,21 @@ DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
 END
 echo "Updating external config to point to auto-ai-hub-$UniqueHostname.local at $FunctionalAddress"
-sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" /home/"${aihubuser}"/my-certs/server.v3.ext
-sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" /home/"${aihubuser}"/my-certs/server.v3.ext
+sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" $UserHomeDirectory/my-certs/server.v3.ext
+sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" $UserHomeDirectory/my-certs/server.v3.ext
 echo "Created ext config:"
-cat /home/"${aihubuser}"/my-certs/server.v3.ext
+cat $UserHomeDirectory/my-certs/server.v3.ext
 sleep 1
 echo "Creating server certificate"
-ls -shalt /home/"${aihubuser}"/my-certs/
-openssl x509 -req -in /home/"${aihubuser}"/my-certs/server.csr -inform PEM -CA /home/"${aihubuser}"/my-certs/ca-root.crt -CAform PEM -CAkey /home/"${aihubuser}"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out /home/"${aihubuser}"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile /home/"${aihubuser}"/my-certs/server.v3.ext 
+ls -shalt $UserHomeDirectory/my-certs/
+openssl x509 -req -in $UserHomeDirectory/my-certs/server.csr -inform PEM -CA $UserHomeDirectory/my-certs/ca-root.crt -CAform PEM -CAkey $UserHomeDirectory/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out $UserHomeDirectory/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile $UserHomeDirectory/my-certs/server.v3.ext 
 echo "Cryptography complete"
 sleep 1
 
 #run deployment-init to generate backend
 echo "Starting Auto-AI-Hub deployment-init"
 sleep 1
-docker compose -f /home/"${aihubuser}"/prod/docker-compose.yml up -d deployment-init
+docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d deployment-init
 echo "Deployment exited to next instructions"
 docker compose logs -f | while read -r LOGLINE
 do
@@ -276,12 +277,39 @@ done
 echo "Deployment-init complete"
 
 #move certificates to proper folder
+echo "Staging Certificates"
+cp $UserHomeDirectory/my-certs/certificate.crt $UserHomeDirectory/prod/ssl/
+cp $UserHomeDirectory/my-certs/private.key $UserHomeDirectory/prod/ssl/
+sleep 1
 
-
-
-#run prepare_cust_ca.sh
-
+#run prepare-cust-ca.sh
+Echo "Executing "prepare-cust-ca.sh"
+sleep 1
+sh $UserHomeDirectory/prod/prepare-cust-ca.sh
+chown $aihubuser:$aihubuser $UserHomeDirectory/prod/docker-compose.yml
+sleep 1
 
 
 #finish script with documentation output
+echo ""
+echo "Auto-AI-Hub Setup Completed!"
+echo "Please save the following information somewhere securely:"
+echo "AI-Hub Hostname: auto-ai-hub-$UniqueHostname.local"
+echo "AI-Hub IP Address: $FunctionalAddress"
+echo "AI-Hub login/password:  admin/rapidminer"
+echo "Next steps:"
+echo "cd $UserHomeDirectory/prod"
+echo "docker compose up -d; docker compose logs -f"
+echo "Please wait 5-10 minutes for the system to start"
+echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING"
+echo "ENTRY TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE HUB"
+echo "YOU WILL NEED ADMINISTRATOR/ROOT ACCESS DO MODIFY"
+echo "THIS FILE, AND YOU MUST REBOOT AFTERWARDS"
+echo "$FunctionalAddress   auto-ai-hub-$UniqueHostname.local   auto-ai-hub-$UniqueHostname"
+echo ""
+echo "Browse to https://auto-ai-hub-$UniqueHostname.local"
+exit 0
+
+
+
 
