@@ -260,7 +260,7 @@ cat "$UserHomeDirectory"/my-certs/server.v3.ext
 sleep 1
 echo "Creating server certificate"
 ls -shalt "$UserHomeDirectory"/my-certs/
-openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "$UserHomeDirectory"/my-certs/ca-root.crt -CAform PEM -CAkey "$UserHomeDirectory"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out $UserHomeDirectory/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile $UserHomeDirectory/my-certs/server.v3.ext 
+openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "$UserHomeDirectory"/my-certs/ca-root.crt -CAform PEM -CAkey "$UserHomeDirectory"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out "$UserHomeDirectory"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile "$UserHomeDirectory"/my-certs/server.v3.ext 
 echo "Cryptography complete"
 sleep 1
 
