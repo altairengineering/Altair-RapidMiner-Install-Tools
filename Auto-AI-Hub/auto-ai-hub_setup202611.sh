@@ -277,17 +277,19 @@ sleep 1
 #run deployment-init to generate backend
 echo "Starting Auto-AI-Hub deployment-init"
 sleep 1
-docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml up -d deployment-init
+su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d deployment-init" "$aihubuser"
 echo "Deployment exited to next instructions"
 sleep 1
-docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml logs -f | while read -r LOGLINE
+su -c "docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml logs -f" "$aihubuser" | while read -r LOGLINE
 do
     echo "$LOGLINE"
     [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml down
 done
 sleep 1
 echo "Deployment-init complete"
-
+sleep 1
+su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml down" "$aihubuser"
+sleep 1
 #move certificates to proper folder
 echo "Staging Certificates"
 cp "$UserHomeDirectory"/my-certs/certificate.crt "$UserHomeDirectory"/prod/ssl/
@@ -300,7 +302,7 @@ sleep 1
 cd "$UserHomeDirectory"/prod
 sh ./prepare-cust-ca.sh
 sleep 1
-chown "$aihubuser:$aihubuser $UserHomeDirectory/prod/docker-compose.yml"
+chown "$aihubuser":"$aihubuser" "$UserHomeDirectory"/prod/docker-compose.yml"
 sleep 1
 
 
