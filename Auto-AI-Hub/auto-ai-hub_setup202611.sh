@@ -273,7 +273,9 @@ openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "
 sleep 1
 echo "Cryptography complete"
 sleep 1
-
+echo "Pulling images from repositories"
+until "docker compose -f $UserHomeDirectory/prod/docker-compose.yml pull"; do echo "retrying"; done
+sleep 1
 #run deployment-init to generate backend
 echo "Starting Auto-AI-Hub deployment-init"
 sleep 1
