@@ -1,27 +1,43 @@
 # Auto AI-hub
 
 ## Description
-Auto-AI-Hub is an install script for POC AI-Hub installations using preconfigured self-signed certificates.  *This should never be used in production environments.*
+Auto-AI-Hub is an install script for POC AI-Hub installations using preconfigured self-signed certificates.  _*This should never be used in production environments.*_
 
 ## Instructions
+
+Notes:  
+Where it is listed [username] this refers to the linux username on the target RHEL, Rocky or Ubuntu server.
+And where it is written [version], this is the desired AI-Hub version.
 
 ### Clone the repo
 Auto-AI-Hub requires the scripts located in other parts of the repository.
 ```
-git clone
+cd ~
+git clone https://github.com/altairengineering/Altair-RapidMiner-Install-Tools/tree/master/Auto-AI-Hub
 ```
 
-### Create symlink
-Allows easy access to software
+### Prepare for installation
+Create symlink to allow easy access to software.
 ```
-ln -s
+cd ~
+ln -s ln -s /home/[username]/Altair-RapidMiner-Install-Tools/Auto-AI-Hub/ autoaihub
+```
+Set the auto-ai-hub_setup.sh executable.
+```
+cd ./autoaihub
+chmod +x 
 ```
 
-### Install
-Run the auto-ai-hub_setup.sh script, carefully review the output.
+### Installation
+Now run the script for on-prem license server.
 ```
-./auto-ai-hub_setup.sh
+sudo ./auto-ai-hub_setup[version].sh [username]
 ```
+Or alternatively, for online credentials validation.
+```
+sudo ./auto-ai-hub_setup[version].sh [username] creds
+```
+
 
 ### Startup
 Run the auto-ai-hub_start.sh script, carefully review the output.
