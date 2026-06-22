@@ -92,7 +92,7 @@ echo "Downloading $hubversion from https://docs.rapidminer.com/assets/download/h
 sleep 1
 wget -P "$UserHomeDirectory" https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip --output-document="$UserHomeDirectory"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
 echo "Extracting data"
-unzip "$UserHomeDirectory"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip -d "$UserHomeDirectory"
+unzip -o "$UserHomeDirectory"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip -d "$UserHomeDirectory"
 sleep 1
 
 ls "$UserHomeDirectory"/prod
