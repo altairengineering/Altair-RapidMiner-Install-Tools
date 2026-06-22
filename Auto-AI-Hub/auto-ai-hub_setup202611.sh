@@ -180,7 +180,7 @@ else
 	echo "Installing On Prem Altair License"
 	sleep 1
 	#	sed -i "s/LICENSE_PROXY_MODE=altair_one/LICENSE_PROXY_MODE=on_prem/g" "$UserHomeDirectory"/prod/.env
-	sed -i "s/ALTAIR_LICENSE_PATH=/ALTAIR_LICENSE_PATH=${LicensePath}/g" "$UserHomeDirectory"/prod/.env
+	sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH="${LicensePath}"%g" "$UserHomeDirectory"/prod/.env
 fi
 
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
@@ -283,9 +283,10 @@ cp "$UserHomeDirectory"/my-certs/private.key "$UserHomeDirectory"/prod/ssl/
 sleep 1
 
 #run prepare-cust-ca.sh
-Echo "Executing prepare-cust-ca.sh"
+echo "Executing prepare-cust-ca.sh"
 sleep 1
-sh "$UserHomeDirectory"/prod/prepare-cust-ca.sh
+cd "$UserHomeDirectory"/prod
+sh ./prepare-cust-ca.sh
 chown "$aihubuser:$aihubuser $UserHomeDirectory/prod/docker-compose.yml"
 sleep 1
 
