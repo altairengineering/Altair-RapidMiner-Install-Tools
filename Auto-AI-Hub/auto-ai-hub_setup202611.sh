@@ -274,7 +274,7 @@ sleep 1
 echo "Cryptography complete"
 sleep 1
 echo "Pulling images from repositories"
-until "docker compose -f $UserHomeDirectory/prod/docker-compose.yml pull"; do echo "retrying"; done
+until su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml pull"; do echo retrying; done
 sleep 1
 #run deployment-init to generate backend
 echo "Starting Auto-AI-Hub deployment-init"
@@ -307,6 +307,10 @@ sleep 1
 chown "$aihubuser":"$aihubuser" "$UserHomeDirectory"/prod/docker-compose.yml
 echo "Touching up"
 sleep 1
+echo "Starting up AI-Hub"
+su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d" "$aihubuser"
+echo "Script complete"
+sleep 1
 
 
 #finish script with documentation output
@@ -319,17 +323,12 @@ echo "Please save the following information somewhere securely:"
 echo "AI-Hub Hostname: auto-ai-hub-$UniqueHostname.local"
 echo "AI-Hub IP Address: $FunctionalAddress"
 echo "AI-Hub login/password:  admin/rapidminer"
-echo "Next steps:"
-echo "cd $UserHomeDirectory/prod"
-echo "docker compose up -d; docker compose logs -f"
-echo "Please wait 5-10 minutes for the system to start"
+echo "Please wait 5-10 minutes for the system to fully startup"
 echo "-------------------------------------------------------------"
-echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING"
-echo "ENTRY TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE HUB"
-echo "YOU WILL NEED ADMINISTRATOR/ROOT ACCESS DO MODIFY"
-echo "THIS FILE, AND YOU MUST REBOOT AFTERWARDS"
+echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING LINE"
+echo "OF HOSTNAMES TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE AI-HUB"
 echo "-------------------------------------------------------------"
-echo "$FunctionalAddress   auto-ai-hub-$UniqueHostname.local   auto-ai-hub-$UniqueHostname"
+echo "$FunctionalAddress       auto-ai-hub-$UniqueHostname.local       auto-ai-hub-$UniqueHostname"
 echo ""
 echo "-------------------------------------------------------------"
 echo "When completed, browse to https://auto-ai-hub-$UniqueHostname.local"
