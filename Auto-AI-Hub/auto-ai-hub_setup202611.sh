@@ -302,11 +302,13 @@ sleep 1
 cd "$UserHomeDirectory"/prod
 sh ./prepare-cust-ca.sh
 sleep 1
-chown "$aihubuser":"$aihubuser" "$UserHomeDirectory"/prod/docker-compose.yml"
+chown "$aihubuser":"$aihubuser" "$UserHomeDirectory"/prod/docker-compose.yml
+echo "Touching up"
 sleep 1
 
 
 #finish script with documentation output
+echo ""
 echo ""
 echo "============================================================="
 echo "Auto-AI-Hub Setup Completed!"
@@ -330,6 +332,7 @@ echo ""
 echo "-------------------------------------------------------------"
 echo "When completed, browse to https://auto-ai-hub-$UniqueHostname.local"
 echo "============================================================="
+echo ""
 exit 0
 
 
