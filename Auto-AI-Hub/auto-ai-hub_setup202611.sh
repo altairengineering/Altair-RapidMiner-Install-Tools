@@ -269,10 +269,10 @@ echo "Starting Auto-AI-Hub deployment-init"
 sleep 1
 docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml up -d deployment-init
 echo "Deployment exited to next instructions"
-docker compose logs -f | while read -r LOGLINE
+docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml logs -f | while read -r LOGLINE
 do
     echo "$LOGLINE"
-    [[ "${LOGLINE}" == *"Successfully finished."* || "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && docker compose down
+    [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml down
 done
 echo "Deployment-init complete"
 
