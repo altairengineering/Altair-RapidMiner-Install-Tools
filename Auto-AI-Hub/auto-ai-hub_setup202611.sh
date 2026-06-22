@@ -199,6 +199,7 @@ sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLAC
 #custom cert fix
 sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' "$UserHomeDirectory"/prod/.env
 echo "Added custom ca certs file"
+sleep 1
 
 #create the ssl directory
 mkdir -p "$UserHomeDirectory"/prod/ssl
@@ -227,18 +228,24 @@ sleep 1
 MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
 FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
 echo "Network data:"
+sleep 1
 echo "$MainAdapter $FunctionalAddress"
 sleep 1
 #create ca cert and key
 CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 echo "Shared Subject is $CASharedSubject"
+sleep 1
 echo "Creating self signed root trust key and certificate"
 sleep 1
 openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+sleep 1
 #openssl  genrsa -aes256 -verbose -out $UserHomeDirectory/my-certs/ca-root.key 4096
 openssl req -x509 -verbose -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
+sleep 1
 echo "Generating CSR"
+sleep 1
 openssl req -verbose -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
+sleep 1
 #create ca config
 sleep 1
 echo "Creating ext config"
@@ -256,11 +263,14 @@ echo "Updating external config to point to auto-ai-hub-$UniqueHostname.local at 
 sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" "$UserHomeDirectory"/my-certs/server.v3.ext
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" "$UserHomeDirectory"/my-certs/server.v3.ext
 echo "Created ext config:"
+sleep 1
 cat "$UserHomeDirectory"/my-certs/server.v3.ext
 sleep 1
 echo "Creating server certificate"
 ls -shalt "$UserHomeDirectory"/my-certs/
+sleep 1
 openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "$UserHomeDirectory"/my-certs/ca-root.crt -CAform PEM -CAkey "$UserHomeDirectory"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out "$UserHomeDirectory"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile "$UserHomeDirectory"/my-certs/server.v3.ext 
+sleep 1
 echo "Cryptography complete"
 sleep 1
 
@@ -269,11 +279,13 @@ echo "Starting Auto-AI-Hub deployment-init"
 sleep 1
 docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml up -d deployment-init
 echo "Deployment exited to next instructions"
+sleep 1
 docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml logs -f | while read -r LOGLINE
 do
     echo "$LOGLINE"
     [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml down
 done
+sleep 1
 echo "Deployment-init complete"
 
 #move certificates to proper folder
@@ -287,13 +299,16 @@ echo "Executing prepare-cust-ca.sh"
 sleep 1
 cd "$UserHomeDirectory"/prod
 sh ./prepare-cust-ca.sh
+sleep 1
 chown "$aihubuser:$aihubuser $UserHomeDirectory/prod/docker-compose.yml"
 sleep 1
 
 
 #finish script with documentation output
 echo ""
+echo "============================================================="
 echo "Auto-AI-Hub Setup Completed!"
+echo "-------------------------------------------------------------"
 echo "Please save the following information somewhere securely:"
 echo "AI-Hub Hostname: auto-ai-hub-$UniqueHostname.local"
 echo "AI-Hub IP Address: $FunctionalAddress"
@@ -302,13 +317,17 @@ echo "Next steps:"
 echo "cd $UserHomeDirectory/prod"
 echo "docker compose up -d; docker compose logs -f"
 echo "Please wait 5-10 minutes for the system to start"
+echo "-------------------------------------------------------------"
 echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING"
 echo "ENTRY TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE HUB"
 echo "YOU WILL NEED ADMINISTRATOR/ROOT ACCESS DO MODIFY"
 echo "THIS FILE, AND YOU MUST REBOOT AFTERWARDS"
+echo "-------------------------------------------------------------"
 echo "$FunctionalAddress   auto-ai-hub-$UniqueHostname.local   auto-ai-hub-$UniqueHostname"
 echo ""
-echo "Browse to https://auto-ai-hub-$UniqueHostname.local"
+echo "-------------------------------------------------------------"
+echo "When completed, browse to https://auto-ai-hub-$UniqueHostname.local"
+echo "============================================================="
 exit 0
 
 
