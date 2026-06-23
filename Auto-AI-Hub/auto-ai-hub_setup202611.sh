@@ -81,7 +81,7 @@ exit 1
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 echo "Docker version $dockerver"
 sleep 1
-su -c "newgrp docker" "$aihubuser"
+su -c $(newgrp - docker) "$aihubuser"
 echo "Starting docker group:"
 echo $(id "$aihubuser")
 sleep 1
