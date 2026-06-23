@@ -10,7 +10,7 @@ printf "\n"
 echo "Auto-AI-Hub Setup script"
 echo "SIEMENS - Anthony Kiehl"
 echo "Version 1.0 - 6/9/26 Initial Release"
-echo "Special thanks to Sebastian L., Lloyd L., and Geetha T."
+echo "Special thanks to Sebastian L. and Geetha T."
 echo "Auto-AI-hub version $hubversion"
 echo "======================================================================"
 sleep 1
