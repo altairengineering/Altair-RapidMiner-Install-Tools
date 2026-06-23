@@ -17,7 +17,7 @@ And where it is written [version], this is the desired AI-Hub version.
 Auto-AI-Hub requires the scripts located in other parts of the repository.
 ```
 cd ~
-git clone [https://github.com/altairengineering/Altair-RapidMiner-Install-Tools/tree/master/Auto-AI-Hub](https://github.com/altairengineering/Altair-RapidMiner-Install-Tools.git)
+git clone https://github.com/altairengineering/Altair-RapidMiner-Install-Tools.git
 ```
 
 ### Prepare for installation
