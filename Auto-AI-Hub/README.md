@@ -24,7 +24,7 @@ git clone https://github.com/altairengineering/Altair-RapidMiner-Install-Tools.g
 Create symlink to allow easy access to software.
 ```
 cd ~
-ln -s ln -s /home/[username]/Altair-RapidMiner-Install-Tools/Auto-AI-Hub/ autoaihub
+ln -s /home/[username]/Altair-RapidMiner-Install-Tools/Auto-AI-Hub/ autoaihub
 ```
 Set the auto-ai-hub_setup.sh executable.
 ```
