@@ -1,5 +1,8 @@
 # Auto AI-hub
+
 <img width="444" height="636" alt="Screenshot 2026-06-22 170411" src="https://github.com/user-attachments/assets/4ca6b663-bd5a-41b8-84aa-b6bb808f3a4d" />
+
+
 ## Description
 Auto-AI-Hub is an install script for POC AI-Hub installations using auto-generated self-signed certificates.  
 
