@@ -2,6 +2,7 @@
 
 ## Description
 Auto-AI-Hub is an install script for POC AI-Hub installations using preconfigured self-signed certificates.  _*This should never be used in production environments.*_
+Special thanks to Sebastian L., and Geetha T.
 
 ## Instructions
 
