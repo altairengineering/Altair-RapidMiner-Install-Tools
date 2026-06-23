@@ -1,6 +1,7 @@
 #!/bin/bash
 #config
 hubversion="2026.1.1"
+NL=$'\n'
 #startup reqs
 [ $# -eq 0 ] && { echo "Usage: $0 username"; exit 1; }
 [ "$(whoami)" = root ] || { echo 'you must run with sudo'; exit 1; }
@@ -219,7 +220,7 @@ chmod -R o-rwx "$UserHomeDirectory"/prod/panopticon/
 echo "Modified directory permissions"
 sleep 1
 
-read -n 1 -s -r -p "Finished AI-Hub file staging.  Press any key to continue"
+read -n 1 -s -r -p "Finished AI-Hub file staging.  Press any key to continue${NL}""
 #creating certificate authority
 echo "Creating cryptography setup"
 sleep 1
@@ -234,13 +235,22 @@ sleep 1
 CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 echo "Shared Subject is $CASharedSubject"
 sleep 1
-read -n 1 -s -r -p "Network survey complete.  Press any key to continue"
+read -n 1 -s -r -p "Network survey complete.  Press any key to continue${NL}""
 echo "Creating self signed root trust key and certificate"
 sleep 1
 openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
 sleep 1
-#openssl  genrsa -aes256 -verbose -out $UserHomeDirectory/my-certs/ca-root.key 4096
-openssl req -x509 -verbose -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
+#ubuntu 2404 uses a very obsolete version of openssl 
+#will switch this out when 2604 testing completes
+if [[ $OperatingSystem = "UBUNTU" ]]; then
+	echo "Using OpenSSL 3.0.13 Jan 2024"
+	openssl  genrsa -aes256 -verbose -out $UserHomeDirectory/my-certs/ca-root.key 4096
+	openssl req -x509 -new -nodes -key ca-root.key -sha256 -days 3650 -out ca-root.crt
+else
+	echo "Using OpenSSL 3.3.5 Jan 2026"
+	openssl req -x509 -verbose -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
+fi
+
 sleep 1
 echo "Generating CSR"
 sleep 1
@@ -266,13 +276,13 @@ echo "Created ext config:"
 sleep 1
 cat "$UserHomeDirectory"/my-certs/server.v3.ext
 sleep 1
-read -n 1 -s -r -p "Completed CA Creation. Press any key to continue"
+read -n 1 -s -r -p "Completed CA Creation. Press any key to continue${NL}""
 echo "Creating server certificate"
 ls -shalt "$UserHomeDirectory"/my-certs/
 sleep 1
 openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "$UserHomeDirectory"/my-certs/ca-root.crt -CAform PEM -CAkey "$UserHomeDirectory"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out "$UserHomeDirectory"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile "$UserHomeDirectory"/my-certs/server.v3.ext 
 sleep 1
-read -n 1 -s -r -p "Cryptography complete.  Press any key to continue"
+read -n 1 -s -r -p "Cryptography complete.  Press any key to continue${NL}""
 echo "Pulling images from repositories"
 until su -g docker -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml pull"; do echo retrying; done
 sleep 1
@@ -289,7 +299,7 @@ do
 done
 sleep 1
 su -g docker -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml down" "$aihubuser"
-read -n 1 -s -r -p "Deployment-init complete. Press any key to continue"
+read -n 1 -s -r -p "Deployment-init complete. Press any key to continue${NL}""
 #move certificates to proper folder
 echo "Staging Certificates"
 cp "$UserHomeDirectory"/my-certs/certificate.crt "$UserHomeDirectory"/prod/ssl/
@@ -305,7 +315,7 @@ sleep 1
 chown "$aihubuser":"$aihubuser" "$UserHomeDirectory"/prod/docker-compose.yml
 echo "Touching up"
 sleep 1
-read -n 1 -s -r -p "Prepare-cust-ca.sh completed. Press any key to continue"
+read -n 1 -s -r -p "Prepare-cust-ca.sh completed. Press any key to continue${NL}""
 echo "Starting up AI-Hub"
 su -g docker -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d" "$aihubuser"
 echo "Script complete"
