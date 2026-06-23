@@ -223,7 +223,7 @@ chmod -R o-rwx "$UserHomeDirectory"/prod/panopticon/
 echo "Modified directory permissions"
 sleep 1
 
-
+read -n 1 -s -r -p "Finished AI-Hub file staging.  Press any key to continue"
 #creating certificate authority
 echo "Creating cryptography setup"
 sleep 1
@@ -238,6 +238,7 @@ sleep 1
 CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
 echo "Shared Subject is $CASharedSubject"
 sleep 1
+read -n 1 -s -r -p "Network survey complete.  Press any key to continue"
 echo "Creating self signed root trust key and certificate"
 sleep 1
 openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
@@ -269,13 +270,13 @@ echo "Created ext config:"
 sleep 1
 cat "$UserHomeDirectory"/my-certs/server.v3.ext
 sleep 1
+read -n 1 -s -r -p "Completed CA Creation. Press any key to continue"
 echo "Creating server certificate"
 ls -shalt "$UserHomeDirectory"/my-certs/
 sleep 1
 openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "$UserHomeDirectory"/my-certs/ca-root.crt -CAform PEM -CAkey "$UserHomeDirectory"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out "$UserHomeDirectory"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile "$UserHomeDirectory"/my-certs/server.v3.ext 
 sleep 1
-echo "Cryptography complete"
-sleep 1
+read -n 1 -s -r -p "Cryptography complete.  Press any key to continue"
 echo "Pulling images from repositories"
 until su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml pull"; do echo retrying; done
 sleep 1
@@ -291,10 +292,8 @@ do
     [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml down
 done
 sleep 1
-echo "Deployment-init complete"
-sleep 1
 su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml down" "$aihubuser"
-sleep 1
+read -n 1 -s -r -p "Deployment-init complete. Press any key to continue"
 #move certificates to proper folder
 echo "Staging Certificates"
 cp "$UserHomeDirectory"/my-certs/certificate.crt "$UserHomeDirectory"/prod/ssl/
@@ -310,11 +309,12 @@ sleep 1
 chown "$aihubuser":"$aihubuser" "$UserHomeDirectory"/prod/docker-compose.yml
 echo "Touching up"
 sleep 1
+read -n 1 -s -r -p "Prepare-cust-ca.sh completed. Press any key to continue"
 echo "Starting up AI-Hub"
 su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d" "$aihubuser"
 echo "Script complete"
 sleep 1
-
+docker ps
 
 #finish script with documentation output
 echo ""
