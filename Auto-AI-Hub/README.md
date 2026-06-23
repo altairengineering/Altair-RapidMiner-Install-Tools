@@ -44,6 +44,6 @@ Run the auto-ai-hub_start.sh script, carefully review the output.
 ```
 ./auto-ai-hub_start.sh
 ```
-<img width="672" height="674" alt="image" src="https://github.com/user-attachments/assets/148e2d36-294a-4107-87a5-de2d3326e4da" />
+
 
 
