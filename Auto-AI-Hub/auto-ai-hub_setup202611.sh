@@ -81,10 +81,6 @@ exit 1
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 echo "Docker version $dockerver"
 sleep 1
-su -c $(newgrp - docker) "$aihubuser"
-echo "Starting docker group:"
-echo $(id "$aihubuser")
-sleep 1
 
 
 #install ai-hub via automation
@@ -278,21 +274,21 @@ openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "
 sleep 1
 read -n 1 -s -r -p "Cryptography complete.  Press any key to continue"
 echo "Pulling images from repositories"
-until su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml pull"; do echo retrying; done
+until su -g docker -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml pull"; do echo retrying; done
 sleep 1
 #run deployment-init to generate backend
 echo "Starting Auto-AI-Hub deployment-init"
 sleep 1
-su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d deployment-init" "$aihubuser"
+su -g docker -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d deployment-init" "$aihubuser"
 echo "Deployment exited to next instructions"
 sleep 1
-su -c "docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml logs -f" "$aihubuser" | while read -r LOGLINE
+su -g docker -c "docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml logs -f" "$aihubuser" | while read -r LOGLINE
 do
     echo "$LOGLINE"
     [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && docker compose -f "$UserHomeDirectory"/prod/docker-compose.yml down
 done
 sleep 1
-su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml down" "$aihubuser"
+su -g docker -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml down" "$aihubuser"
 read -n 1 -s -r -p "Deployment-init complete. Press any key to continue"
 #move certificates to proper folder
 echo "Staging Certificates"
@@ -311,7 +307,7 @@ echo "Touching up"
 sleep 1
 read -n 1 -s -r -p "Prepare-cust-ca.sh completed. Press any key to continue"
 echo "Starting up AI-Hub"
-su -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d" "$aihubuser"
+su -g docker -c "docker compose -f $UserHomeDirectory/prod/docker-compose.yml up -d" "$aihubuser"
 echo "Script complete"
 sleep 1
 docker ps
