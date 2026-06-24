@@ -244,7 +244,7 @@ sleep 1
 #will switch this out when 2604 testing completes
 if [[ $OperatingSystem = "UBUNTU" ]]; then
 	echo "Using OpenSSL 3.0.13 Jan 2024"
-	openssl  genrsa -aes256 -verbose -out $UserHomeDirectory/my-certs/ca-root.key 4096
+	openssl  genrsa -aes256 -out $UserHomeDirectory/my-certs/ca-root.key 4096
 	openssl req -x509 -new -nodes -key ca-root.key -sha256 -days 3650 -out ca-root.crt
 else
 	echo "Using OpenSSL 3.3.5 Jan 2026"
