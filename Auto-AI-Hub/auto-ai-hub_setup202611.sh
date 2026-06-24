@@ -242,9 +242,13 @@ sleep 1
 #will switch this out when 2604 testing completes
 if [[ $OperatingSystem = "UBUNTU" ]]; then
 	echo "Using OpenSSL 3.0.13 Jan 2024"
-	openssl genrsa -aes256 -out $UserHomeDirectory/my-certs/ca-root.key 4096
+	#openssl genrsa -aes256 -out $UserHomeDirectory/my-certs/ca-root.key 4096
+	#echo "Created private ca key, now creating ca root certificate"
+	#openssl req -x509 -new -nodes -key ca-root.key -sha256 -days 3650 -out ca-root.crt
+	#sleep 1
+	openssl genpkey -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
 	echo "Created private ca key, now creating ca root certificate"
-	openssl req -x509 -new -nodes -key ca-root.key -sha256 -days 3650 -out ca-root.crt
+	openssl req -x509 -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
 	sleep 1
 else
 	echo "Using OpenSSL 3.3.5 Jan 2026"
