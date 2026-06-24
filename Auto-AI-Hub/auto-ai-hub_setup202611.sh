@@ -238,17 +238,20 @@ sleep 1
 read -n 1 -s -r -p "Network survey complete.  Press any key to continue${NL}"
 echo "Creating self signed root trust key and certificate"
 sleep 1
-openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
-sleep 1
 #ubuntu 2404 uses a very obsolete version of openssl 
 #will switch this out when 2604 testing completes
 if [[ $OperatingSystem = "UBUNTU" ]]; then
 	echo "Using OpenSSL 3.0.13 Jan 2024"
-	openssl  genrsa -aes256 -out $UserHomeDirectory/my-certs/ca-root.key 4096
+	openssl genrsa -aes256 -out $UserHomeDirectory/my-certs/ca-root.key 4096
+	echo "Created private ca key, now creating ca root certificate"
 	openssl req -x509 -new -nodes -key ca-root.key -sha256 -days 3650 -out ca-root.crt
+	sleep 1
 else
 	echo "Using OpenSSL 3.3.5 Jan 2026"
+	openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+	echo "Created private ca key, now creating ca root certificate"
 	openssl req -x509 -verbose -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
+	sleep 1
 fi
 
 sleep 1
