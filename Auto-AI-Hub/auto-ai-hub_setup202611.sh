@@ -220,14 +220,14 @@ chmod -R o-rwx "$UserHomeDirectory"/prod/panopticon/
 echo "Modified directory permissions"
 sleep 1
 
-read -n 1 -s -r -p "Finished AI-Hub file staging.  Press any key to continue${NL}""
+read -n 1 -s -r -p "Finished AI-Hub file staging.  Press any key to continue${NL}"
 #creating certificate authority
 echo "Creating cryptography setup"
 sleep 1
 #collect networking data
 MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
 FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
-echo "Network data:"
+echo "Network data"
 sleep 1
 echo "$MainAdapter $FunctionalAddress"
 sleep 1
