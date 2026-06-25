@@ -37,13 +37,15 @@ chmod +x chmod +x auto-ai-hub_setup[version].sh
 ```
 
 ### Installation
-Now run the script for on-prem license server.
+Now become root and run the script for on-prem license server.
 ```
-sudo ./auto-ai-hub_setup[version].sh [username]
+sudo su -
+./auto-ai-hub_setup[version].sh [username]
 ```
 Or alternatively, for online credentials validation.
 ```
-sudo ./auto-ai-hub_setup[version].sh [username] creds
+sudo su -
+./auto-ai-hub_setup[version].sh [username] creds
 ```
 
 
