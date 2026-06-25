@@ -322,7 +322,7 @@ sleep 1
 echo "Executing prepare-cust-ca.sh"
 sleep 1
 cd "$UserHomeDirectory"/prod
-sh ./prepare-cust-ca.sh
+bash ./prepare-cust-ca.sh
 sleep 1
 chown "$aihubuser":"$aihubuser" "$UserHomeDirectory"/prod/docker-compose.yml
 echo "Touching up"
