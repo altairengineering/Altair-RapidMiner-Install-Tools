@@ -290,9 +290,9 @@ cat "$UserHomeDirectory"/my-certs/server.v3.ext
 sleep 1
 read -n 1 -s -r -p "Completed CA Creation. Press any key to continue${NL}"
 echo "Creating server certificate"
-ls -shalt "$UserHomeDirectory"/my-certs/
-sleep 1
 openssl x509 -req -in "$UserHomeDirectory"/my-certs/server.csr -inform PEM -CA "$UserHomeDirectory"/my-certs/ca-root.crt -CAform PEM -CAkey "$UserHomeDirectory"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out "$UserHomeDirectory"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile "$UserHomeDirectory"/my-certs/server.v3.ext 
+sleep 1
+ls -shalt "$UserHomeDirectory"/my-certs/
 sleep 1
 read -n 1 -s -r -p "Cryptography complete.  Press any key to continue${NL}"
 echo "Pulling images from repositories"
