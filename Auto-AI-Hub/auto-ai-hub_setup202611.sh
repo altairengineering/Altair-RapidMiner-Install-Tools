@@ -250,19 +250,24 @@ if [[ $OperatingSystem = "UBUNTU" ]]; then
 	echo "Created private ca key, now creating ca root certificate"
 	openssl req -x509 -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
 	sleep 1
+    echo "Generating CSR"
+    sleep 1
+    openssl req -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
+    sleep 1
 else
 	echo "Using OpenSSL 3.3.5 Jan 2026"
 	openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
 	echo "Created private ca key, now creating ca root certificate"
 	openssl req -x509 -verbose -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
 	sleep 1
+    echo "Generating CSR"
+    sleep 1
+    openssl req -verbose -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
+    sleep 1
 fi
 
 sleep 1
-echo "Generating CSR"
-sleep 1
-openssl req -verbose -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
-sleep 1
+
 #create ca config
 sleep 1
 echo "Creating ext config"
