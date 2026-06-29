@@ -33,7 +33,7 @@ ln -s /home/[username]/Altair-RapidMiner-Install-Tools/Auto-AI-Hub/ autoaihub
 Set the auto-ai-hub_setup.sh executable.
 ```
 cd ./autoaihub
-chmod +x chmod +x auto-ai-hub_setup[version].sh
+chmod +x auto-ai-hub_setup[version].sh
 ```
 
 ### Installation
