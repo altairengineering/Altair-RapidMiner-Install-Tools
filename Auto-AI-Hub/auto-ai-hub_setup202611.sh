@@ -4,7 +4,7 @@ hubversion="2026.1.1"
 NL=$'\n'
 #startup reqs
 [ $# -eq 0 ] && { echo "Usage: $0 username"; exit 1; }
-[ "$(whoami)" = root ] || { echo 'you must run with sudo'; exit 1; }
+[ "$(whoami)" = root ] || { echo 'you must first use sudo su - '; exit 1; }
 
 #welcome banner
 printf "\n"
