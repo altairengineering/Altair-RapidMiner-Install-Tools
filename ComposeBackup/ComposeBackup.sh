@@ -66,6 +66,15 @@ else
   exit 1
 fi
 
+if [[ -d $2 ]]; then
+  echo "Directory detected in arguement."
+else
+  echo "This command should point to a directory only"
+  exit 1
+fi
+
+
+
  # tarball all the relative folders to the compose as well as the entirety of the /var/lib/docker/
 echo "removing downloaded images to prevent orphan danglers"
 docker image prune -af
@@ -104,6 +113,12 @@ else
   echo "Needs to be run in the same directory as the target environment's docker compose file."
   exit 1
 fi
+if [[ -d $2 ]]; then
+  echo "Directory detected in arguement."
+else
+  echo "This command should point to a directory only"
+  exit 1
+fi
 
 
 echo "extracting compose folder" && sleep 1
@@ -129,7 +144,12 @@ if [[ -z $2 ]]; then
   echo "Restoring docker to system requires a target directory that contains both tarballs created by this tool."
   exit 1
 fi
-
+if [[ -d $2 ]]; then
+  echo "Directory detected in arguement."
+else
+  echo "This command should point to a directory only"
+  exit 1
+fi
 
 
 echo "extracting compose folder" && sleep 1
