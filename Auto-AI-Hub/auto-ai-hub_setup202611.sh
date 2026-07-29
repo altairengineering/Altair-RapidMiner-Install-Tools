@@ -2,6 +2,7 @@
 set -o errexit -o pipefail -o noclobber -o nounset
 #config
 hubversion="2026.1.1"
+PrefixHostname="auto-ai-hub"
 NL=$'\n'
 #startup reqs
 [ $# -eq 0 ] && { echo "Usage: $0 username"; exit 1; }
@@ -31,7 +32,31 @@ else
   exit 1
 fi
 #checking if user is real
-aihubuser="$1"
+#aihubuser="$1"
+
+#check the arguements manually and shift the values to parse them all
+for i in "$@"; do
+  case $i in
+    -e=*|--extension=*)
+      EXTENSION="${i#*=}"
+      shift # past argument=value
+      ;;
+    -s=*|--searchpath=*)
+      SEARCHPATH="${i#*=}"
+      shift # past argument=value
+      ;;
+    --default)
+      DEFAULT=YES
+      shift # past argument with no value
+      ;;
+    -*|--*)
+      echo "Unknown option $i"
+      exit 1
+      ;;
+    *)
+      ;;
+  esac
+done
 if [ -d /home/"$aihubuser"/ ]; then
 	echo "Found $aihubuser"
 	UserHomeDirectory="/home/${aihubuser}"
@@ -121,8 +146,8 @@ END
 fi
 #read the source with the unique id and write it into the config
 source "$UserHomeDirectory"/my-certs/UniqueID
-sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
-sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=auto-ai-hub-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
+sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=$PrefixHostname-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
+sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=$PrefixHostname-$UniqueHostname.local%g" /home/"$aihubuser"/prod/.env
 echo "Configured hostnames"
 sleep 1
 
@@ -233,42 +258,20 @@ sleep 1
 echo "$MainAdapter $FunctionalAddress"
 sleep 1
 #create ca cert and key
-CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=auto-ai-hub-$UniqueHostname.local"
+CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=$PrefixHostname-$UniqueHostname.local"
 echo "Shared Subject is $CASharedSubject"
 sleep 1
 read -n 1 -s -r -p "Network survey complete.  Press any key to continue${NL}"
 echo "Creating self signed root trust key and certificate"
 sleep 1
-#ubuntu 2404 uses a very obsolete version of openssl 
-#will switch this out when 2604 testing completes
-if [[ $OperatingSystem = "UBUNTU" ]]; then
-	echo "Using OpenSSL 3.0.13 Jan 2024"
-	#openssl genrsa -aes256 -out $UserHomeDirectory/my-certs/ca-root.key 4096
-	#echo "Created private ca key, now creating ca root certificate"
-	#openssl req -x509 -new -nodes -key ca-root.key -sha256 -days 3650 -out ca-root.crt
-	#sleep 1
-	openssl genpkey -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
-	echo "Created private ca key, now creating ca root certificate"
-	openssl req -x509 -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
-	sleep 1
-    echo "Generating CSR"
-    sleep 1
-    openssl req -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
-    sleep 1
-else
-	echo "Using OpenSSL 3.3.5 Jan 2026"
-	openssl genpkey -verbose -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
-	echo "Created private ca key, now creating ca root certificate"
-	openssl req -x509 -verbose -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
-	sleep 1
-    echo "Generating CSR"
-    sleep 1
-    openssl req -verbose -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
-    sleep 1
-fi
-
+openssl genpkey -out "$UserHomeDirectory"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+echo "Created private ca key, now creating ca root certificate"
+openssl req -x509 -new -nodes -key "$UserHomeDirectory"/my-certs/ca-root.key -sha256 -days 3650 -subj "$CASharedSubject" -out "$UserHomeDirectory"/my-certs/ca-root.crt
 sleep 1
-
+echo "Generating CSR"
+sleep 1
+openssl req -new -nodes -outform PEM -out "$UserHomeDirectory"/my-certs/server.csr -newkey rsa:4096 -keyout "$UserHomeDirectory"/my-certs/private.key -subj "$CASharedSubject"
+sleep 1
 #create ca config
 sleep 1
 echo "Creating ext config"
@@ -282,8 +285,8 @@ subjectAltName = @alt_names
 DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
 END
-echo "Updating external config to point to auto-ai-hub-$UniqueHostname.local at $FunctionalAddress"
-sed -i "s%<YOUR-SERVER-HOSTNAME>%auto-ai-hub-$UniqueHostname.local%g" "$UserHomeDirectory"/my-certs/server.v3.ext
+echo "Updating external config to point to $PrefixHostname-$UniqueHostname.local at $FunctionalAddress"
+sed -i "s%<YOUR-SERVER-HOSTNAME>%$PrefixHostname-$UniqueHostname.local%g" "$UserHomeDirectory"/my-certs/server.v3.ext
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" "$UserHomeDirectory"/my-certs/server.v3.ext
 echo "Created ext config:"
 sleep 1
@@ -345,7 +348,7 @@ echo "============================================================="
 echo "Auto-AI-Hub Setup Completed!"
 echo "-------------------------------------------------------------"
 echo "Please save the following information somewhere securely:"
-echo "AI-Hub Hostname: auto-ai-hub-$UniqueHostname.local"
+echo "AI-Hub Hostname: $PrefixHostname-$UniqueHostname.local"
 echo "AI-Hub IP Address: $FunctionalAddress"
 echo "AI-Hub login/password:  admin/rapidminerautoaihub"
 echo "Please wait 5-10 minutes for the system to fully startup"
@@ -353,10 +356,10 @@ echo "-------------------------------------------------------------"
 echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING LINE"
 echo "OF HOSTNAMES TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE AI-HUB"
 echo "-------------------------------------------------------------"
-echo "$FunctionalAddress       auto-ai-hub-$UniqueHostname.local       auto-ai-hub-$UniqueHostname"
+echo "$FunctionalAddress       $PrefixHostname-$UniqueHostname.local       $PrefixHostname-$UniqueHostname"
 echo ""
 echo "-------------------------------------------------------------"
-echo "When completed, browse to https://auto-ai-hub-$UniqueHostname.local"
+echo "When completed, browse to https://$PrefixHostname-$UniqueHostname.local"
 echo "============================================================="
 echo ""
 exit 0
