@@ -53,7 +53,10 @@ for i in "$@"; do
       echo "Unknown option $i"
       exit 1
       ;;
-    *)
+    *|-h)
+		echo "Auto-AI-Hub Usage and help."
+		echo "auto-ai-hub_setup.sh -u <username> -"
+		echo ""
       ;;
   esac
 done
