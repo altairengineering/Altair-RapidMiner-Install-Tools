@@ -317,6 +317,9 @@ echo "Staging Certificates"
 cp "$UserHomeDirectory"/my-certs/certificate.crt "$UserHomeDirectory"/prod/ssl/
 cp "$UserHomeDirectory"/my-certs/private.key "$UserHomeDirectory"/prod/ssl/
 sleep 1
+echo "Merging root trust"
+cat "$UserHomeDirectory"/my-certs/ca-root.crt >> "$UserHomeDirectory"/my-certs/certificate.crt
+sleep 1
 
 #run prepare-cust-ca.sh
 echo "Executing prepare-cust-ca.sh"
