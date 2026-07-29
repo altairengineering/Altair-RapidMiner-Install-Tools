@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o errexit -o pipefail -o noclobber -o nounset
 #config
 hubversion="2026.1.1"
 NL=$'\n'
@@ -105,8 +106,8 @@ sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" "$UserHomeDirectory"/prod/.env
 echo "Configured TZ"
 sleep 1
 
-#configure hostnames in env
-#create the folder if its not already there
+
+#create the cert folder if its not already there
 mkdir -p "$UserHomeDirectory"/my-certs
 UniqueHostname=""
 #check if there is already been a unique id generated to prevent collisions during testing
