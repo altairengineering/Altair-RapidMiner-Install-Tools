@@ -83,7 +83,7 @@ echo "Auto-AI-Hub Setup script"
 echo "SIEMENS - Anthony Kiehl"
 echo "Version 1.0 - 6/9/26 Initial Release"
 echo "Special thanks to: Helge H, Sebastian L, Geetha T"
-echo "Auto-AI-hub version $hubversion"
+echo "Auto-AI-hub version ${hubversion}"
 echo "======================================================================"
 sleep 1
 
@@ -180,7 +180,7 @@ for i in "$@"; do
 done
 
 $echolog "Setting up permissions for ${HOMEDIRECTORY} to ${AIHUBUSER}"
-chown $AIHUBUSER:$AIHUBUSER ${HOMEDIRECTORY}
+chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
 
 #check operating system
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
@@ -236,6 +236,7 @@ case $OperatingSystem in
 	  DEBIAN_FRONTEND=noninteractive apt-get update -y
 	  DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io
 	  $echolog "Installed docker compose on Ubuntu"
+	fi
   ;;   
 
   *)
@@ -250,7 +251,7 @@ exit 1
 }
 systemctl enable --now docker
 systemctl enable --now haveged
-usermod -aG docker $AIHUBUSER
+usermod -aG docker ${AIHUBUSER}
 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 $echolog "Docker version $dockerver"
@@ -260,10 +261,10 @@ $echolog "Docker version $dockerver"
 #download and install ai-hub via automation
 
 $echolog "Downloading and installing AI-Hub"
-$echolog "Downloading $hubversion from https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-2026.1.1-docker-compose-template-prod.zip"
-wget -P "${HOMEDIRECTORY}" https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip --output-document="${HOMEDIRECTORY}"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
+$echolog "Downloading ${hubversion} from https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-2026.1.1-docker-compose-template-prod.zip"
+wget -P "${HOMEDIRECTORY}" https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-"${hubversion}"-docker-compose-template-prod.zip --output-document="${HOMEDIRECTORY}"/rapidminer-ai-hub-"${hubversion}"-docker-compose-template-prod.zip
 $echolog "Extracting data"
-unzip -o "${HOMEDIRECTORY}"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip -d "${HOMEDIRECTORY}"
+unzip -o "${HOMEDIRECTORY}"/rapidminer-ai-hub-"${hubversion}"-docker-compose-template-prod.zip -d "${HOMEDIRECTORY}"
 ls "${HOMEDIRECTORY}"/prod
 $echolog "Files staged in prod folder"
 
@@ -285,22 +286,22 @@ END
 fi
 #read the source with the unique id and write it into the config
 source "${HOMEDIRECTORY}"/my-certs/UniqueID
-sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
-sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
+sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
+sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
 $echolog "Configured hostnames"
 
 #generate fresh keycloak secret
 $echolog "Generating fresh keycloak secret..."
 freshkeycloak="$(echo $RANDOM | md5sum | head -c 20; echo | base64)"
 $echolog "$freshkeycloak"
-sed -i "s/AUTH_SECRET=\"<AUTH-SECRET-PLACEHOLDER>\"/AUTH_SECRET=\"${freshkeycloak}\"/g" /home/"$AIHUBUSER"/prod/.env
+sed -i "s/AUTH_SECRET=\"<AUTH-SECRET-PLACEHOLDER>\"/AUTH_SECRET=\"${freshkeycloak}\"/g" /home/"${AIHUBUSER}"/prod/.env
 
 #generate active mq password
 $echolog "Generating ActiveMQ password..."
 activemqpassword="$(echo $RANDOM | md5sum | head -c 15)"
-$echolog "$activemqpassword"
+$echolog "${activemqpassword}"
 sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" "${HOMEDIRECTORY}"/prod/.env
-sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=$ADMINPASSWORD/g" "${HOMEDIRECTORY}"/prod/.env
+sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=${ADMINPASSWORD}/g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "Platform admin creds configured"
 sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=${ADMINPASSWORD}/g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "Keycloak database configured"
@@ -318,9 +319,9 @@ if [ "$CREDLIC" -eq 1 ]; then
 	read -r -s LicenseUserPasswordfirst
 	echo "Please re-enter password:"
 	read -r -s LicenseUserPasswordsecond
-	if [ "$LicenseUserPasswordfirst" == "$LicenseUserPasswordsecond" ]; then
+	if [ "${LicenseUserPasswordfirst}" == "${LicenseUserPasswordsecond}" ]; then
   				echo "Password recorded"
-					LicenseUserPassword=$LicenseUserPasswordfirst
+					LicenseUserPassword=${LicenseUserPasswordfirst}
 	else
 					echo "Passwords did not match"
 					exit 1
@@ -334,18 +335,18 @@ else
 	
 	LicensePath="${PORTLIC}@${HOSTLIC}"
 	$echolog "Setting license data to ${PORTLIC}@${HOSTLIC}"	
-	sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH="${LicensePath}"%g" "${HOMEDIRECTORY}"/prod/.env
+	sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH=${LicensePath}%g" "${HOMEDIRECTORY}"/prod/.env
 fi
 #setting machine details
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
-$echolog "Machine ID = $LicenseAgentID"
+$echolog "Machine ID = ${LicenseAgentID}"
 sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" "${HOMEDIRECTORY}"/prod/.env
 sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "License configured"
 
 #1031 Pano mac address creation for altair one licensing
 PanoGenMAC=$(cat /dev/urandom | tr -d -c '[:digit:]A-F' | fold -w 12 | sed -E -n -e '/^.[26AE]/s/(..)/\1-/gp' | sed -e 's/-$//g' |sed 's/-/:/g'| head -n1 | sed 's/^\S\S/66/g')
-$echolog "Panopticon Generated MAC address = $PanoGenMAC"
+$echolog "Panopticon Generated MAC address = ${PanoGenMAC}"
 sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" "${HOMEDIRECTORY}"/prod/.env
 
 #custom cert fix
@@ -371,9 +372,9 @@ $echolog "Finished AI-Hub file staging"
 $echolog "Creating cryptography setup"
 #collect networking data
 MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
-FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
+FunctionalAddress=$(ip addr show "${MainAdapter}" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
 $echolog "Network data"
-$echolog "$MainAdapter $FunctionalAddress"
+$echolog "${MainAdapter} ${FunctionalAddress}"
 
 #create ca cert and key
 CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=${PREFIXHOSTNAME}-${UniqueHostname}.local"
@@ -406,15 +407,16 @@ openssl x509 -req -in "${HOMEDIRECTORY}"/my-certs/server.csr -inform PEM -CA "${
 if [ $VERBOSE -eq 1 ]; then ls -shalt "${HOMEDIRECTORY}"/my-certs/; fi #debug output
 $echolog  "Cryptography complete."
 
+#get the latest images
 $echolog "Pulling images from repositories"
 until su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml pull"; do echo retrying; done
 #run deployment-init to generate backend
 $echolog "Starting Auto-AI-Hub deployment-init"
-su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d deployment-init" "$AIHUBUSER"
-su -g docker -c "docker compose -f "${HOMEDIRECTORY}"/prod/docker-compose.yml logs -f" "$AIHUBUSER" | while read -r LOGLINE
+su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d deployment-init" "${AIHUBUSER}"
+su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml logs -f" "${AIHUBUSER}" | while read -r LOGLINE
 do
     $echolog "$LOGLINE"
-    [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml down" "$AIHUBUSER"
+    [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml down" "${AIHUBUSER}"
 done
 $echolog "Deployment-init complete."
 
@@ -429,10 +431,10 @@ cat "${HOMEDIRECTORY}"/my-certs/ca-root.crt >> "${HOMEDIRECTORY}"/my-certs/certi
 $echolog "Executing prepare-cust-ca.sh"
 cd "${HOMEDIRECTORY}"/prod
 bash ./prepare-cust-ca.sh
-chown "$AIHUBUSER":"$AIHUBUSER" "${HOMEDIRECTORY}"/prod/docker-compose.yml
-read -n 1 -s -r -p "Prepare-cust-ca.sh completed."
+chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"/prod/docker-compose.yml
+$echolog "Prepare-cust-ca.sh completed."
 $echolog "Starting up AI-Hub"
-su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d" "$AIHUBUSER"
+su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d" "${AIHUBUSER}"
 $echolog "Script complete"
 if [ $VERBOSE -eq 1 ]; then docker ps; fi #debug output
 
