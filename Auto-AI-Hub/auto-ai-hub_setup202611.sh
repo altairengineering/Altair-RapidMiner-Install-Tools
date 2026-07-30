@@ -41,12 +41,12 @@ for i in "$@"; do
       EXTENSION="${i#*=}"
       shift # past argument=value
       ;;
-    -s=*|--searchpath=*)
+    -d=*|--directory=*)
       SEARCHPATH="${i#*=}"
       shift # past argument=value
       ;;
-    --default)
-      DEFAULT=YES
+    -v|--verbose)
+      VERBOSE=YES
       shift # past argument with no value
       ;;
     -*|--*)
@@ -54,9 +54,20 @@ for i in "$@"; do
       exit 1
       ;;
     *|-h)
-		echo "Auto-AI-Hub Usage and help."
-		echo "auto-ai-hub_setup.sh -u <username"
-		echo ""
+		echo 'Usage:'
+		echo ' auto-ai-hub.sh <parameters>'
+		echo ' auto-ai-hub.sh [options] -o|--options <optstring> [options] [--] <parameters>'
+		echo ''
+		echo 'Parse command options.'
+		echo ''
+		echo 'Options:'
+		echo ' -u, --username=<username>   	           Mandatory. Specify the linux username that will operate the AI-Hub'
+		echo ' -p, --password=<aihub_password>     	   Mandatory. Sets the password for the admin login'
+		echo ' -d, --directory=<path>        	       The directory to install into, by default will install to home folder'
+		echo ' -h, --hostname=<hostname>    	       This is the hostname to the license server. Defaults to 127.0.0.1'
+		echo ' -P, --port=<port>					   Network port number for the license server.  Defaults to 6200'	
+		echo ' -c, --credentials                       Prompts user for license login.  Ignores license hostname and port'
+		echo ' -v, --verbose                           Run the command with extra output'
       ;;
   esac
 done
@@ -143,9 +154,8 @@ sleep 1
 
 #install ai-hub via automation
 #download ai-hub and echo the version
-echo "Checking for target directory"
-if [[ -
 echo "Preparing the target directory $UserHomeDirectory"
+mkdir -p $UserHomeDirectory
 chown -R $aihubuser:$aihubuser $UserHomeDirectory
 echo "Downloading and installing AI-Hub"
 sleep 1
