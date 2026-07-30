@@ -32,11 +32,12 @@ function helpfile () {
 	  echo ' -P, --port=<port>					    Network port number for the license server.  Defaults to 6200'	
 	  echo ' -w, --webprefix=<string>			    Unique webaddress prefix to URL for AI-Hub.  Defaults to auto-ai-hub'		  
 	  echo ' -c, --credentials                      Prompts user for license login.  Ignores license hostname and port'
+	  echo ' -s, --skipdocker                       Skips the docker installation'
 	  echo ' -v, --verbose                          Run the command with extra output'
 	  echo ' -h, --help                             Displays this help document as output'
 	  echo 'Examples:'
-	  echo 'auto-ai-hub.sh -u john -p agoodpassword'
-	  echo 'auto-ai-hub.sh -u john -p agoodpassword -d /opt/autoaihub -H 10.0.15.100 -P 6201'
+	  echo 'auto-ai-hub.sh -u=john -p=agoodpassword'
+	  echo 'auto-ai-hub.sh -u=john -p=agoodpassword -d=/opt/autoaihub -H=10.0.15.100 -P=6201'
 	  echo 'auto-ai-hub.sh --username=john --password=agoodpassword --credentials --verbose'
 	  echo 'Will install for user john in /opt/autoaihub and seek a license server at 10.0.15.100 running on port 6201'
 }
@@ -69,6 +70,7 @@ hubversion="2026.1.1"
 PREFIXHOSTNAME="auto-ai-hub"
 VERBOSE=0
 CREDLIC=0
+SKIPDOCKER=0
 UniqueHostname=""
 
 #startup reqs
@@ -114,14 +116,18 @@ for i in "$@"; do
     -d=*|--directory=*)
       HOMEDIRECTORY="${i#*=}"
 	  $checkchars ${HOMEDIRECTORY}
-      HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9-_\/]/}
+      if [ ! -d ${HOMEDIRECTORY} ]; then
+	     echo "Please pick a real directory and use absolute path, not relative."
+		 exit 1
+	  fi
+	  
       shift # past argument=value
       ;;
 	  
     -H=*|--hostname=*)
       HOSTLIC="${i#*=}"
 	  $checkchars ${HOSTLIC}
-      HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9\.]/}
+      HOSTLIC=${HOSTLIC//[^a-zA-Z0-9\.]/}
       shift # past argument=value
       ;;
 	  
@@ -132,16 +138,30 @@ for i in "$@"; do
       shift # past argument=value
       ;;
 	  
-    -c=*|--credentials=*)
+    -w=*|--webprefix=*)
+      PREFIXHOSTNAME="${i#*=}"
+	  $checkchars ${PREFIXHOSTNAME}
+      HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9-]/}
+      shift # past argument=value
+      ;;	
+	  
+    -c|--credentials)
       CREDLIC=1
       shift # past argument=value
       ;;
-	  
-    -w=*|--webprefix=*)
-      PREFIXHOSTNAME="${i#*=}"
+  	  
+    -s|--skipdocker)
+	  docker compose &> /dev/null
+	  if [ $? -eq 0 ]; then
+	  	$echolog "Docker Compose is already installed, and user opted to skip reinstalling."
+		SKIPDOCKER=1
+	  else
+	  	echo "Docker compose is not installed, you cannot skip the installation, bye"
+		exit 1
+	  fi
       shift # past argument=value
-      ;;	  
-	  
+      ;;
+
     -v|--verbose)
       VERBOSE=1
       shift # past argument with no value
@@ -159,20 +179,12 @@ for i in "$@"; do
   esac
 done
 
-#checking if user is real
-#aihubuser="$1"
-
-if [ ! -d ${HOMEDIRECTORY} ]; then
-	mkdir -p ${HOMEDIRECTORY}
-else	
-	$echolog "Found ${HOMEDIRECTORY}"
-fi
-$echolog "Setting up permissions for ${HOMEDIRECTORY} to $AIHUBUSER"
-chown -R $AIHUBUSER:$AIHUBUSER ${HOMEDIRECTORY}
+$echolog "Setting up permissions for ${HOMEDIRECTORY} to ${AIHUBUSER}"
+chown $AIHUBUSER:$AIHUBUSER ${HOMEDIRECTORY}
 
 #check operating system
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
-$echolog "$OperatingSystem detected"
+$echolog "${OperatingSystem} detected"
 $echolog "Attempting to install docker"
 
 #execute docker instal with case
@@ -180,47 +192,50 @@ $echolog "Attempting to install docker"
 case $OperatingSystem in
 
   "RED HAT ENTERPRIZE LINUX")
-    $echolog "Detected Red Hat operating system"
-	
+    $echolog "Detected Red Hat operating system"	
 	dnf update -y
 	dnf upgrade -y
-	dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
-	dnf install -y curl wget vim unzip openssl git
-	dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-	sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
-	dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-	dnf update -y
-	dnf install -y haveged
-	dnf install -y docker-ce docker-ce-cli containerd.io
+	dnf install -y curl wget vim unzip openssl git haveged
+    if [ SKIPDOCKER -eq 0 ]; then 	
+	  dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
+	  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+	  sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
+	  dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+	  dnf update -y
+	  dnf install -y docker-ce docker-ce-cli containerd.io
+	  $echolog "Installed docker compose on RHEL"
+
+	fi
   ;;
 
   "ROCKY LINUX")
-    $echolog "Detected Rocky operating system"
-	
+    $echolog "Detected Rocky operating system"	
 	dnf update -y
 	dnf upgrade -y
-	dnf remove -y docker*
 	dnf install -y epel-release
-	dnf install -y dnf-utils curl wget vim unzip openssl git
-	dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-	dnf update -y --allowerasing
-	dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
-	dnf install -y haveged --allowerasing
+	dnf install -y haveged dnf-utils curl wget vim unzip openssl git --allowerasing		
+    if [ SKIPDOCKER -eq 0 ]; then 
+	  dnf remove -y docker*
+	  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+	  dnf update -y --allowerasing
+	  dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
+	  $echolog "Installed docker compose on Rocky Linux"
+    fi
   ;;
 
   "UBUNTU")
-    $echolog "Detected Ubuntu operating system"
-	
+    $echolog "Detected Ubuntu operating system"	
 	DEBIAN_FRONTEND=noninteractive apt-get update -y
 	DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-	DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker.io containerd runc
-	DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
 	DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl wget vim ca-certificates net-tools gnupg lsb-release haveged openssl git
-	curl -kfsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	DEBIAN_FRONTEND=noninteractive apt-get update -y
-	DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io
-
+    if [ SKIPDOCKER -eq 0 ]; then 
+	  DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker.io containerd runc
+	  DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
+	  curl -kfsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+	  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	  DEBIAN_FRONTEND=noninteractive apt-get update -y
+	  DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io
+	  $echolog "Installed docker compose on Ubuntu"
   ;;   
 
   *)
