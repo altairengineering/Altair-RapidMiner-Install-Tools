@@ -80,20 +80,46 @@ case $OperatingSystem in
 
   "RED HAT ENTERPRIZE LINUX")
     echo "Detected Red Hat operating system"
-    chmod +x ../Docker-Installers/rhel.sh
-    /bin/bash ../Docker-Installers/rhel.sh "$1"
+	sleep 1
+	dnf update -y
+	dnf upgrade -y
+	dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
+	dnf install -y curl wget vim unzip openssl git
+	dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+	sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
+	dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+	dnf update -y
+	dnf install -y haveged
+	dnf install -y docker-ce docker-ce-cli containerd.io
   ;;
 
   "ROCKY LINUX")
     echo "Detected Rocky operating system"
-    chmod +x ../Docker-Installers/rocky.sh
-    /bin/bash ../Docker-Installers/rocky.sh "$1"
+	sleep 1
+	dnf update -y
+	dnf upgrade -y
+	dnf remove -y docker*
+	dnf install -y epel-release
+	dnf install -y dnf-utils curl wget vim unzip openssl git
+	dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+	dnf update -y --allowerasing
+	dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
+	dnf install -y haveged --allowerasing
   ;;
 
   "UBUNTU")
     echo "Detected Ubuntu operating system"
-    chmod +x ../Docker-Installers/ubuntu.sh
-    /bin/bash ../Docker-Installers/ubuntu.sh "$1"
+	sleep 1
+	DEBIAN_FRONTEND=noninteractive apt-get update -y
+	DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+	DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker.io containerd runc
+	DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
+	DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl wget vim ca-certificates net-tools gnupg lsb-release haveged openssl git
+	curl -kfsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	DEBIAN_FRONTEND=noninteractive apt-get update -y
+	DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io
+
   ;;   
 
   *)
@@ -106,7 +132,9 @@ esac
 echo "Docker install case operation failed"
 exit 1
 }
-
+systemctl enable --now docker
+systemctl enable --now haveged
+usermod -aG docker $1
 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 echo "Docker version $dockerver"
