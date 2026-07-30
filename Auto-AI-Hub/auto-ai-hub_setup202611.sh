@@ -55,7 +55,7 @@ for i in "$@"; do
       ;;
     *|-h)
 		echo "Auto-AI-Hub Usage and help."
-		echo "auto-ai-hub_setup.sh -u <username> -"
+		echo "auto-ai-hub_setup.sh -u <username"
 		echo ""
       ;;
   esac
@@ -143,6 +143,10 @@ sleep 1
 
 #install ai-hub via automation
 #download ai-hub and echo the version
+echo "Checking for target directory"
+if [[ -
+echo "Preparing the target directory $UserHomeDirectory"
+chown -R $aihubuser:$aihubuser $UserHomeDirectory
 echo "Downloading and installing AI-Hub"
 sleep 1
 echo "Downloading $hubversion from https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-2026.1.1-docker-compose-template-prod.zip"
