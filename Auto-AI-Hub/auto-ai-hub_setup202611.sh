@@ -4,7 +4,17 @@ set -o errexit -o pipefail -o noclobber -o nounset
 #functions
 
 declare echolog='logverbose'
-function logverbose () { if [ $VERBOSE -eq 1 ]; then echo "$@"; sleep 1; fi }
+function logverbose () { 
+if [ ${VERBOSE} -eq 1 ]; then echo "$@"; sleep 1; fi 
+}
+
+declare checkchars='charsanity'
+function charsanity () {
+	  if [[ "$@" =~ ['!@#$%^&*()_+'] ]]; then
+	  	echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"
+		exit 1
+	  fi
+}
 
 declare echodocs='helpfile'
 function helpfile () {
@@ -18,14 +28,15 @@ function helpfile () {
 	  echo ' -u, --username=<username>   	        MANDATORY. Specify the linux username that will operate the AI-Hub'
 	  echo ' -p, --password=<aihub_password>        MANDATORY. Admin password cannot contain special characters or spaces'
 	  echo ' -d, --directory=<path>        	    	The directory to install into, by default will install to home folder'
-	  echo ' -h, --hostname=<hostname>    	        This is the hostname to the license server. Defaults to 127.0.0.1'
+	  echo ' -H, --hostname=<hostname>    	        This is the hostname to the license server. Defaults to 127.0.0.1'
 	  echo ' -P, --port=<port>					    Network port number for the license server.  Defaults to 6200'	
 	  echo ' -w, --webprefix=<string>			    Unique webaddress prefix to URL for AI-Hub.  Defaults to auto-ai-hub'		  
 	  echo ' -c, --credentials                      Prompts user for license login.  Ignores license hostname and port'
 	  echo ' -v, --verbose                          Run the command with extra output'
+	  echo ' -h, --help                             Displays this help document as output'
 	  echo 'Examples:'
 	  echo 'auto-ai-hub.sh -u john -p agoodpassword'
-	  echo 'auto-ai-hub.sh -u john -p agoodpassword -d /opt/autoaihub -h 10.0.15.100 -P 6201'
+	  echo 'auto-ai-hub.sh -u john -p agoodpassword -d /opt/autoaihub -H 10.0.15.100 -P 6201'
 	  echo 'auto-ai-hub.sh --username=john --password=agoodpassword --credentials --verbose'
 	  echo 'Will install for user john in /opt/autoaihub and seek a license server at 10.0.15.100 running on port 6201'
 }
@@ -37,7 +48,7 @@ echo "============================================================="
 echo "Auto-AI-Hub Setup Completed!"
 echo "-------------------------------------------------------------"
 echo "Please save the following information somewhere securely:"
-echo "AI-Hub Hostname: ${PrefixHostname}-${UniqueHostname}.local"
+echo "AI-Hub Hostname: ${PREFIXHOSTNAME}-${UniqueHostname}.local"
 echo "AI-Hub IP Address: $FunctionalAddress"
 echo "AI-Hub login/password:  admin/${ADMINPASSWORD}"
 echo "Please wait 5-10 minutes for the system to fully startup"
@@ -45,21 +56,20 @@ echo "-------------------------------------------------------------"
 echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING LINE"
 echo "OF HOSTNAMES TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE AI-HUB"
 echo "-------------------------------------------------------------"
-echo "$FunctionalAddress       ${PrefixHostname}-${UniqueHostname}.local       ${PrefixHostname}-${UniqueHostname}"
+echo "$FunctionalAddress       ${PREFIXHOSTNAME}-${UniqueHostname}.local       ${PREFIXHOSTNAME}-${UniqueHostname}"
 echo ""
 echo "-------------------------------------------------------------"
-echo "When completed, browse to https://${PrefixHostname}-${UniqueHostname}.local"
+echo "When completed, browse to https://${PREFIXHOSTNAME}-${UniqueHostname}.local"
 echo "============================================================="
 echo ""
 }
 
 #vars
 hubversion="2026.1.1"
-PrefixHostname="auto-ai-hub"
+PREFIXHOSTNAME="auto-ai-hub"
 VERBOSE=0
 CREDLIC=0
 UniqueHostname=""
-NL=$'\n'
 
 #startup reqs
 [ $# -eq 0 ] && { $echodocs; exit 1; }
@@ -84,37 +94,61 @@ for i in "$@"; do
   
     -u=*|--username=*)
       AIHUBUSER="${i#*=}"
+	  $checkchars ${AIHUBUSER}
+	  getent passwd ${AIHUBUSER} > /dev/null 2&>1
+	  if [ $? -eq 0 ]; then
+	    $echolog "User ${AIHUBUSER} exists"
+	  else
+	    echo "${AIHUBUSER} is not a valid user on this system"
+		exit 1
+	  fi
 	  shift # past argument=value
       ;;
 	  
     -p=*|--password=*)
       ADMINPASSWORD="${i#*=}"
+	  $checkchars ${ADMINPASSWORD}
       shift # past argument=value
       ;;
 	  
     -d=*|--directory=*)
       HOMEDIRECTORY="${i#*=}"
+	  $checkchars ${HOMEDIRECTORY}
+      HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9-_\/]/}
       shift # past argument=value
       ;;
 	  
-    -h=*|--hostname=*)
+    -H=*|--hostname=*)
       HOSTLIC="${i#*=}"
+	  $checkchars ${HOSTLIC}
+      HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9\.]/}
       shift # past argument=value
       ;;
 	  
     -P=*|--port=*)
       PORTLIC="${i#*=}"
+	  $checkchars ${PORTLIC}
+      PORTLIC=${PORTLIC//[0-9]/}
       shift # past argument=value
       ;;
 	  
     -c=*|--credentials=*)
       CREDLIC=1
       shift # past argument=value
-      ;;	
+      ;;
+	  
+    -w=*|--webprefix=*)
+      PREFIXHOSTNAME="${i#*=}"
+      shift # past argument=value
+      ;;	  
 	  
     -v|--verbose)
       VERBOSE=1
       shift # past argument with no value
+      ;;
+	  
+    -h|--help)
+	  $echodocs
       ;;
 	  
     -*|--*)
@@ -122,9 +156,6 @@ for i in "$@"; do
       exit 1
       ;;
 	  
-    *|-h)
-	  $echodocs
-      ;;
   esac
 done
 
@@ -239,8 +270,8 @@ END
 fi
 #read the source with the unique id and write it into the config
 source "${HOMEDIRECTORY}"/my-certs/UniqueID
-sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PrefixHostname}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
-sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PrefixHostname}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
+sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
+sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
 $echolog "Configured hostnames"
 
 #generate fresh keycloak secret
@@ -330,7 +361,7 @@ $echolog "Network data"
 $echolog "$MainAdapter $FunctionalAddress"
 
 #create ca cert and key
-CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=${PrefixHostname}-${UniqueHostname}.local"
+CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=${PREFIXHOSTNAME}-${UniqueHostname}.local"
 $echolog "Shared Subject is ${CASharedSubject}"
 $echolog "Creating self signed root trust key and certificate"
 openssl genpkey -out "${HOMEDIRECTORY}"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
@@ -350,8 +381,8 @@ subjectAltName = @alt_names
 DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
 END
-$echolog "Updating external config to point to ${PrefixHostname}-${UniqueHostname}.local at $FunctionalAddress"
-sed -i "s%<YOUR-SERVER-HOSTNAME>%${PrefixHostname}-${UniqueHostname}.local%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
+$echolog "Updating external config to point to ${PREFIXHOSTNAME}-${UniqueHostname}.local at $FunctionalAddress"
+sed -i "s%<YOUR-SERVER-HOSTNAME>%${PREFIXHOSTNAME}-${UniqueHostname}.local%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
 $echolog "Created ext config:"
 if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/server.v3.ext; fi #debug output
