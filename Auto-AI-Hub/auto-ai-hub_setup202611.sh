@@ -391,5 +391,5 @@ $echolog "Script complete"
 if [ $VERBOSE -eq 1 ]; then docker ps; fi #debug output
 
 #finish script with documentation output
-$endfile
+$exitdocs
 exit 0
