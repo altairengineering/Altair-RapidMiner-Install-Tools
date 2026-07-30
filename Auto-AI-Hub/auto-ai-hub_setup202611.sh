@@ -37,11 +37,11 @@ fi
 #check the arguements manually and shift the values to parse them all
 for i in "$@"; do
   case $i in
-    -e=*|--extension=*)
-      EXTENSION="${i#*=}"
+    -u=*|--username=*)
+      @aihubuser="${i#*=}"
       shift # past argument=value
       ;;
-    -d=*|--directory=*)
+    -p=*|--password=*)
       SEARCHPATH="${i#*=}"
       shift # past argument=value
       ;;
@@ -62,7 +62,7 @@ for i in "$@"; do
 		echo ''
 		echo 'Options:'
 		echo ' -u, --username=<username>   	           Mandatory. Specify the linux username that will operate the AI-Hub'
-		echo ' -p, --password=<aihub_password>     	   Mandatory. Sets the password for the admin login'
+		echo ' -p, --password=<aihub_password>     	   Mandatory. Admin password cannot contain special characters or spaces'
 		echo ' -d, --directory=<path>        	       The directory to install into, by default will install to home folder'
 		echo ' -h, --hostname=<hostname>    	       This is the hostname to the license server. Defaults to 127.0.0.1'
 		echo ' -P, --port=<port>					   Network port number for the license server.  Defaults to 6200'	
@@ -210,10 +210,10 @@ sleep 1
 activemqpassword="$(echo $RANDOM | md5sum | head -c 15)"
 echo "$activemqpassword"
 sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" "$UserHomeDirectory"/prod/.env
-sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=rapidminerautoaihub/g" "$UserHomeDirectory"/prod/.env
+sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=$ADMINPASSWORD/g" "$UserHomeDirectory"/prod/.env
 echo "Platform admin creds configured"
 sleep 1
-sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=rapidminerautoaihub/g" "$UserHomeDirectory"/prod/.env
+sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=$ADMINPASSWORD/g" "$UserHomeDirectory"/prod/.env
 echo "Keycloak database configured"
 sleep 1
 
