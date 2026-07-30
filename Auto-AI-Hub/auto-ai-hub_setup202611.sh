@@ -1,5 +1,6 @@
 #!/bin/bash
 set -o errexit -o pipefail -o noclobber -o nounset
+declare echolog='logverbose'
 function logverbose () {
     if [[ $VERBOSE -eq 1 ]]; then
         echo "$@"
@@ -96,23 +97,23 @@ if [ ! -d ${HOMEDIRECTORY} ]; then
 	mkdir -p ${HOMEDIRECTORY}
 	if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 else	
-	logverbose() "Found ${HOMEDIRECTORY}"
+	$echolog "Found ${HOMEDIRECTORY}"
 fi
-logverbose() "Setting up permissions for ${HOMEDIRECTORY} to $AIHUBUSER"
+$echolog "Setting up permissions for ${HOMEDIRECTORY} to $AIHUBUSER"
 chown -R $AIHUBUSER:$AIHUBUSER ${HOMEDIRECTORY}
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 #check operating system
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
-logverbose() "$OperatingSystem detected"
+$echolog "$OperatingSystem detected"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Attempting to install docker"
+$echolog "Attempting to install docker"
 #execute docker installer scripts with case
 { #try
 case $OperatingSystem in
 
   "RED HAT ENTERPRIZE LINUX")
-    logverbose() "Detected Red Hat operating system"
+    $echolog "Detected Red Hat operating system"
 	if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 	dnf update -y
 	dnf upgrade -y
@@ -127,7 +128,7 @@ case $OperatingSystem in
   ;;
 
   "ROCKY LINUX")
-    logverbose() "Detected Rocky operating system"
+    $echolog "Detected Rocky operating system"
 	if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 	dnf update -y
 	dnf upgrade -y
@@ -141,7 +142,7 @@ case $OperatingSystem in
   ;;
 
   "UBUNTU")
-    logverbose() "Detected Ubuntu operating system"
+    $echolog "Detected Ubuntu operating system"
 	if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 	DEBIAN_FRONTEND=noninteractive apt-get update -y
 	DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
@@ -170,29 +171,29 @@ systemctl enable --now haveged
 usermod -aG docker $AIHUBUSER
 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
-logverbose() "Docker version $dockerver"
+$echolog "Docker version $dockerver"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 
 #install ai-hub via automation
 #download ai-hub and echo the version
-logverbose() "Downloading and installing AI-Hub"
+$echolog "Downloading and installing AI-Hub"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Downloading $hubversion from https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-2026.1.1-docker-compose-template-prod.zip"
+$echolog "Downloading $hubversion from https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-2026.1.1-docker-compose-template-prod.zip"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 wget -P "${HOMEDIRECTORY}" https://docs.rapidminer.com/assets/download/hub/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip --output-document="${HOMEDIRECTORY}"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip
-logverbose() "Extracting data"
+$echolog "Extracting data"
 unzip -o "${HOMEDIRECTORY}"/rapidminer-ai-hub-"$hubversion"-docker-compose-template-prod.zip -d "${HOMEDIRECTORY}"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 ls "${HOMEDIRECTORY}"/prod
-logverbose() "Files staged in prod folder"
+$echolog "Files staged in prod folder"
 #sed commands
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 linuxtimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
 sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" "${HOMEDIRECTORY}"/prod/.env
-logverbose() "Configured TZ"
+$echolog "Configured TZ"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 
@@ -211,34 +212,34 @@ fi
 source "${HOMEDIRECTORY}"/my-certs/UniqueID
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PrefixHostname}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PrefixHostname}-${UniqueHostname}.local%g" /home/"$AIHUBUSER"/prod/.env
-logverbose() "Configured hostnames"
+$echolog "Configured hostnames"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 
 #generate fresh keycloak secret
-logverbose() "Generating fresh keycloak secret..."
+$echolog "Generating fresh keycloak secret..."
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 freshkeycloak="$(echo $RANDOM | md5sum | head -c 20; echo | base64)"
-logverbose() "$freshkeycloak"
+$echolog "$freshkeycloak"
 sed -i "s/AUTH_SECRET=\"<AUTH-SECRET-PLACEHOLDER>\"/AUTH_SECRET=\"${freshkeycloak}\"/g" /home/"$AIHUBUSER"/prod/.env
 
 #generate active mq password
-logverbose() "Generating ActiveMQ password..."
+$echolog "Generating ActiveMQ password..."
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 activemqpassword="$(echo $RANDOM | md5sum | head -c 15)"
-logverbose() "$activemqpassword"
+$echolog "$activemqpassword"
 sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" "${HOMEDIRECTORY}"/prod/.env
 sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=$ADMINPASSWORD/g" "${HOMEDIRECTORY}"/prod/.env
-logverbose() "Platform admin creds configured"
+$echolog "Platform admin creds configured"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=${ADMINPASSWORD}/g" "${HOMEDIRECTORY}"/prod/.env
-logverbose() "Keycloak database configured"
+$echolog "Keycloak database configured"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 #create jupyterhub secret
 JupyterCryptKey=$(openssl rand -hex 32)
 sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB_CRYPT_KEY=""${JupyterCryptKey}""%g" "${HOMEDIRECTORY}"/prod/.env
-logverbose() "Jupyter Hub secret configured"
+$echolog "Jupyter Hub secret configured"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 #credentials license
@@ -261,39 +262,39 @@ if [ "$CREDLIC" -eq 1 ]; then
 	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" "${HOMEDIRECTORY}"/prod/.env
 else
 #on prem license
-	logverbose() "User did not specify \"creds\" as a command argument, defaulting to prem license server."
+	$echolog "User did not specify \"creds\" as a command argument, defaulting to prem license server."
 	if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 	LicensePath="${PORTLIC}@${HOSTLIC}"
-	logverbose() "Setting license data to ${PORTLIC}@${HOSTLIC}"
+	$echolog "Setting license data to ${PORTLIC}@${HOSTLIC}"
 	if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-	logverbose() "Installing On Prem Altair License"
+	$echolog "Installing On Prem Altair License"
 	if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 	sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH="${LicensePath}"%g" "${HOMEDIRECTORY}"/prod/.env
 fi
 
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
-logverbose() "Machine ID = $LicenseAgentID"
+$echolog "Machine ID = $LicenseAgentID"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" "${HOMEDIRECTORY}"/prod/.env
 sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" "${HOMEDIRECTORY}"/prod/.env
-logverbose() "License configured"
+$echolog "License configured"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 #1031 Pano mac address creation for altair one licensing
 PanoGenMAC=$(cat /dev/urandom | tr -d -c '[:digit:]A-F' | fold -w 12 | sed -E -n -e '/^.[26AE]/s/(..)/\1-/gp' | sed -e 's/-$//g' |sed 's/-/:/g'| head -n1 | sed 's/^\S\S/66/g')
-logverbose() "Panopticon Generated MAC address = $PanoGenMAC"
+$echolog "Panopticon Generated MAC address = $PanoGenMAC"
 sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" "${HOMEDIRECTORY}"/prod/.env
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 #custom cert fix
 sed -i 's%CUSTOM_CA_CERTS_FILE=.*%CUSTOM_CA_CERTS_FILE=certificate.crt%g' "${HOMEDIRECTORY}"/prod/.env
-logverbose() "Added custom ca certs file"
+$echolog "Added custom ca certs file"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 #create the ssl directory
 mkdir -p "${HOMEDIRECTORY}"/prod/ssl
 mkdir -p "${HOMEDIRECTORY}"/prod/panopticon
-logverbose() "Created pano and ssl directories"
+$echolog "Created pano and ssl directories"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 #chown and chmod it
@@ -306,35 +307,35 @@ chmod -R o-rwx "${HOMEDIRECTORY}"/prod/ssl/
 chown -R 2011:0 "${HOMEDIRECTORY}"/prod/panopticon/
 chmod -R ug+w "${HOMEDIRECTORY}"/prod/panopticon/
 chmod -R o-rwx "${HOMEDIRECTORY}"/prod/panopticon/
-logverbose() "Modified directory permissions"
+$echolog "Modified directory permissions"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 
 read -n 1 -s -r -p "Finished AI-Hub file staging.  Press any key to continue${NL}"
 #creating certificate authority
-logverbose() "Creating cryptography setup"
+$echolog "Creating cryptography setup"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 #collect networking data
 MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
 FunctionalAddress=$(ip addr show "$MainAdapter" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
-logverbose() "Network data"
-logverbose() "$MainAdapter $FunctionalAddress"
+$echolog "Network data"
+$echolog "$MainAdapter $FunctionalAddress"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 #create ca cert and key
 CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=${PrefixHostname}-${UniqueHostname}.local"
-logverbose() "Shared Subject is ${CASharedSubject}"
+$echolog "Shared Subject is ${CASharedSubject}"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Creating self signed root trust key and certificate"
+$echolog "Creating self signed root trust key and certificate"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 openssl genpkey -out "${HOMEDIRECTORY}"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
-logverbose() "Created private ca key, now creating ca root certificate"
+$echolog "Created private ca key, now creating ca root certificate"
 openssl req -x509 -new -nodes -key "${HOMEDIRECTORY}"/my-certs/ca-root.key -sha256 -days 3650 -subj "${CASharedSubject}" -out "${HOMEDIRECTORY}"/my-certs/ca-root.crt
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Generating CSR"
+$echolog "Generating CSR"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 openssl req -new -nodes -outform PEM -out "${HOMEDIRECTORY}"/my-certs/server.csr -newkey rsa:4096 -keyout "${HOMEDIRECTORY}"/my-certs/private.key -subj "${CASharedSubject}"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 #create ca config
-logverbose() "Creating ext config"
+$echolog "Creating ext config"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 cat >> "${HOMEDIRECTORY}"/my-certs/server.v3.ext << 'END'
 authorityKeyIdentifier=keyid,issuer
@@ -345,51 +346,51 @@ subjectAltName = @alt_names
 DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
 END
-logverbose() "Updating external config to point to ${PrefixHostname}-${UniqueHostname}.local at $FunctionalAddress"
+$echolog "Updating external config to point to ${PrefixHostname}-${UniqueHostname}.local at $FunctionalAddress"
 sed -i "s%<YOUR-SERVER-HOSTNAME>%${PrefixHostname}-${UniqueHostname}.local%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
-logverbose() "Created ext config:"
+$echolog "Created ext config:"
 if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/server.v3.ext; fi #debug output
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Creating server certificate"
+$echolog "Creating server certificate"
 openssl x509 -req -in "${HOMEDIRECTORY}"/my-certs/server.csr -inform PEM -CA "${HOMEDIRECTORY}"/my-certs/ca-root.crt -CAform PEM -CAkey "${HOMEDIRECTORY}"/my-certs/ca-root.key -CAkeyform PEM -CAcreateserial -out "${HOMEDIRECTORY}"/my-certs/certificate.crt -outform PEM -days 1095 -sha256 -extfile "${HOMEDIRECTORY}"/my-certs/server.v3.ext 
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 if [ $VERBOSE -eq 1 ]; then ls -shalt "${HOMEDIRECTORY}"/my-certs/; fi #debug output
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose()  "Cryptography complete."
+$echolog  "Cryptography complete."
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Pulling images from repositories"
+$echolog "Pulling images from repositories"
 until su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml pull"; do echo retrying; done
 #run deployment-init to generate backend
-logverbose() "Starting Auto-AI-Hub deployment-init"
+$echolog "Starting Auto-AI-Hub deployment-init"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d deployment-init" "$AIHUBUSER"
 su -g docker -c "docker compose -f "${HOMEDIRECTORY}"/prod/docker-compose.yml logs -f" "$AIHUBUSER" | while read -r LOGLINE
 do
-    logverbose() "$LOGLINE"
+    $echolog "$LOGLINE"
     [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml down" "$AIHUBUSER"
 done
-logverbose() "Deployment-init complete."
+$echolog "Deployment-init complete."
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 #move certificates to proper folder
-logverbose() "Staging Certificates"
+$echolog "Staging Certificates"
 cp "${HOMEDIRECTORY}"/my-certs/certificate.crt "${HOMEDIRECTORY}"/prod/ssl/
 cp "${HOMEDIRECTORY}"/my-certs/private.key "${HOMEDIRECTORY}"/prod/ssl/
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Merging root trust"
+$echolog "Merging root trust"
 cat "${HOMEDIRECTORY}"/my-certs/ca-root.crt >> "${HOMEDIRECTORY}"/my-certs/certificate.crt
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 #run prepare-cust-ca.sh
-logverbose() "Executing prepare-cust-ca.sh"
+$echolog "Executing prepare-cust-ca.sh"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 cd "${HOMEDIRECTORY}"/prod
 bash ./prepare-cust-ca.sh
 chown "$AIHUBUSER":"$AIHUBUSER" "${HOMEDIRECTORY}"/prod/docker-compose.yml
 read -n 1 -s -r -p "Prepare-cust-ca.sh completed."
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
-logverbose() "Starting up AI-Hub"
+$echolog "Starting up AI-Hub"
 su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d" "$AIHUBUSER"
-logverbose() "Script complete"
+$echolog "Script complete"
 if [ $VERBOSE -eq 1 ]; then sleep 1; fi #sleep command
 if [ $VERBOSE -eq 1 ]; then docker ps; fi #debug output
 
