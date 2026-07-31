@@ -42,7 +42,6 @@ function helpfile () {
       echo 'auto-ai-hub.sh -u=john -p=agoodpassword'
       echo 'auto-ai-hub.sh -u=john -p=agoodpassword -d=/opt/autoaihub -H=10.0.15.100 -P=6201'
       echo 'auto-ai-hub.sh --username=john --password=agoodpassword --credentials --verbose'
-      echo 'Will install for user john in /opt/autoaihub and seek a license server at 10.0.15.100 running on port 6201'
 }
 
 declare exitdocs='endfile'
