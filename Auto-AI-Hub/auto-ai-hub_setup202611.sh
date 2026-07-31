@@ -90,6 +90,7 @@ SKIPDOCKER=0
 PORTLIC="6200"
 HOSTLIC="127.0.0.1"
 UniqueHostname=""
+UniqueIdentifier="000000"
 
 
 #startup reqs
@@ -287,22 +288,26 @@ $echolog "Configured TZ"
 
 #create the cert folder if its not already there
 mkdir -p "${HOMEDIRECTORY}"/my-certs
-$echolog "Created my-certs"
+$echolog "Created my-certs folder"
 #check if there is already been a unique id generated to prevent collisions during testing
 if [ ! -f "${HOMEDIRECTORY}"/my-certs/UniqueID ]; then
     cat >> "${HOMEDIRECTORY}"/my-certs/UniqueID << 'END'
 #UniqueHostnameIdentifier
 UniqueHostname=target
 END
+if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/UniqueID; fi #debug output
     UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
+        $echolog "${UniqueIdentifier}"
     sed -i "s/target/${UniqueIdentifier}/g" "${HOMEDIRECTORY}"/my-certs/UniqueID
     $echolog "Created new Unique Identifier ${UniqueIdentifier}"
 fi
 #read the source with the unique id and write it into the config
+$echolog "Configuring hostnames"
 source "${HOMEDIRECTORY}"/my-certs/UniqueID
+if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/UniqueID; fi #debug output
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
-$echolog "Configured hostnames"
+
 
 #generate fresh keycloak secret
 $echolog "Generating fresh keycloak secret..."
