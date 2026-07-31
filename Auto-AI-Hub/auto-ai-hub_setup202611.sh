@@ -281,6 +281,7 @@ $echolog "Configured TZ"
 
 #create the cert folder if its not already there
 mkdir -p "${HOMEDIRECTORY}"/my-certs
+$echolog "Created my-certs"
 #check if there is already been a unique id generated to prevent collisions during testing
 if [ ! -f "${HOMEDIRECTORY}"/my-certs/UniqueID ]; then
     cat >> "${HOMEDIRECTORY}"/my-certs/UniqueID << 'END'
@@ -289,6 +290,7 @@ UniqueHostname=target
 END
     UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
     sed -i "s/target/${UniqueIdentifier}/g" "${HOMEDIRECTORY}"/my-certs/UniqueID
+    $echolog "Created new Unique Identifier ${UniqueIdentifier}"
 fi
 #read the source with the unique id and write it into the config
 source "${HOMEDIRECTORY}"/my-certs/UniqueID
