@@ -13,36 +13,36 @@ function charsanity () {
 case "$@" in
   *['!&()'@#$%^*_+]* ) echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"; exit 1 ;;
 esac
-#	  if [ "$@" =~ ['!@#$%^&*()_+'] ]; then
-#	  	echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"
-#		exit 1
-#	  fi
+#      if [ "$@" =~ ['!@#$%^&*()_+'] ]; then
+#          echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"
+#        exit 1
+#      fi
 }
 
 declare echodocs='helpfile'
 function helpfile () {
       echo ''
-	  echo 'Usage:'
-	  echo ' auto-ai-hub.sh <parameters>'
-	  echo ''
-	  echo 'Create an AI-Hub automatically.'
-	  echo ''
-	  echo 'Options:'
-	  echo ' -u, --username=<username>        MANDATORY. Specify the linux username that will operate the AI-Hub'
-	  echo ' -p, --password=<aihub_password>  MANDATORY. Admin password cannot contain special characters or spaces'
-	  echo ' -d, --directory=<path>           The directory to install into, by default will install to home folder'
-	  echo ' -H, --hostname=<hostname>        This is the hostname to the license server. Defaults to 127.0.0.1'
-	  echo ' -P, --port=<port>                Network port number for the license server.  Defaults to 6200'	
-	  echo ' -w, --webprefix=<string>         Unique webaddress prefix to URL for AI-Hub.  Defaults to auto-ai-hub'		  
-	  echo ' -c, --credentials                Prompts user for license login.  Ignores license hostname and port'
-	  echo ' -s, --skipdocker                 Skips the docker installation'
-	  echo ' -v, --verbose                    Run the command with extra output'
-	  echo ' -h, --help                       Displays this help document as output'
-	  echo 'Examples:'
-	  echo 'auto-ai-hub.sh -u=john -p=agoodpassword'
-	  echo 'auto-ai-hub.sh -u=john -p=agoodpassword -d=/opt/autoaihub -H=10.0.15.100 -P=6201'
-	  echo 'auto-ai-hub.sh --username=john --password=agoodpassword --credentials --verbose'
-	  echo 'Will install for user john in /opt/autoaihub and seek a license server at 10.0.15.100 running on port 6201'
+      echo 'Usage:'
+      echo ' auto-ai-hub.sh <parameters>'
+      echo ''
+      echo 'Create an AI-Hub automatically.'
+      echo ''
+      echo 'Options:'
+      echo ' -u, --username=<username>          MANDATORY. Specify the linux username that will operate the AI-Hub'
+      echo ' -p, --password=<aihub_password>    MANDATORY. Admin password cannot contain special characters or spaces'
+      echo ' -d, --directory=<path>             The directory to install into, by default will install to home folder'
+      echo ' -H, --hostname=<hostname>          This is the hostname to the license server. Defaults to 127.0.0.1'
+      echo ' -P, --port=<port>                  Network port number for the license server.  Defaults to 6200'    
+      echo ' -w, --webprefix=<string>           Unique webaddress prefix to URL for AI-Hub.  Defaults to auto-ai-hub'          
+      echo ' -c, --credentials                  Prompts user for license login.  Ignores license hostname and port'
+      echo ' -s, --skipdocker                   Skips the docker installation'
+      echo ' -v, --verbose                      Run the command with extra output'
+      echo ' -h, --help                         Displays this help document as output'
+      echo 'Examples:'
+      echo 'auto-ai-hub.sh -u=john -p=agoodpassword'
+      echo 'auto-ai-hub.sh -u=john -p=agoodpassword -d=/opt/autoaihub -H=10.0.15.100 -P=6201'
+      echo 'auto-ai-hub.sh --username=john --password=agoodpassword --credentials --verbose'
+      echo 'Will install for user john in /opt/autoaihub and seek a license server at 10.0.15.100 running on port 6201'
 }
 
 declare exitdocs='endfile'
@@ -100,66 +100,66 @@ for i in "$@"; do
   
     -u=*|--username=*)
       AIHUBUSER="${i#*=}"
-	  $checkchars "${AIHUBUSER}"
-	  getent passwd "${AIHUBUSER}" > /dev/null
-	  if [ $? -eq 0 ]; then
-	    $echolog "User ${AIHUBUSER} exists"
-	  else
-	    echo "${AIHUBUSER} is not a valid user on this system"
-		exit 1
-	  fi
-	  shift # past argument=value
+      $checkchars "${AIHUBUSER}"
+      getent passwd "${AIHUBUSER}" > /dev/null
+      if [ $? -eq 0 ]; then
+        $echolog "User ${AIHUBUSER} exists"
+      else
+        echo "${AIHUBUSER} is not a valid user on this system"
+        exit 1
+      fi
+      shift # past argument=value
       ;;
-	  
+      
     -p=*|--password=*)
       ADMINPASSWORD="${i#*=}"
-	  $checkchars "${ADMINPASSWORD}"
+      $checkchars "${ADMINPASSWORD}"
       shift # past argument=value
       ;;
-	  
+      
     -d=*|--directory=*)
       HOMEDIRECTORY="${i#*=}"
-	  $checkchars "${HOMEDIRECTORY}"
+      $checkchars "${HOMEDIRECTORY}"
       if [ ! -d "${HOMEDIRECTORY}" ]; then
-	     echo "Please pick a real directory and use absolute path, not relative."
-		 exit 1
-	  fi	  
+         echo "Please pick a real directory and use absolute path, not relative."
+         exit 1
+      fi      
       shift # past argument=value
       ;;
-	  
+      
     -H=*|--hostname=*)
       HOSTLIC="${i#*=}"
-	  $checkchars "${HOSTLIC}"
+      $checkchars "${HOSTLIC}"
       HOSTLIC=${HOSTLIC//[^a-zA-Z0-9\.]/}
       shift # past argument=value
       ;;
-	  
+      
     -P=*|--port=*)
       PORTLIC="${i#*=}"
-	  $checkchars ${PORTLIC}
+      $checkchars ${PORTLIC}
       PORTLIC=${PORTLIC//[0-9]/}
       shift # past argument=value
       ;;
-	  
+      
     -w=*|--webprefix=*)
       PREFIXHOSTNAME="${i#*=}"
-	  $checkchars "${PREFIXHOSTNAME}"
+      $checkchars "${PREFIXHOSTNAME}"
       HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9-]/}
       shift # past argument=value
-      ;;	
-	  
+      ;;    
+      
     -c|--credentials)
       CREDLIC=1
       shift # past argument=value
       ;;
-  	  
+        
     -s|--skipdocker)
-	  if ! docker compose; then
-	    echo "Docker compose is not installed, you cannot skip this installation"
-		exit 1
-	  fi
-	  $echolog "Docker Compose is already installed, and user opted to skip reinstalling."
-	  SKIPDOCKER=1
+      if ! docker compose; then
+        echo "Docker compose is not installed, you cannot skip this installation"
+        exit 1
+      fi
+      $echolog "Docker Compose is already installed, and user opted to skip reinstalling."
+      SKIPDOCKER=1
       shift # past argument=value
       ;;
 
@@ -167,16 +167,16 @@ for i in "$@"; do
       VERBOSE=1
       shift # past argument with no value
       ;;
-	  
+      
     -h|--help)
-	  $echodocs
+      $echodocs
       ;;
-	  
+      
     --*|-*)
       echo "Unknown option $i"
       exit 1
       ;;
-	  
+      
   esac
 done
 
@@ -193,53 +193,53 @@ $echolog "${OperatingSystem} detected"
 case $OperatingSystem in
 
   "RED HAT ENTERPRIZE LINUX")
-    $echolog "Detected Red Hat operating system"	
-	dnf update -y
-	dnf upgrade -y
-	dnf install -y curl wget vim unzip openssl git haveged
-    if [ "${SKIPDOCKER}" = 0 ]; then 	
-	  $echolog "Attempting to install docker"
-	  dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
-	  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-	  sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
-	  dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-	  dnf update -y
-	  dnf install -y docker-ce docker-ce-cli containerd.io
-	  $echolog "Installed docker compose on RHEL"
-	fi
+    $echolog "Detected Red Hat operating system"    
+    dnf update -y
+    dnf upgrade -y
+    dnf install -y curl wget vim unzip openssl git haveged
+    if [ "${SKIPDOCKER}" = 0 ]; then     
+      $echolog "Attempting to install docker"
+      dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
+      dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
+      dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+      dnf update -y
+      dnf install -y docker-ce docker-ce-cli containerd.io
+      $echolog "Installed docker compose on RHEL"
+    fi
   ;;
 
   "ROCKY LINUX")
-    $echolog "Detected Rocky operating system"	
-	dnf update -y
-	dnf upgrade -y
-	dnf install -y epel-release
-	dnf install -y haveged dnf-utils curl wget vim unzip openssl git --allowerasing		
-    if [ "${SKIPDOCKER}" = 0 ]; then 	
-	  $echolog "Attempting to install docker"
-	  dnf remove -y docker*
-	  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-	  dnf update -y --allowerasing
-	  dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
-	  $echolog "Installed docker compose on Rocky Linux"
+    $echolog "Detected Rocky operating system"    
+    dnf update -y
+    dnf upgrade -y
+    dnf install -y epel-release
+    dnf install -y haveged dnf-utils curl wget vim unzip openssl git --allowerasing        
+    if [ "${SKIPDOCKER}" = 0 ]; then     
+      $echolog "Attempting to install docker"
+      dnf remove -y docker*
+      dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      dnf update -y --allowerasing
+      dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
+      $echolog "Installed docker compose on Rocky Linux"
     fi
   ;;
 
   "UBUNTU")
-    $echolog "Detected Ubuntu operating system"	
-	DEBIAN_FRONTEND=noninteractive apt-get update -y
-	DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-	DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl wget vim ca-certificates net-tools gnupg lsb-release haveged openssl git
+    $echolog "Detected Ubuntu operating system"    
+    DEBIAN_FRONTEND=noninteractive apt-get update -y
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+    DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl wget vim ca-certificates net-tools gnupg lsb-release haveged openssl git
     if [ "${SKIPDOCKER}" = 0 ]; then 
-	  $echolog "Attempting to install docker"
-	  DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker.io containerd runc
-	  DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
-	  curl -kfsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-	  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	  DEBIAN_FRONTEND=noninteractive apt-get update -y
-	  DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io
-	  $echolog "Installed docker compose on Ubuntu"
-	fi
+      $echolog "Attempting to install docker"
+      DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker.io containerd runc
+      DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
+      curl -kfsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      DEBIAN_FRONTEND=noninteractive apt-get update -y
+      DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io
+      $echolog "Installed docker compose on Ubuntu"
+    fi
   ;;   
 
   *)
@@ -280,12 +280,12 @@ $echolog "Configured TZ"
 mkdir -p "${HOMEDIRECTORY}"/my-certs
 #check if there is already been a unique id generated to prevent collisions during testing
 if [ ! -f "${HOMEDIRECTORY}"/my-certs/UniqueID ]; then
-	cat >> "${HOMEDIRECTORY}"/my-certs/UniqueID << 'END'
+    cat >> "${HOMEDIRECTORY}"/my-certs/UniqueID << 'END'
 #UniqueHostnameIdentifier
 UniqueHostname=target
 END
-	UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
-	sed -i "s/target/${UniqueIdentifier}/g" "${HOMEDIRECTORY}"/my-certs/UniqueID
+    UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
+    sed -i "s/target/${UniqueIdentifier}/g" "${HOMEDIRECTORY}"/my-certs/UniqueID
 fi
 #read the source with the unique id and write it into the config
 source "${HOMEDIRECTORY}"/my-certs/UniqueID
@@ -316,29 +316,29 @@ $echolog "Jupyter Hub secret configured"
 
 #credentials license
 if [ "$CREDLIC" -eq 1 ]; then
-	echo "Please enter License Unit Manager User Name (email address for Siemens AltairOne):"
-	read -r LicenseUser
-	echo "Please carefully enter License Unit Manager Password (creds for Siemens AltairOne):"
-	read -r -s LicenseUserPasswordfirst
-	echo "Please re-enter password:"
-	read -r -s LicenseUserPasswordsecond
-	if [ "${LicenseUserPasswordfirst}" == "${LicenseUserPasswordsecond}" ]; then
-  				echo "Password recorded"
-					LicenseUserPassword=${LicenseUserPasswordfirst}
-	else
-					echo "Passwords did not match"
-					exit 1
-	fi
-	sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" "${HOMEDIRECTORY}"/prod/.env
-	sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" "${HOMEDIRECTORY}"/prod/.env
-	sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" "${HOMEDIRECTORY}"/prod/.env
+    echo "Please enter License Unit Manager User Name (email address for Siemens AltairOne):"
+    read -r LicenseUser
+    echo "Please carefully enter License Unit Manager Password (creds for Siemens AltairOne):"
+    read -r -s LicenseUserPasswordfirst
+    echo "Please re-enter password:"
+    read -r -s LicenseUserPasswordsecond
+    if [ "${LicenseUserPasswordfirst}" == "${LicenseUserPasswordsecond}" ]; then
+                  echo "Password recorded"
+                    LicenseUserPassword=${LicenseUserPasswordfirst}
+    else
+                    echo "Passwords did not match"
+                    exit 1
+    fi
+    sed -i "s/LICENSE_UNIT_MANAGER_USER_NAME=/LICENSE_UNIT_MANAGER_USER_NAME=${LicenseUser}/g" "${HOMEDIRECTORY}"/prod/.env
+    sed -i "s/LICENSE_PROXY_MODE=on_prem/LICENSE_PROXY_MODE=altair_one/g" "${HOMEDIRECTORY}"/prod/.env
+    sed -i "s/LICENSE_UNIT_MANAGER_PASSWORD=/LICENSE_UNIT_MANAGER_PASSWORD=${LicenseUserPassword}/g" "${HOMEDIRECTORY}"/prod/.env
 else
 #on prem license
-	$echolog "User did not specify \"creds\" as a command argument, defaulting to prem license server."
-	
-	LicensePath="${PORTLIC}@${HOSTLIC}"
-	$echolog "Setting license data to ${PORTLIC}@${HOSTLIC}"	
-	sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH=${LicensePath}%g" "${HOMEDIRECTORY}"/prod/.env
+    $echolog "User did not specify \"creds\" as a command argument, defaulting to prem license server."
+    
+    LicensePath="${PORTLIC}@${HOSTLIC}"
+    $echolog "Setting license data to ${PORTLIC}@${HOSTLIC}"    
+    sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH=${LicensePath}%g" "${HOMEDIRECTORY}"/prod/.env
 fi
 #setting machine details
 LicenseAgentID="$(openssl rand -hex 4)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 2)-$(openssl rand -hex 6)"
