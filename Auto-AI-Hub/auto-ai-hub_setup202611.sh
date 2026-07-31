@@ -347,8 +347,8 @@ else
 #on prem license
     $echolog "User did not specify \"creds\" as a command argument, defaulting to prem license server."
     
-    LicensePath=""${PORTLIC}"@${HOSTLIC}"
-    $echolog "Setting license data to "${PORTLIC}"@${HOSTLIC}"    
+    LicensePath="${PORTLIC}@${HOSTLIC}"
+    $echolog "Setting license data to ${PORTLIC}@${HOSTLIC}"    
     sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH=${LicensePath}%g" "${HOMEDIRECTORY}"/prod/.env
 fi
 #setting machine details
