@@ -5,7 +5,7 @@ set -o errexit -o pipefail -o noclobber -o nounset
 
 declare echolog='logverbose'
 function logverbose () { 
-if [ ${VERBOSE} -eq 1 ]; then echo "$@"; sleep 1; fi 
+if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; sleep 1; fi 
 }
 
 declare checkchars='charsanity'
