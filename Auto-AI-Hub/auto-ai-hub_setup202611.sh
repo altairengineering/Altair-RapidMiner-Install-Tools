@@ -102,6 +102,7 @@ for i in "$@"; do
   
     -u=*|--username=*)
       AIHUBUSER="${i#*=}"
+      $echolog "${AIHUBUSER}"
       $checkchars "${AIHUBUSER}"
       getent passwd "${AIHUBUSER}" > /dev/null
       if [ $? -eq 0 ]; then
@@ -260,9 +261,10 @@ esac
 echo "Docker install case operation failed"
 exit 1
 }
+$echolog "Enabling services"
 systemctl enable --now docker
 systemctl enable --now haveged
-usermod -aG docker ${AIHUBUSER}
+usermod -aG docker "${AIHUBUSER}"
 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 $echolog "Docker version $dockerver"
