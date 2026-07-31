@@ -298,7 +298,7 @@ $echolog "Configured TZ"
 mkdir -p "${HOMEDIRECTORY}"/my-certs
 $echolog "Created my-certs folder"
 
-UniqueIdentifier=$(tr -dc a-f0-9 < /dev/urandom | head -c 8)
+UniqueIdentifier="$(tr -dc a-f0-9 < /dev/urandom | head -c 8)"
 $echolog "${UniqueIdentifier}"
 
 #read the source with the unique id and write it into the config
