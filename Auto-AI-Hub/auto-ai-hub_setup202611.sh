@@ -10,8 +10,8 @@ if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; sleep 1; fi
 
 declare checkchars='charsanity'
 function charsanity () {
+$echolog "$@"
 case "$@" in
-  if [ $VERBOSE -eq 1 ]; then echo "$@"; fi #debug output
   *['!&()'@#$%^*_+]* )
   echo 'You cannot use special characters for the password like !@#$%^&*()_+'
   exit 1 
