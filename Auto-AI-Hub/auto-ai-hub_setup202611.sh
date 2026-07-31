@@ -77,7 +77,7 @@ if [ "${TRACE}" -eq 1 ]; then $(set | grep '^[a-z].*='); sleep 1; fi
 declare checkchars='charsanity'
 function charsanity () {
 $echolog "$@"
-if [[ "$@" == *['!'@\#\$%^&*()_+]* ]]
+if [[ "$@" == *[\!\@\#\$\%\^\&\*\(\)\_\+]* ]]
 then
   echo 'You cannot use special characters for the password like !@#$%^&*()_+'
   exit 1
