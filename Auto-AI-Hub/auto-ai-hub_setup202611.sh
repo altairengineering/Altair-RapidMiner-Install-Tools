@@ -1,6 +1,6 @@
 #!/bin/bash
 #error handling
-set -o errexit -o pipefail -o noclobber -o nounset
+set -o errexit -o pipefail -o noclobber -o nounset -o posix
 #functions
 #documentation
 declare documents='startsplash'
@@ -67,7 +67,7 @@ echo ""
 
 declare echolog='logverbose'
 function logverbose () { 
-if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; ( set -o posix; set | grep '^[a-z].*=' );sleep 1; fi 
+if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; set | grep '^[a-z].*='; sleep 1; fi 
 }
 
 declare checkchars='charsanity'
