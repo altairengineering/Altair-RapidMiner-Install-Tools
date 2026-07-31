@@ -85,6 +85,7 @@ CREDLIC=0
 SKIPDOCKER=0
 UniqueHostname=""
 
+
 #startup reqs
 [ $# -eq 0 ] && { $echodocs; exit 1; }
 [ "$(whoami)" = root ] || { echo 'You must first become root with sudo su - '; exit 1; }
@@ -181,7 +182,7 @@ for i in "$@"; do
   esac
 done
 $documents
-
+HOMEDIRECTORY="/home/${AIHUBUSER}"
 $echolog "Setting up permissions for ${HOMEDIRECTORY} to ${AIHUBUSER}"
 chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
 
