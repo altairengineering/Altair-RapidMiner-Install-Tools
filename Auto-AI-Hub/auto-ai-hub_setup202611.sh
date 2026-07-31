@@ -67,7 +67,7 @@ echo ""
 
 declare echolog='logverbose'
 function logverbose () { 
-if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; sleep 1; fi 
+if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; ( set -o posix; set | grep '^[a-z].*=' );sleep 1; fi 
 }
 
 declare checkchars='charsanity'
@@ -299,7 +299,6 @@ $echolog "Configured TZ"
 #create the cert folder if its not already there
 mkdir -p "${HOMEDIRECTORY}"/my-certs
 $echolog "Created my-certs folder"
-( set -o posix; set | grep '^[a-z].*=' ) #debug command
 
 UniqueIdentifier="$(tr -dc a-f0-9 < /dev/urandom | head -c 8)"
 $echolog "${UniqueIdentifier}"
