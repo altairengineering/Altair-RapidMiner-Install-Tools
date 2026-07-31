@@ -104,8 +104,7 @@ for i in "$@"; do
       AIHUBUSER="${i#*=}"
       $echolog "${AIHUBUSER}"
       $checkchars "${AIHUBUSER}"
-      getent passwd "${AIHUBUSER}" > /dev/null
-      if [ $? -eq 0 ]; then
+      if [ getent passwd "${AIHUBUSER}" > /dev/null]; then
         $echolog "User ${AIHUBUSER} exists"
       else
         echo "${AIHUBUSER} is not a valid user on this system"
@@ -139,7 +138,7 @@ for i in "$@"; do
       
     -P=*|--port=*)
       PORTLIC="${i#*=}"
-      $checkchars ${PORTLIC}
+      $checkchars "${PORTLIC}"
       PORTLIC=${PORTLIC//[0-9]/}
       shift # past argument=value
       ;;
@@ -348,8 +347,8 @@ else
 #on prem license
     $echolog "User did not specify \"creds\" as a command argument, defaulting to prem license server."
     
-    LicensePath="${PORTLIC}@${HOSTLIC}"
-    $echolog "Setting license data to ${PORTLIC}@${HOSTLIC}"    
+    LicensePath=""${PORTLIC}"@${HOSTLIC}"
+    $echolog "Setting license data to "${PORTLIC}"@${HOSTLIC}"    
     sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH=${LicensePath}%g" "${HOMEDIRECTORY}"/prod/.env
 fi
 #setting machine details
