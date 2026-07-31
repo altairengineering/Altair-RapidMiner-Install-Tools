@@ -132,21 +132,21 @@ for i in "$@"; do
     -H=*|--hostname=*)
       HOSTLIC="${i#*=}"
       $checkchars "${HOSTLIC}"
-      HOSTLIC=${HOSTLIC//[^a-zA-Z0-9\.]/}
+      HOSTLIC="${HOSTLIC//[^a-zA-Z0-9\.]/}"
       shift # past argument=value
       ;;
       
     -P=*|--port=*)
       PORTLIC="${i#*=}"
       $checkchars "${PORTLIC}"
-      PORTLIC=${PORTLIC//[0-9]/}
+      PORTLIC="${PORTLIC//[0-9]/}"
       shift # past argument=value
       ;;
       
     -w=*|--webprefix=*)
       PREFIXHOSTNAME="${i#*=}"
       $checkchars "${PREFIXHOSTNAME}"
-      HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9-]/}
+      HOMEDIRECTORY="${HOMEDIRECTORY//[^a-zA-Z0-9-]/}"
       shift # past argument=value
       ;;    
       
