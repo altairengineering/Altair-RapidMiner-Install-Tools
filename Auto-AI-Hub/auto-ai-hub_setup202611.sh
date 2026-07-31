@@ -90,7 +90,7 @@ SKIPDOCKER=0
 PORTLIC="6200"
 HOSTLIC="127.0.0.1"
 UniqueHostname=""
-UniqueIdentifier="000000"
+UniqueIdentifier="00000000"
 
 
 #startup reqs
@@ -296,24 +296,13 @@ $echolog "Configured TZ"
 mkdir -p "${HOMEDIRECTORY}"/my-certs
 $echolog "Created my-certs folder"
 #check if there is already been a unique id generated to prevent collisions during testing
-if [ ! -f "${HOMEDIRECTORY}"/my-certs/UniqueID ]; then
-    cat >> "${HOMEDIRECTORY}"/my-certs/UniqueID << 'END'
-#UniqueHostnameIdentifier
-UniqueHostname=target
-END
-    cat "${HOMEDIRECTORY}"/my-certs/UniqueID #debug output
-    UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
-    $echolog "${UniqueIdentifier}"
-    sed -i "s/target/${UniqueIdentifier}/g" "${HOMEDIRECTORY}"/my-certs/UniqueID
-    $echolog "Created new Unique Identifier ${UniqueIdentifier}"
-fi
+UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 8)
+$echolog "${UniqueIdentifier}"
+
 #read the source with the unique id and write it into the config
 $echolog "Configuring hostnames"
-source "${HOMEDIRECTORY}"/my-certs/UniqueID
-if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/UniqueID; fi #debug output
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
-
 
 #generate fresh keycloak secret
 $echolog "Generating fresh keycloak secret..."
@@ -334,7 +323,7 @@ $echolog "Keycloak database configured"
 #create jupyterhub secret
 JupyterCryptKey=$(openssl rand -hex 32)
 sed -i "s%JUPYTERHUB_CRYPT_KEY=\"<JUPYTERHUB-CRYPT-KEY-PLACEHOLDER>\"%JUPYTERHUB_CRYPT_KEY=""${JupyterCryptKey}""%g" "${HOMEDIRECTORY}"/prod/.env
-$echolog "Jupyter Hub secret configured"
+$echolog "Jupyter Hub secret configured to $JupyterCryptKey"
 
 #credentials license
 if [ "$CREDLIC" -eq 1 ]; then
