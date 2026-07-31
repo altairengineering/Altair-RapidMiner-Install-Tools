@@ -215,6 +215,8 @@ case $OperatingSystem in
       dnf update -y
       dnf install -y docker-ce docker-ce-cli containerd.io
       $echolog "Installed docker compose on RHEL"
+    else
+     $echolog "Docker was not reinstalled because SKIPDOCKER was set"
     fi
   ;;
 
@@ -231,6 +233,8 @@ case $OperatingSystem in
       dnf update -y --allowerasing
       dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin --allowerasing
       $echolog "Installed docker compose on Rocky Linux"
+    else
+     $echolog "Docker was not reinstalled because SKIPDOCKER was set"
     fi
   ;;
 
@@ -248,6 +252,8 @@ case $OperatingSystem in
       DEBIAN_FRONTEND=noninteractive apt-get update -y
       DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io
       $echolog "Installed docker compose on Ubuntu"
+    else
+     $echolog "Docker was not reinstalled because SKIPDOCKER was set"
     fi
   ;;   
 
