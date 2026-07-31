@@ -301,9 +301,9 @@ if [ ! -f "${HOMEDIRECTORY}"/my-certs/UniqueID ]; then
 #UniqueHostnameIdentifier
 UniqueHostname=target
 END
-if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/UniqueID; fi #debug output
+    cat "${HOMEDIRECTORY}"/my-certs/UniqueID #debug output
     UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 6)
-        $echolog "${UniqueIdentifier}"
+    $echolog "${UniqueIdentifier}"
     sed -i "s/target/${UniqueIdentifier}/g" "${HOMEDIRECTORY}"/my-certs/UniqueID
     $echolog "Created new Unique Identifier ${UniqueIdentifier}"
 fi
