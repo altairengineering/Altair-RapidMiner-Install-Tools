@@ -289,14 +289,16 @@ $echolog "Files staged in prod folder"
 
 #timezone set to local maxchine
 linuxtimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
+$echolog "${linuxtimezone}"
+$echolog "${HOMEDIRECTORY}"
 sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "Configured TZ"
 
 #create the cert folder if its not already there
 mkdir -p "${HOMEDIRECTORY}"/my-certs
 $echolog "Created my-certs folder"
-#check if there is already been a unique id generated to prevent collisions during testing
-UniqueIdentifier=$(tr -dc a-f0-9 </dev/urandom | head -c 8)
+
+UniqueIdentifier=$(tr -dc a-f0-9 < /dev/urandom | head -c 8)
 $echolog "${UniqueIdentifier}"
 
 #read the source with the unique id and write it into the config
