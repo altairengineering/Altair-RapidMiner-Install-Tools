@@ -2,23 +2,7 @@
 #error handling
 set -o errexit -o pipefail -o noclobber -o nounset
 #functions
-
-declare echolog='logverbose'
-function logverbose () { 
-if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; sleep 1; fi 
-}
-
-declare checkchars='charsanity'
-function charsanity () {
-$echolog "$@"
-case "$@" in
-  *['!&()'@#$%^*_+]* )
-  echo 'You cannot use special characters for the password like !@#$%^&*()_+'
-  exit 1 
-  ;;
-esac
-}
-
+#documentation
 declare documents='startsplash'
 function startsplash () {
 #welcome banner
@@ -80,6 +64,24 @@ echo "If you need to turn off the AI-Hub or restart the system, use docker compo
 echo "============================================================="
 echo ""
 }
+
+declare echolog='logverbose'
+function logverbose () { 
+if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; sleep 1; fi 
+}
+
+declare checkchars='charsanity'
+function charsanity () {
+$echolog "$@"
+case "$@" in
+  *['!&()'@#$%^*_+]* )
+  echo 'You cannot use special characters for the password like !@#$%^&*()_+'
+  exit 1 
+  ;;
+esac
+}
+
+
 
 #vars
 hubversion="2026.1.1"
