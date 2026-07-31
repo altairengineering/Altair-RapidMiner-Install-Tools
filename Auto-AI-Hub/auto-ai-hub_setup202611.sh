@@ -299,6 +299,7 @@ $echolog "Configured TZ"
 #create the cert folder if its not already there
 mkdir -p "${HOMEDIRECTORY}"/my-certs
 $echolog "Created my-certs folder"
+( set -o posix; set | grep '^[a-z].*=' ) #debug command
 
 UniqueIdentifier="$(tr -dc a-f0-9 < /dev/urandom | head -c 8)"
 $echolog "${UniqueIdentifier}"
