@@ -34,6 +34,7 @@ function helpfile () {
       echo ' -c, --credentials                  Prompts user for license login.  Ignores license hostname and port'
       echo ' -s, --skipdocker                   Skips the docker installation'
       echo ' -v, --verbose                      Run the command with extra output'
+      echo ' -t, --trace                        Run the command with trace ouput'
       echo ' -h, --help                         Displays this help document as output'
       echo 'Examples:'
       echo 'auto-ai-hub.sh -u=john -p=agoodpassword'
@@ -73,12 +74,17 @@ if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; set | grep '^[a-z].*='; sleep 1; fi
 declare checkchars='charsanity'
 function charsanity () {
 $echolog "$@"
-case "$@" in
-  *['!&()'@#$%^*_+]* )
+if [[ "$@" == *['!'@\#\$%^&*()_+]* ]]
+then
   echo 'You cannot use special characters for the password like !@#$%^&*()_+'
-  exit 1 
-  ;;
-esac
+  exit 1
+fi
+#case "$@" in
+#  *['!&()'@#$%^*_+]* )
+#  echo 'You cannot use special characters for the password like !@#$%^&*()_+'
+#  exit 1 
+#  ;;
+#esac
 }
 
 
@@ -89,6 +95,7 @@ PREFIXHOSTNAME="auto-ai-hub"
 VERBOSE=0
 CREDLIC=0
 SKIPDOCKER=0
+TRACE=0
 PORTLIC="6200"
 HOSTLIC="127.0.0.1"
 UniqueHostname=""
@@ -170,6 +177,11 @@ for i in "$@"; do
 
     -v|--verbose)
       VERBOSE=1
+      shift # past argument with no value
+      ;;
+
+    -t|--trace)
+      TRACE=1
       shift # past argument with no value
       ;;
       
