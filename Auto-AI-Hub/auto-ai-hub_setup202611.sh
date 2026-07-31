@@ -104,7 +104,7 @@ for i in "$@"; do
       AIHUBUSER="${i#*=}"
       $echolog "${AIHUBUSER}"
       $checkchars "${AIHUBUSER}"
-      if [ getent passwd "${AIHUBUSER}" ]; then
+      if getent passwd "${AIHUBUSER}"; then
         $echolog "User ${AIHUBUSER} exists"
       else
         echo "${AIHUBUSER} is not a valid user on this system"
