@@ -13,10 +13,19 @@ function charsanity () {
 case "$@" in
   *['!&()'@#$%^*_+]* ) echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"; exit 1 ;;
 esac
-#      if [ "$@" =~ ['!@#$%^&*()_+'] ]; then
-#          echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"
-#        exit 1
-#      fi
+}
+
+declare documents='startsplash'
+function startsplash () {
+#welcome banner
+printf "\n"
+echo "Auto-AI-Hub Setup script"
+echo "SIEMENS - Anthony Kiehl"
+echo "Version 1.0 - 6/9/26 Initial Release"
+echo "Special thanks to: Helge H, Sebastian L, Geetha T"
+echo "Auto-AI-hub version ${hubversion}"
+echo "======================================================================"
+sleep 1
 }
 
 declare echodocs='helpfile'
@@ -79,19 +88,6 @@ UniqueHostname=""
 #startup reqs
 [ $# -eq 0 ] && { $echodocs; exit 1; }
 [ "$(whoami)" = root ] || { echo 'You must first become root with sudo su - '; exit 1; }
-
-#welcome banner
-printf "\n"
-echo "Auto-AI-Hub Setup script"
-echo "SIEMENS - Anthony Kiehl"
-echo "Version 1.0 - 6/9/26 Initial Release"
-echo "Special thanks to: Helge H, Sebastian L, Geetha T"
-echo "Auto-AI-hub version ${hubversion}"
-echo "======================================================================"
-sleep 1
-
-
-
 
 #check the arguements manually and shift the values to parse them all
 for i in "$@"; do
