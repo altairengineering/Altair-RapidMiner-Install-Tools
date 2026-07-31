@@ -150,7 +150,7 @@ for i in "$@"; do
       ;;
         
     -s|--skipdocker)
-      if ! docker compose; then
+      if ! docker compose version; then
         echo "Docker compose is not installed, you cannot skip this installation"
         exit 1
       fi
