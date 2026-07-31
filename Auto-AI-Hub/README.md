@@ -44,7 +44,8 @@ sudo su -
 ```
 
 
-
+### License
+GNU AFFERO GENERAL PUBLIC LICENSE
 
 
 
