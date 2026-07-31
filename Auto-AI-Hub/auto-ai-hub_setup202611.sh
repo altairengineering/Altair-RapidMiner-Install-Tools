@@ -87,6 +87,8 @@ PREFIXHOSTNAME="auto-ai-hub"
 VERBOSE=0
 CREDLIC=0
 SKIPDOCKER=0
+PORTLIC="6200"
+HOSTLIC="127.0.0.1"
 UniqueHostname=""
 
 
@@ -194,8 +196,7 @@ chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
 $echolog "${OperatingSystem} detected"
 
-
-#execute docker instal with case
+#execute docker install with case
 { #try
 case $OperatingSystem in
 
