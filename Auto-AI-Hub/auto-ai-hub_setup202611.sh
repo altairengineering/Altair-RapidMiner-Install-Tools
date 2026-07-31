@@ -180,7 +180,7 @@ for i in "$@"; do
       
   esac
 done
-$startsplash
+$documents
 
 $echolog "Setting up permissions for ${HOMEDIRECTORY} to ${AIHUBUSER}"
 chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
