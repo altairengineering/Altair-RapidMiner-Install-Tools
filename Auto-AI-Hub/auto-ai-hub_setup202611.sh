@@ -171,6 +171,12 @@ for i in "$@"; do
       echo "Unknown option $i"
       exit 1
       ;;
+
+    *)
+      echo "Did not understand $i"
+      exit 1
+      ;;
+    
       
   esac
 done
