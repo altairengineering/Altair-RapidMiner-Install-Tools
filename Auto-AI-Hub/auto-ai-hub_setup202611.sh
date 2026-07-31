@@ -68,7 +68,9 @@ echo ""
 
 declare echolog='logverbose'
 function logverbose () { 
+
 if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; set | grep '^[a-z].*='; sleep 1; fi 
+if [ "${TRACE}" -eq 1 ]; then $(set | grep '^[a-z].*='); sleep 1; fi 
 }
 
 declare checkchars='charsanity'
