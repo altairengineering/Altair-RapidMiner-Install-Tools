@@ -10,10 +10,13 @@ if [ ${VERBOSE} -eq 1 ]; then echo "$@"; sleep 1; fi
 
 declare checkchars='charsanity'
 function charsanity () {
-	  if [[ "$@" =~ ['!@#$%^&*()_+'] ]]; then
-	  	echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"
-		exit 1
-	  fi
+case "$@" in
+  *['!&()'@#$%^*_+]* ) echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"; exit 1 ;;
+esac
+#	  if [ "$@" =~ ['!@#$%^&*()_+'] ]; then
+#	  	echo "You cannot use special characters for the password like '\!\@\#\$\%\^\&\*\(\)\_\+'"
+#		exit 1
+#	  fi
 }
 
 declare echodocs='helpfile'
@@ -61,6 +64,7 @@ echo "$FunctionalAddress       ${PREFIXHOSTNAME}-${UniqueHostname}.local       $
 echo ""
 echo "-------------------------------------------------------------"
 echo "When completed, browse to https://${PREFIXHOSTNAME}-${UniqueHostname}.local"
+echo "If you need to turn off the AI-Hub or restart the system, use docker compose down"
 echo "============================================================="
 echo ""
 }
@@ -96,8 +100,8 @@ for i in "$@"; do
   
     -u=*|--username=*)
       AIHUBUSER="${i#*=}"
-	  $checkchars ${AIHUBUSER}
-	  getent passwd ${AIHUBUSER} > /dev/null 2&>1
+	  $checkchars "${AIHUBUSER}"
+	  getent passwd "${AIHUBUSER}" > /dev/null
 	  if [ $? -eq 0 ]; then
 	    $echolog "User ${AIHUBUSER} exists"
 	  else
@@ -109,24 +113,23 @@ for i in "$@"; do
 	  
     -p=*|--password=*)
       ADMINPASSWORD="${i#*=}"
-	  $checkchars ${ADMINPASSWORD}
+	  $checkchars "${ADMINPASSWORD}"
       shift # past argument=value
       ;;
 	  
     -d=*|--directory=*)
       HOMEDIRECTORY="${i#*=}"
-	  $checkchars ${HOMEDIRECTORY}
-      if [ ! -d ${HOMEDIRECTORY} ]; then
+	  $checkchars "${HOMEDIRECTORY}"
+      if [ ! -d "${HOMEDIRECTORY}" ]; then
 	     echo "Please pick a real directory and use absolute path, not relative."
 		 exit 1
-	  fi
-	  
+	  fi	  
       shift # past argument=value
       ;;
 	  
     -H=*|--hostname=*)
       HOSTLIC="${i#*=}"
-	  $checkchars ${HOSTLIC}
+	  $checkchars "${HOSTLIC}"
       HOSTLIC=${HOSTLIC//[^a-zA-Z0-9\.]/}
       shift # past argument=value
       ;;
@@ -140,7 +143,7 @@ for i in "$@"; do
 	  
     -w=*|--webprefix=*)
       PREFIXHOSTNAME="${i#*=}"
-	  $checkchars ${PREFIXHOSTNAME}
+	  $checkchars "${PREFIXHOSTNAME}"
       HOMEDIRECTORY=${HOMEDIRECTORY//[^a-zA-Z0-9-]/}
       shift # past argument=value
       ;;	
@@ -151,14 +154,12 @@ for i in "$@"; do
       ;;
   	  
     -s|--skipdocker)
-	  docker compose &> /dev/null
-	  if [ $? -eq 0 ]; then
-	  	$echolog "Docker Compose is already installed, and user opted to skip reinstalling."
-		SKIPDOCKER=1
-	  else
-	  	echo "Docker compose is not installed, you cannot skip the installation, bye"
+	  if ! docker compose; then
+	    echo "Docker compose is not installed, you cannot skip this installation"
 		exit 1
 	  fi
+	  $echolog "Docker Compose is already installed, and user opted to skip reinstalling."
+	  SKIPDOCKER=1
       shift # past argument=value
       ;;
 
@@ -171,7 +172,7 @@ for i in "$@"; do
 	  $echodocs
       ;;
 	  
-    -*|--*)
+    --*|-*)
       echo "Unknown option $i"
       exit 1
       ;;
@@ -185,7 +186,7 @@ chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
 #check operating system
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
 $echolog "${OperatingSystem} detected"
-$echolog "Attempting to install docker"
+
 
 #execute docker instal with case
 { #try
@@ -196,7 +197,8 @@ case $OperatingSystem in
 	dnf update -y
 	dnf upgrade -y
 	dnf install -y curl wget vim unzip openssl git haveged
-    if [ SKIPDOCKER -eq 0 ]; then 	
+    if [ "${SKIPDOCKER}" = 0 ]; then 	
+	  $echolog "Attempting to install docker"
 	  dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
 	  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 	  sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
@@ -204,7 +206,6 @@ case $OperatingSystem in
 	  dnf update -y
 	  dnf install -y docker-ce docker-ce-cli containerd.io
 	  $echolog "Installed docker compose on RHEL"
-
 	fi
   ;;
 
@@ -214,7 +215,8 @@ case $OperatingSystem in
 	dnf upgrade -y
 	dnf install -y epel-release
 	dnf install -y haveged dnf-utils curl wget vim unzip openssl git --allowerasing		
-    if [ SKIPDOCKER -eq 0 ]; then 
+    if [ "${SKIPDOCKER}" = 0 ]; then 	
+	  $echolog "Attempting to install docker"
 	  dnf remove -y docker*
 	  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 	  dnf update -y --allowerasing
@@ -228,7 +230,8 @@ case $OperatingSystem in
 	DEBIAN_FRONTEND=noninteractive apt-get update -y
 	DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 	DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl wget vim ca-certificates net-tools gnupg lsb-release haveged openssl git
-    if [ SKIPDOCKER -eq 0 ]; then 
+    if [ "${SKIPDOCKER}" = 0 ]; then 
+	  $echolog "Attempting to install docker"
 	  DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker.io containerd runc
 	  DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
 	  curl -kfsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -357,7 +360,7 @@ $echolog "Added custom ca certs file"
 mkdir -p "${HOMEDIRECTORY}"/prod/ssl
 mkdir -p "${HOMEDIRECTORY}"/prod/panopticon
 $echolog "Created pano and ssl directories"
-chown -R "${aihubuser}":"${aihubuser}" "${HOMEDIRECTORY}"/prod
+chown -R "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"/prod
 chmod -R 750 "${HOMEDIRECTORY}"/prod
 chmod a+rw "${HOMEDIRECTORY}"/prod/.env
 chown -R 2011:0 "${HOMEDIRECTORY}"/prod/ssl/
