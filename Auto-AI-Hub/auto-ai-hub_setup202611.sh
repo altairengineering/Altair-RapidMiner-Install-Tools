@@ -50,18 +50,18 @@ echo "============================================================="
 echo "Auto-AI-Hub Setup Completed!"
 echo "-------------------------------------------------------------"
 echo "Please save the following information somewhere securely:"
-echo "AI-Hub Hostname: ${PREFIXHOSTNAME}-${UniqueHostname}.local"
-echo "AI-Hub IP Address: $FunctionalAddress"
+echo "AI-Hub Hostname: ${CombinedHostname}"
+echo "AI-Hub IP Address: ${FunctionalAddress}"
 echo "AI-Hub login/password:  admin/${ADMINPASSWORD}"
 echo "Please wait 5-10 minutes for the system to fully startup"
 echo "-------------------------------------------------------------"
 echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING LINE"
 echo "OF HOSTNAMES TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE AI-HUB"
 echo "-------------------------------------------------------------"
-echo "$FunctionalAddress       ${PREFIXHOSTNAME}-${UniqueHostname}.local       ${PREFIXHOSTNAME}-${UniqueHostname}"
+echo "${FunctionalAddress}       ${CombinedHostname}       ${PREFIXHOSTNAME}-${UniqueHostname}"
 echo ""
 echo "-------------------------------------------------------------"
-echo "When completed, browse to https://${PREFIXHOSTNAME}-${UniqueHostname}.local"
+echo "When completed, browse to https://${CombinedHostname}"
 echo "If you need to turn off the AI-Hub or restart the system, use docker compose down"
 echo "============================================================="
 echo ""
@@ -96,6 +96,7 @@ TRACE=0
 PORTLIC="6200"
 HOSTLIC="127.0.0.1"
 UniqueHostname=""
+CombinedHostname=""
 UniqueIdentifier="00000000"
 
 
@@ -314,8 +315,11 @@ $echolog "${UniqueIdentifier}"
 
 #read the source with the unique id and write it into the config
 $echolog "Configuring hostnames"
-sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
-sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${PREFIXHOSTNAME}-${UniqueHostname}.local%g" /home/"${AIHUBUSER}"/prod/.env
+$echolog "Combining ${PREFIXHOSTNAME} and ${UniqueHostname}"
+CombinedHostname="${PREFIXHOSTNAME}-${UniqueHostname}.local"
+$echolog "${CombinedHostname}"
+sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${CombinedHostname}%g" /home/"${AIHUBUSER}"/prod/.env
+sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${CombinedHostname}%g" /home/"${AIHUBUSER}"/prod/.env
 
 #generate fresh keycloak secret
 $echolog "Generating fresh keycloak secret..."
@@ -424,9 +428,9 @@ subjectAltName = @alt_names
 DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
 END
-$echolog "Updating external config to point to ${PREFIXHOSTNAME}-${UniqueHostname}.local at $FunctionalAddress"
+$echolog "Updating external config to point to ${PREFIXHOSTNAME}-${UniqueHostname}.local at ${FunctionalAddress}"
 sed -i "s%<YOUR-SERVER-HOSTNAME>%${PREFIXHOSTNAME}-${UniqueHostname}.local%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
-sed -i "s%<YOUR-SERVER-IP-ADDRESS>%$FunctionalAddress%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
+sed -i "s%<YOUR-SERVER-IP-ADDRESS>%${FunctionalAddress}%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
 $echolog "Created ext config:"
 if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/server.v3.ext; fi #debug output
 $echolog "Creating server certificate"
