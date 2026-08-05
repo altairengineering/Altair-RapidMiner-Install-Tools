@@ -150,7 +150,7 @@ for i in "$@"; do
     -P=*|--port=*)
       PORTLIC="${i#*=}"
       #$checkchars "${PORTLIC}"
-      PORTLIC="${PORTLIC//[0-9]/}"
+      PORTLIC="${PORTLIC//[^0-9]/}"
       shift # past argument=value
       ;;
       
@@ -222,6 +222,9 @@ fi
 
 #show starting banner
 $documents
+if [[ "${VERBOSE}" -eq 0 ]]; then
+  echo "Starting Silent install.  Use -v|--verbose to view detailed output."
+fi
 
 #prepare workspace
 $echolog "Setting up permissions for ${HOMEDIRECTORY} to ${AIHUBUSER}"
@@ -390,8 +393,10 @@ else
 #on prem license
     $echolog "User did not specify \"creds\" as a command argument, defaulting to prem license server."
     
-    LicensePath="${PORTLIC}@${HOSTLIC}"
-    $echolog "Setting license data to ${PORTLIC}@${HOSTLIC}"    
+    LicensePath="${PORTLIC}"
+    LicensePath+='@'
+    LicensePath+="${HOSTLIC}"
+    $echolog "Setting license data to ${LicensePath}"    
     sed -i "s%ALTAIR_LICENSE_PATH=%ALTAIR_LICENSE_PATH=${LicensePath}%g" "${HOMEDIRECTORY}"/prod/.env
 fi
 #setting machine details
