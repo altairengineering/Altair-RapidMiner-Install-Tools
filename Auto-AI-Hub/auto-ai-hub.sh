@@ -343,8 +343,8 @@ $echolog "Created UniqueIdentifier"
 #read the source with the unique id and write it into the config
 $echolog "Configuring hostnames"
 CombinedHostname="${PREFIXHOSTNAME}-${UniqueIdentifier}.local"
-sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${CombinedHostname}%g" /home/"${AIHUBUSER}"/prod/.env
-sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${CombinedHostname}%g" /home/"${AIHUBUSER}"/prod/.env
+sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${CombinedHostname}%g" "${HOMEDIRECTORY}"/prod/.env
+sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${CombinedHostname}%g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "Hostnames set to ${CombinedHostname}"
 
 
@@ -353,7 +353,7 @@ $echolog "Hostnames set to ${CombinedHostname}"
 $echolog "Generating fresh keycloak secret..."
 freshkeycloak="$(echo $RANDOM | md5sum | head -c 20; echo | base64)"
 $echolog "$freshkeycloak"
-sed -i "s/AUTH_SECRET=\"<AUTH-SECRET-PLACEHOLDER>\"/AUTH_SECRET=\"${freshkeycloak}\"/g" /home/"${AIHUBUSER}"/prod/.env
+sed -i "s/AUTH_SECRET=\"<AUTH-SECRET-PLACEHOLDER>\"/AUTH_SECRET=\"${freshkeycloak}\"/g" "${HOMEDIRECTORY}"/prod/.env
 
 #generate active mq password
 $echolog "Generating ActiveMQ password..."
