@@ -22,6 +22,7 @@ function startsplash () {
 printf "\n"
 echo "Auto-AI-Hub Setup script"
 echo "SIEMENS - Anthony Kiehl"
+echo "Version 1.2 - 8/5/26"
 echo "Version 1.0 - 6/9/26 Initial Release"
 echo "Special thanks to: Helge H, Sebastian L, Geetha T"
 echo "Auto-AI-hub version ${hubversion}"
@@ -114,15 +115,13 @@ for i in "$@"; do
   
     -u=*|--username=*)
       AIHUBUSER="${i#*=}"
-      $echolog "${AIHUBUSER}"
-      #$checkchars "${AIHUBUSER}"
-      if getent passwd "${AIHUBUSER}"; then
-        $echolog "User ${AIHUBUSER} exists"
-      else
-        echo "${AIHUBUSER} is not a valid user on this system"
+      if id "${AIHUBUSER}" &>/dev/null; then
+        $echolog "User exists"
+      else 
+        echo "User ${AIHUBUSER} does not exist"
         exit 1
       fi
-      shift # past argument=value
+        shift # past argument=value
       ;;
       
     -p=*|--password=*)
@@ -189,6 +188,7 @@ for i in "$@"; do
       
     -h|--help)
       $echodocs
+      exit 0
       ;;
       
     --*|-*)
@@ -206,11 +206,24 @@ for i in "$@"; do
 done
 
 #MAIN LOGIC
+#validate parameters
+if [[ -z  "${AIHUBUSER}" || -z "${ADMINPASSWORD}" ]]; then
+  echo "ERROR: -u|--username and -p|--password are mandatory arguements."
+  exit 1;
+fi
+if [[ -z "${HOMEDIRECTORY}" ]]; then
+  HOMEDIRECTORY="/home/${AIHUBUSER}"
+fi
+
+
+
+
+
+
 #show starting banner
 $documents
 
 #prepare workspace
-HOMEDIRECTORY="/home/${AIHUBUSER}"
 $echolog "Setting up permissions for ${HOMEDIRECTORY} to ${AIHUBUSER}"
 chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
 
