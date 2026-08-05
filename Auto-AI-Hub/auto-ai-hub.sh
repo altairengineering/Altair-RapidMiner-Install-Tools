@@ -1,8 +1,21 @@
 #!/bin/bash
-#error handling
-set -o errexit -o pipefail -o noclobber -o nounset -o posix
-#functions
-#documentation
+#set -o errexit -o pipefail -o noclobber -o nounset -o posix
+
+#VARIABLES
+hubversion="2026.1.1"
+PREFIXHOSTNAME="auto-ai-hub"
+VERBOSE=0
+CREDLIC=0
+SKIPDOCKER=0
+TRACE=0
+PORTLIC="6200"
+HOSTLIC="127.0.0.1"
+CombinedHostname=""
+UniqueIdentifier="00000000"
+
+
+#FUNCTIONS
+#DOCUMENTATION
 declare documents='startsplash'
 function startsplash () {
 #welcome banner
@@ -58,7 +71,7 @@ echo "-------------------------------------------------------------"
 echo "YOU WILL ALMOST CERTAINLY NEED TO ADD THE FOLLOWING LINE"
 echo "OF HOSTNAMES TO YOUR PC/LAPTOP \"HOSTS\" FILE TO USE THE AI-HUB"
 echo "-------------------------------------------------------------"
-echo "${FunctionalAddress}       ${CombinedHostname}       ${PREFIXHOSTNAME}-${UniqueHostname}"
+echo "${FunctionalAddress}       ${CombinedHostname}       ${PREFIXHOSTNAME}-${UniqueIdentifier}"
 echo ""
 echo "-------------------------------------------------------------"
 echo "When completed, browse to https://${CombinedHostname}"
@@ -69,41 +82,32 @@ echo ""
 
 declare echolog='logverbose'
 function logverbose () { 
-
-if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; set | grep '^[a-z].*='; sleep 1; fi 
-if [ "${TRACE}" -eq 1 ]; then $(set | grep '^[a-z].*='); sleep 1; fi 
+if [ "${TRACE}" -eq 1 ]; then set; printf "===================================\n"; fi 
+if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; printf "\n"; fi 
+sleep 1
 }
 
-declare checkchars='charsanity'
-function charsanity () {
-$echolog "$@"
-if [[ "$@" == *[\!\@\#\$\%\^\&\*\(\)\_\+]* ]]
-then
-  echo 'You cannot use special characters for the password like !@#$%^&*()_+'
-  exit 1
-fi
-}
+#INPUT SANITATION
+#declare checkchars='charsanity'
+#function charsanity () {
+#echo "$@"
+#if "$@" -eq *[\!\@\#\$\%\^\&\*\(\)\_\+]*;
+#then
+#  echo 'You cannot use special characters for the password like !@#$%^&*()_+'
+#  exit 1
+#fi
+#}
+
+#END OF FUNCTIONS
 
 
-
-#vars
-hubversion="2026.1.1"
-PREFIXHOSTNAME="auto-ai-hub"
-VERBOSE=0
-CREDLIC=0
-SKIPDOCKER=0
-TRACE=0
-PORTLIC="6200"
-HOSTLIC="127.0.0.1"
-UniqueHostname=""
-CombinedHostname=""
-UniqueIdentifier="00000000"
-
-
+#SYSTEM AUDITS
 #startup reqs
 [ $# -eq 0 ] && { $echodocs; exit 1; }
 [ "$(whoami)" = root ] || { echo 'You must first become root with sudo su - '; exit 1; }
 
+
+#PARAMETER PARSING
 #check the arguements manually and shift the values to parse them all
 for i in "$@"; do
   case $i in
@@ -111,7 +115,7 @@ for i in "$@"; do
     -u=*|--username=*)
       AIHUBUSER="${i#*=}"
       $echolog "${AIHUBUSER}"
-      $checkchars "${AIHUBUSER}"
+      #$checkchars "${AIHUBUSER}"
       if getent passwd "${AIHUBUSER}"; then
         $echolog "User ${AIHUBUSER} exists"
       else
@@ -123,13 +127,13 @@ for i in "$@"; do
       
     -p=*|--password=*)
       ADMINPASSWORD="${i#*=}"
-      $checkchars "${ADMINPASSWORD}"
+      #$checkchars "${ADMINPASSWORD}"
       shift # past argument=value
       ;;
       
     -d=*|--directory=*)
       HOMEDIRECTORY="${i#*=}"
-      $checkchars "${HOMEDIRECTORY}"
+      #$checkchars "${HOMEDIRECTORY}"
       if [ ! -d "${HOMEDIRECTORY}" ]; then
          echo "Please pick a real directory and use absolute path, not relative."
          exit 1
@@ -139,21 +143,21 @@ for i in "$@"; do
       
     -H=*|--hostname=*)
       HOSTLIC="${i#*=}"
-      $checkchars "${HOSTLIC}"
+      #$checkchars "${HOSTLIC}"
       HOSTLIC="${HOSTLIC//[^a-zA-Z0-9\.]/}"
       shift # past argument=value
       ;;
       
     -P=*|--port=*)
       PORTLIC="${i#*=}"
-      $checkchars "${PORTLIC}"
+      #$checkchars "${PORTLIC}"
       PORTLIC="${PORTLIC//[0-9]/}"
       shift # past argument=value
       ;;
       
     -w=*|--webprefix=*)
       PREFIXHOSTNAME="${i#*=}"
-      $checkchars "${PREFIXHOSTNAME}"
+      #$checkchars "${PREFIXHOSTNAME}"
       HOMEDIRECTORY="${HOMEDIRECTORY//[^a-zA-Z0-9-]/}"
       shift # past argument=value
       ;;    
@@ -200,7 +204,12 @@ for i in "$@"; do
       
   esac
 done
+
+#MAIN LOGIC
+#show starting banner
 $documents
+
+#prepare workspace
 HOMEDIRECTORY="/home/${AIHUBUSER}"
 $echolog "Setting up permissions for ${HOMEDIRECTORY} to ${AIHUBUSER}"
 chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
@@ -208,6 +217,12 @@ chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
 #check operating system
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
 $echolog "${OperatingSystem} detected"
+
+#collect networking data
+MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
+FunctionalAddress=$(ip addr show "${MainAdapter}" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
+$echolog "Network data"
+$echolog "${MainAdapter} ${FunctionalAddress}"
 
 #execute docker install with case
 { #try
@@ -301,8 +316,6 @@ $echolog "Files staged in prod folder"
 
 #timezone set to local maxchine
 linuxtimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
-$echolog "${linuxtimezone}"
-$echolog "${HOMEDIRECTORY}"
 sed -i "s%TZ=UTC%TZ=${linuxtimezone}%g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "Configured TZ"
 
@@ -310,16 +323,18 @@ $echolog "Configured TZ"
 mkdir -p "${HOMEDIRECTORY}"/my-certs
 $echolog "Created my-certs folder"
 
-UniqueIdentifier="$(tr -dc a-f0-9 < /dev/urandom | head -c 8)"
-$echolog "${UniqueIdentifier}"
+UniqueIdentifier=$(openssl rand -hex 4)
+#UniqueIdentifier="$(tr -dc a-f0-9 < /dev/urandom | head -c 8)"
+$echolog "Created UniqueIdentifier"
 
 #read the source with the unique id and write it into the config
 $echolog "Configuring hostnames"
-$echolog "Combining ${PREFIXHOSTNAME} and ${UniqueHostname}"
-CombinedHostname="${PREFIXHOSTNAME}-${UniqueHostname}.local"
-$echolog "${CombinedHostname}"
+CombinedHostname="${PREFIXHOSTNAME}-${UniqueIdentifier}.local"
 sed -i "s%PUBLIC_DOMAIN=platform.rapidminer.com%PUBLIC_DOMAIN=${CombinedHostname}%g" /home/"${AIHUBUSER}"/prod/.env
 sed -i "s%SSO_PUBLIC_DOMAIN=platform.rapidminer.com%SSO_PUBLIC_DOMAIN=${CombinedHostname}%g" /home/"${AIHUBUSER}"/prod/.env
+$echolog "Hostnames set to ${CombinedHostname}"
+
+
 
 #generate fresh keycloak secret
 $echolog "Generating fresh keycloak secret..."
@@ -332,10 +347,8 @@ $echolog "Generating ActiveMQ password..."
 activemqpassword="$(echo $RANDOM | md5sum | head -c 15)"
 $echolog "${activemqpassword}"
 sed -i "s/BROKER_ACTIVEMQ_PASSWORD=\"<SERVER-AMQ-PASS-PLACEHOLDER>\"/BROKER_ACTIVEMQ_PASSWORD=${activemqpassword}/g" "${HOMEDIRECTORY}"/prod/.env
-sed -i "s/KEYCLOAK_DBPASS=changeit/KEYCLOAK_DBPASS=${ADMINPASSWORD}/g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "Platform admin creds configured"
 sed -i "s/KC_BOOTSTRAP_ADMIN_PASSWORD=changeit/KC_BOOTSTRAP_ADMIN_PASSWORD=${ADMINPASSWORD}/g" "${HOMEDIRECTORY}"/prod/.env
-$echolog "Keycloak database configured"
 
 #create jupyterhub secret
 JupyterCryptKey=$(openssl rand -hex 32)
@@ -375,8 +388,9 @@ sed -i "s/LICENSE_AGENT_MACHINE_ID=\"\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgen
 sed -i "s/LICENSE_AGENT_MACHINE_ID=\"00000000-0000-0000-0000-000000000000\"/LICENSE_AGENT_MACHINE_ID=\"${LicenseAgentID}\"/g" "${HOMEDIRECTORY}"/prod/.env
 $echolog "License configured"
 
-#1031 Pano mac address creation for altair one licensing
-PanoGenMAC=$(cat /dev/urandom | tr -d -c '[:digit:]A-F' | fold -w 12 | sed -E -n -e '/^.[26AE]/s/(..)/\1-/gp' | sed -e 's/-$//g' |sed 's/-/:/g'| head -n1 | sed 's/^\S\S/66/g')
+#Pano mac address creation for licensing
+PanoGenMAC=$(openssl rand -hex 6|fold -w2|paste -sd: - | sed 's/^\S\S/66/g')
+
 $echolog "Panopticon Generated MAC address = ${PanoGenMAC}"
 sed -i "s/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"<PANOPTICON-MAC-ADDRESS-PLACEHOLDER>\"/PANOPTICON_VIZAPP_CONTAINER_MAC_ADDRESS=\"${PanoGenMAC}\"/g" "${HOMEDIRECTORY}"/prod/.env
 
@@ -401,14 +415,9 @@ $echolog "Finished AI-Hub file staging"
 
 #creating certificate authority
 $echolog "Creating cryptography setup"
-#collect networking data
-MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
-FunctionalAddress=$(ip addr show "${MainAdapter}" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
-$echolog "Network data"
-$echolog "${MainAdapter} ${FunctionalAddress}"
 
 #create ca cert and key
-CASharedSubject="/C=US/O=RapidMiner/OU=AutoAIHub/CN=${PREFIXHOSTNAME}-${UniqueHostname}.local"
+CASharedSubject="/C=US/O=RapidMiner/OU=${PREFIXHOSTNAME}/CN=${CombinedHostname}"
 $echolog "Shared Subject is ${CASharedSubject}"
 $echolog "Creating self signed root trust key and certificate"
 openssl genpkey -out "${HOMEDIRECTORY}"/my-certs/ca-root.key -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096
@@ -428,8 +437,8 @@ subjectAltName = @alt_names
 DNS.1 = <YOUR-SERVER-HOSTNAME>
 IP.1 = <YOUR-SERVER-IP-ADDRESS>
 END
-$echolog "Updating external config to point to ${PREFIXHOSTNAME}-${UniqueHostname}.local at ${FunctionalAddress}"
-sed -i "s%<YOUR-SERVER-HOSTNAME>%${PREFIXHOSTNAME}-${UniqueHostname}.local%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
+$echolog "Updating external config to point to ${CombinedHostname} at ${FunctionalAddress}"
+sed -i "s%<YOUR-SERVER-HOSTNAME>%${CombinedHostname}%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
 sed -i "s%<YOUR-SERVER-IP-ADDRESS>%${FunctionalAddress}%g" "${HOMEDIRECTORY}"/my-certs/server.v3.ext
 $echolog "Created ext config:"
 if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/my-certs/server.v3.ext; fi #debug output
@@ -441,22 +450,27 @@ $echolog  "Cryptography complete."
 #get the latest images
 $echolog "Pulling images from repositories"
 until su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml pull"; do echo retrying; done
+
 #run deployment-init to generate backend
 $echolog "Starting Auto-AI-Hub deployment-init"
+chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"/prod/docker-compose.yml
+su -g docker -c "${HOMEDIRECTORY}/prod/yq -i '.services.keycloak.depends_on.keycloak-db.condition = \"service_started\"' ${HOMEDIRECTORY}/prod/docker-compose.yml" "${AIHUBUSER}"
 su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d deployment-init" "${AIHUBUSER}"
+$echolog "Finished deployment-init command spawning"
 su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml logs -f" "${AIHUBUSER}" | while read -r LOGLINE
 do
-    $echolog "$LOGLINE"
+    echo "$LOGLINE"
     [[ "${LOGLINE}" == *"deployment-init-1 exited with code"* ]] && echo "!!!executing changes based on logs!!!" && su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml down" "${AIHUBUSER}"
 done
 $echolog "Deployment-init complete."
 
 #move certificates to proper folder
 $echolog "Staging Certificates"
-cp "${HOMEDIRECTORY}"/my-certs/certificate.crt "${HOMEDIRECTORY}"/prod/ssl/
 cp "${HOMEDIRECTORY}"/my-certs/private.key "${HOMEDIRECTORY}"/prod/ssl/
 $echolog "Merging root trust"
-cat "${HOMEDIRECTORY}"/my-certs/ca-root.crt >> "${HOMEDIRECTORY}"/my-certs/certificate.crt
+cat "${HOMEDIRECTORY}"/my-certs/certificate.crt "${HOMEDIRECTORY}"/my-certs/ca-root.crt >> "${HOMEDIRECTORY}"/prod/ssl/certificate.crt
+if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/prod/ssl/certificate.crt; sleep 1; fi #debug output
+
 
 #run prepare-cust-ca.sh
 $echolog "Executing prepare-cust-ca.sh"
@@ -464,11 +478,13 @@ cd "${HOMEDIRECTORY}"/prod
 bash ./prepare-cust-ca.sh
 chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"/prod/docker-compose.yml
 $echolog "Prepare-cust-ca.sh completed."
+
+#start the aihub for usage
 $echolog "Starting up AI-Hub"
 su -g docker -c "docker compose -f ${HOMEDIRECTORY}/prod/docker-compose.yml up -d" "${AIHUBUSER}"
 $echolog "Script complete"
-if [ $VERBOSE -eq 1 ]; then docker ps; fi #debug output
+if [ $VERBOSE -eq 1 ]; then echo "Checking container states"; sleep 5; docker ps; fi #debug output
 
-#finish script with documentation output
+#EXIT DOCUMENTATION
 $exitdocs
 exit 0
