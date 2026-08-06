@@ -22,7 +22,7 @@ function startsplash () {
 printf "\n"
 echo "Auto-AI-Hub Setup script"
 echo "SIEMENS - Anthony Kiehl"
-echo "Version 1.2 - 8/5/26"
+echo "Version 1.2 - 8/5/26 Feature Update"
 echo "Version 1.0 - 6/9/26 Initial Release"
 echo "Special thanks to: Helge H, Sebastian L, Geetha T"
 echo "Auto-AI-hub version ${hubversion}"
@@ -52,11 +52,12 @@ function helpfile () {
       echo ' -t, --trace                        Run the command with trace ouput'
       echo ' -h, --help                         Displays this help document as output'
       echo 'Examples:'
-      echo 'auto-ai-hub.sh -u=john -p=agoodpassword'
+      echo 'auto-ai-hub.sh -u=ingo -p=agoodpassword'
       echo 'auto-ai-hub.sh -u=john -p=agoodpassword -d=/opt/autoaihub -H=10.0.15.100 -P=6201'
-      echo 'auto-ai-hub.sh --username=john --password=agoodpassword --credentials --verbose'
+      echo 'auto-ai-hub.sh --username=ingo --password=agoodpassword --credentials --verbose'
 }
 
+#exit documentation
 declare exitdocs='endfile'
 function endfile () {
 echo ""
@@ -81,23 +82,13 @@ echo "============================================================="
 echo ""
 }
 
+#standard logging function
 declare echolog='logverbose'
 function logverbose () { 
 if [ "${TRACE}" -eq 1 ]; then set; printf "===================================\n"; fi 
 if [ "${VERBOSE}" -eq 1 ]; then echo "$@"; printf "\n"; fi 
 sleep 1
 }
-
-#INPUT SANITATION
-#declare checkchars='charsanity'
-#function charsanity () {
-#echo "$@"
-#if "$@" -eq *[\!\@\#\$\%\^\&\*\(\)\_\+]*;
-#then
-#  echo 'You cannot use special characters for the password like !@#$%^&*()_+'
-#  exit 1
-#fi
-#}
 
 #END OF FUNCTIONS
 
@@ -125,14 +116,17 @@ for i in "$@"; do
       ;;
       
     -p=*|--password=*)
-      ADMINPASSWORD="${i#*=}"
-      #$checkchars "${ADMINPASSWORD}"
+      if [[ "${i#*=}" =~ ^[a-zA-Z][a-zA-Z0-9_.-]*$ ]]; then
+        ADMINPASSWORD="${i#*=}"
+      else
+        echo 'For the passphrase you are only allowed to use basic characters a-zA-Z0-9 _ . -'
+        exit 1
+      fi
       shift # past argument=value
       ;;
       
     -d=*|--directory=*)
       HOMEDIRECTORY="${i#*=}"
-      #$checkchars "${HOMEDIRECTORY}"
       if [ ! -d "${HOMEDIRECTORY}" ]; then
          echo "Please pick a real directory and use absolute path, not relative."
          exit 1
@@ -141,23 +135,35 @@ for i in "$@"; do
       ;;
       
     -H=*|--hostname=*)
-      HOSTLIC="${i#*=}"
-      #$checkchars "${HOSTLIC}"
-      HOSTLIC="${HOSTLIC//[^a-zA-Z0-9\.]/}"
+
+      if [[ "${i#*=}" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
+        HOSTLIC="${i#*=}"
+      else
+        echo 'For the license hostname you are only allowed to use basic characters a-z A-Z 0-9 _ . -'
+        exit 1
+      fi
       shift # past argument=value
       ;;
       
     -P=*|--port=*)
-      PORTLIC="${i#*=}"
-      #$checkchars "${PORTLIC}"
-      PORTLIC="${PORTLIC//[^0-9]/}"
+
+      if [[ "${i#*=}" =~ ^[0-9]+$ ]]; then
+        PORTLIC="${i#*=}"
+      else
+        echo 'For the port number you are only allowed to use numbers'
+        exit 1
+      fi
       shift # past argument=value
       ;;
       
     -w=*|--webprefix=*)
+
+      if [[ "${i#*=}" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
       PREFIXHOSTNAME="${i#*=}"
-      #$checkchars "${PREFIXHOSTNAME}"
-      HOMEDIRECTORY="${HOMEDIRECTORY//[^a-zA-Z0-9-]/}"
+      else
+        echo 'For the hostname prefix you are only allowed to use basic characters a-z A-Z 0-9 . -'
+        exit 1
+      fi
       shift # past argument=value
       ;;    
       
@@ -492,7 +498,7 @@ if [ $VERBOSE -eq 1 ]; then cat "${HOMEDIRECTORY}"/prod/ssl/certificate.crt; sle
 
 #run prepare-cust-ca.sh
 $echolog "Executing prepare-cust-ca.sh"
-cd "${HOMEDIRECTORY}"/prod
+cd "${HOMEDIRECTORY}"/prod || exit 1
 bash ./prepare-cust-ca.sh
 chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"/prod/docker-compose.yml
 $echolog "Prepare-cust-ca.sh completed."
