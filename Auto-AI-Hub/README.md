@@ -5,43 +5,46 @@
 
 
 ## Description
-Auto-AI-Hub is an install script for POC AI-Hub installations using auto-generated self-signed certificates.  
+Auto-AI-Hub is an install script for POC AI-Hub installations using auto-generated, root-trusted self-signed certificates.  
 
-Special thanks to Sebastian L., and Geetha T.
+Special thanks to Helge H., Sebastian L., and Geetha T.
 
 _*This should never be used in production environments.*_
 
 ## Instructions
 
-Notes:  
-Where it is listed [username] this refers to the linux username on the target RHEL, Rocky or Ubuntu server.
-And where it is written [version], this is the desired AI-Hub version.
 
-### Clone the repo
-Auto-AI-Hub requires the scripts located in other parts of the repository.
-```
-cd ~
-git clone https://github.com/altairengineering/Altair-RapidMiner-Install-Tools.git
-```
 
-### Prepare for installation
-Set the auto-ai-hub_setup.sh executable.
+### Prep
+Set the auto-ai-hub.sh executable.
 ```
 cd ./autoaihub
-chmod +x auto-ai-hub_setup[version].sh
+chmod +x auto-ai-hub.sh
 ```
 
-### Installation
-Now become root and run the script for on-prem license server.
+### Docs
 ```
-sudo su -
-./auto-ai-hub_setup[version].sh [username]
-```
-Or alternatively, for online credentials validation.
-```
-sudo su -
-./auto-ai-hub_setup[version].sh [username] creds
-```
+Usage: 
+ auto-ai-hub.sh <parameters> 
+ 
+Create an AI-Hub automatically. 
+ 
+Options: 
+ -u, --username=<username>          MANDATORY. Specify the linux username that will operate the AI-Hub 
+ -p, --password=<aihub_password>    MANDATORY. Admin password cannot contain special characters or spaces 
+ -d, --directory=<path>             The directory to install into, by default will install to home folder 
+ -H, --hostname=<hostname>          This is the hostname to the license server. Defaults to 127.0.0.1 
+ -P, --port=<port>                  Network port number for the license server.  Defaults to 6200     
+ -w, --webprefix=<string>           Unique webaddress prefix to URL for AI-Hub.  Defaults to auto-ai-hub           
+ -c, --credentials                  Prompts user for license login.  Ignores license hostname and port 
+ -s, --skipdocker                   Skips the docker installation 
+ -v, --verbose                      Run the command with extra output 
+ -t, --trace                        Run the command with trace ouput 
+ -h, --help                         Displays this help document as output 
+Examples: 
+auto-ai-hub.sh -u=ingo -p=agoodpassword 
+auto-ai-hub.sh -u=john -p=agoodpassword -d=/opt/autoaihub -H=10.0.15.100 -P=6201 
+auto-ai-hub.sh --username=ingo --password=agoodpassword --credentials --verbose 
 
 
 ### License
