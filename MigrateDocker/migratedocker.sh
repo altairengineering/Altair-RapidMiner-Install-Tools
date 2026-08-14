@@ -12,9 +12,9 @@ declare documents='startsplash'
 function startsplash () {
 #welcome banner
 printf "\n"
-echo "MigroateDocker"
+echo "MigrateDocker Script"
 echo "SIEMENS - Anthony Kiehl"
-echo "Version 1.2 - 8/11/26 Feature Update"
+echo "Version 0.1 - 8/11/26 alpha"
 echo "Special thanks to: Helge H, Zhanna A"
 echo "License: AGPL 3.0 or better"
 echo "======================================================================"
@@ -25,16 +25,21 @@ declare echodocs='helpfile'
 function helpfile () {
       echo ''
       echo 'Usage:'
-      echo ' auto-ai-hub.sh <parameters>'
+      echo 'migratedocker.sh <parameters>'
       echo ''
-      echo 'Create an AI-Hub automatically.'
+      echo 'Import/Export a stateful docker environment automatically.'
       echo ''
       echo 'Options:'
+      echo ' -m, --mode=export                  Mode export must specify a filename for the tarball to be created with (-f|--file)'
+      echo ' -m, --mode=import                  Mode import must target an existing tarball created by this tool with (-f|--file)'
+      echo ' -f, --file=/path/to/tarball        Always an absolute filepath to a tarball, export mode creates a new file, import mode requires existing file'
+      echo ' -t, --target=/path/to/composefile  Target docker compose directory and subfolders (Optional)'
+      echo ' -s, --skip-compose                 Skips check for docker-compose.yml and does not archive'
       echo ' -v, --verbose                      Run the command with extra output'
       echo ' -t, --trace                        Run the command with trace ouput'
       echo ' -h, --help                         Displays this help document as output'
       echo 'Examples:'
-      echo 'auto-ai-hub.sh -u=ingo -p=agoodpassword'
+      echo 'migratedocker.sh -u=ingo -p=agoodpassword'
 }
 
 #exit documentation
@@ -42,7 +47,7 @@ declare exitdocs='endfile'
 function endfile () {
 echo ""
 echo "============================================================="
-echo "Auto-AI-Hub Setup Completed!"
+echo "MigrateDocker tasks Completed!"
 echo "-------------------------------------------------------------"
 echo "Please save the following information somewhere securely:"
 echo "============================================================="
