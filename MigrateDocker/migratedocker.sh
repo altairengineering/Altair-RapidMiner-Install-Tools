@@ -81,8 +81,20 @@ for i in "$@"; do
         exit 1
       else
       OPERATIONMODE="${i#*=}"
+      $echolog "${OPERATIONMODE}"
       fi
         shift # past argument=value
+      ;;
+
+    -f=*|--filepath=*)
+      TARBALLFILEPATH="${i#*=}"
+      if [ $OPERATIONMODE -eq import ]; then
+      #stopped here 8/20/26
+         if [ ! -d "${HOMEDIRECTORY}" ]; then
+         echo "Please pick a real directory and use absolute path, not relative."
+         exit 1
+      fi      
+      shift # past argument=value
       ;;
       
     -p=*|--password=*)
@@ -95,14 +107,7 @@ for i in "$@"; do
       shift # past argument=value
       ;;
       
-    -d=*|--directory=*)
-      HOMEDIRECTORY="${i#*=}"
-      if [ ! -d "${HOMEDIRECTORY}" ]; then
-         echo "Please pick a real directory and use absolute path, not relative."
-         exit 1
-      fi      
-      shift # past argument=value
-      ;;
+
       
     -H=*|--hostname=*)
 
