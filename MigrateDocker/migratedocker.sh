@@ -75,13 +75,12 @@ sleep 1
 for i in "$@"; do
   case $i in
   
-    -u=*|--username=*)
-      AIHUBUSER="${i#*=}"
-      if id "${AIHUBUSER}" &>/dev/null; then
-        $echolog "User exists"
-      else 
-        echo "User ${AIHUBUSER} does not exist"
+    -m=*|--mode=*)
+      if [[ "${i#*=}" =~ ^(import|export)$ ]]; then
+        echo "the only allowed entries for mode are \"import\" or \"export\" without quotes"
         exit 1
+      else
+      OPERATIONMODE="${i#*=}"
       fi
         shift # past argument=value
       ;;
