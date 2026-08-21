@@ -30,15 +30,15 @@ function helpfile () {
       echo 'Import/Export a stateful docker environment automatically.'
       echo ''
       echo 'Options:'
-      echo ' -m, --mode=export                  Saves entire docker setup on current machine. Mode export must specify a filename for the tarball to be created with (-f|--file)'
-      echo ' -m, --mode=import                  Loads entire docker setup on current machine. WARNING: OVERWRITES EXISTING DOCKER SETUP DESTRICTIVELY.'
-      echo ' -f, --file=/path/to/tarball        Always an absolute filepath to a tarball, export mode creates a new file, import mode requires existing file'
-      echo ' -c, --compose=/path/to/composefile Target docker compose directory and subfolders, export archives, import writes folder to path (Optional)'
-      echo ' -s, --system=/var/lib/docker       Target root docker systems folder (Defaults to /var/lib/docker)'
-      echo ' -v, --verbose                      Run the command with extra output'
-      echo ' -h, --help                         Displays this help document as output'
+      echo ' -m, --mode=archive                       Archives and saves entire docker setup on current machine. Mode archive must specify a filename for the tarball to be created with (-f|--file)'
+      echo ' -m, --mode=decompress                    Decompresses and loads entire docker setup on current machine. WARNING: OVERWRITES EXISTING DOCKER SETUP DESTRICTIVELY.'
+      echo ' -f, --file=/path/to/tarball.tar.gz       Always an absolute filepath to a tarball, export mode creates a new file, import mode requires existing file'
+      echo ' -c, --compose=/path/to/compose           Target docker compose directory. Export archives entire directory contents and subfolders. Import writes folder to target path (Optional)'
+      echo ' -s, --system=/var/lib/docker             Target root docker systems folder (Defaults to /var/lib/docker)'
+      echo ' -v, --verbose                            Run the command with extra output'
+      echo ' -h, --help                               Displays this help document as output'
       echo 'Examples:'
-      echo 'migratedocker.sh -u=ingo -p=agoodpassword'
+      echo 'migratedocker.sh'
 }
 
 #exit documentation
@@ -68,6 +68,7 @@ sleep 1
 #startup reqs
 [ $# -eq 0 ] && { $echodocs; exit 1; }
 [ "$(whoami)" = root ] || { echo 'You must first become root with sudo su - '; exit 1; }
+[ tar --version &> /dev/null  ] || { echo 'You must install tar'; exit 1; }
 
 
 #PARAMETER PARSING
@@ -76,8 +77,8 @@ for i in "$@"; do
   case $i in
   
     -m=*|--mode=*)
-      if [[ "${i#*=}" =~ ^(import|export)$ ]]; then
-        echo "the only allowed entries for mode are \"import\" or \"export\" without quotes"
+      if [[ "${i#*=}" =~ ^(archive|decompress)$ ]]; then
+        echo "the only allowed entries for mode are \"archive\" or \"decompress\" without quotes"
         exit 1
       else
       OPERATIONMODE="${i#*=}"
@@ -86,14 +87,18 @@ for i in "$@"; do
         shift # past argument=value
       ;;
 
-    -f=*|--filepath=*)
-      TARBALLFILEPATH="${i#*=}"
-      if [ $OPERATIONMODE -eq import ]; then
-      #stopped here 8/20/26
-         if [ ! -d "${HOMEDIRECTORY}" ]; then
-         echo "Please pick a real directory and use absolute path, not relative."
-         exit 1
-      fi      
+    -f=*|--file=*)
+      TARBALLFILE="${i#*=}"
+      if [ $OPERATIONMODE -eq decompress ]; then
+         if [ tar -tf ${TARBALLFILE} &> /dev/null]; then
+           $echolog "Found ${TARBALLFILE}"
+         else
+           echo "The import mode requires a valid tarball file that was created by this MigrateDocker previously"
+           exit 1
+         fi  
+      elif [ $OPERATIONMODE -eq archive ]; then
+      install -D /dev/null "${TARBALLFILE}"
+      $echolog "Created placeholder at ${TARBALLFILE}"
       shift # past argument=value
       ;;
       
