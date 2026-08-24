@@ -33,7 +33,7 @@ function helpfile () {
       echo ' -m, --mode=archive                       Archives and saves entire docker setup on current machine. Mode archive must specify a filename for the tarball to be created with (-f|--file)'
       echo ' -m, --mode=decompress                    Decompresses and loads entire docker setup on current machine. WARNING: OVERWRITES EXISTING DOCKER SETUP DESTRICTIVELY.'
       echo ' -f, --file=/path/to/tarball.tar.gz       Always an absolute filepath to a tarball, export mode creates a new file, import mode requires existing file'
-      echo ' -c, --compose=/path/to/compose           Target docker compose directory. Export archives entire directory contents and subfolders. Import writes folder to target path (Optional)'
+      echo ' -c, --compose=/path/to/compose           Target docker compose directory.  Archive mode compresses entire directory contents and subfolders. Import writes directory to target path (Optional)'
       echo ' -s, --system=/var/lib/docker             Target root docker systems folder (Defaults to /var/lib/docker)'
       echo ' -v, --verbose                            Run the command with extra output'
       echo ' -h, --help                               Displays this help document as output'
@@ -93,7 +93,22 @@ for i in "$@"; do
          if [ tar -tf ${TARBALLFILE} &> /dev/null]; then
            $echolog "Found ${TARBALLFILE}"
          else
-           echo "The import mode requires a valid tarball file that was created by this MigrateDocker previously"
+           echo "The decompress mode requires a valid tarball file (absolute filepath) that was created by this MigrateDocker tool previously"
+           exit 1
+         fi  
+      elif [ $OPERATIONMODE -eq archive ]; then
+      install -D /dev/null "${TARBALLFILE}"
+      $echolog "Created placeholder at ${TARBALLFILE}"
+      shift # past argument=value
+      ;;
+
+    -c=*|--compose=*)
+      COMPOSEDIRECTORY="${i#*=}"
+      if [ $OPERATIONMODE -eq decompress ]; then
+         if [ -d ${COMPOSEDIRECTORY}]; then
+           $echolog "Found ${COMPOSEDIRECTORY}"
+         else
+           echo "The compose archive mode requires a valid directory (absolute filepath) that should contain a docker-compose.yml file"
            exit 1
          fi  
       elif [ $OPERATIONMODE -eq archive ]; then
