@@ -110,7 +110,7 @@ for i in "$@"; do
          else
            echo "The compose archive mode requires a valid directory (absolute filepath) that should contain a docker-compose.yml file"
            exit 1
-      elif [ $OPERATIONMODE -eq deompress ]; then
+      elif [ $OPERATIONMODE -eq decompress ]; then
       $echolog "Will use ${TARBALLFILE}"
       fi
       shift # past argument=value
