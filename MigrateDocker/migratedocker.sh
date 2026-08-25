@@ -94,26 +94,39 @@ for i in "$@"; do
            $echolog "Found ${TARBALLFILE}"
          else
            echo "The decompress mode requires a valid tarball file (absolute filepath) that was created by this MigrateDocker tool previously"
-           exit 1
-         fi  
+           exit 1  
       elif [ $OPERATIONMODE -eq archive ]; then
       install -D /dev/null "${TARBALLFILE}"
       $echolog "Created placeholder at ${TARBALLFILE}"
+      fi
       shift # past argument=value
       ;;
 
     -c=*|--compose=*)
       COMPOSEDIRECTORY="${i#*=}"
-      if [ $OPERATIONMODE -eq decompress ]; then
+      if [ $OPERATIONMODE -eq archive ]; then
          if [ -d ${COMPOSEDIRECTORY}]; then
            $echolog "Found ${COMPOSEDIRECTORY}"
          else
            echo "The compose archive mode requires a valid directory (absolute filepath) that should contain a docker-compose.yml file"
            exit 1
-         fi  
-      elif [ $OPERATIONMODE -eq archive ]; then
-      install -D /dev/null "${TARBALLFILE}"
-      $echolog "Created placeholder at ${TARBALLFILE}"
+      elif [ $OPERATIONMODE -eq deompress ]; then
+      $echolog "Will use ${TARBALLFILE}"
+      fi
+      shift # past argument=value
+      ;;
+
+    -s=*|--system=*)
+      SYSTEMDIRECTORY="${i#*=}"
+      if [ $OPERATIONMODE -eq archive ]; then
+         if [ -d ${SYSTEMDIRECTORY}]; then
+           $echolog "Found ${SYSTEMDIRECTORY}"
+         else
+           echo "The system directory archive mode requires a valid directory (absolute filepath) that should contain the entirety of the docker backend.  It will normally default to /var/lib/docker, maybe skip this option?"
+           exit 1
+      elif [ $OPERATIONMODE -eq decompress ]; then
+      $echolog "Will use ${TARBALLFILE}"
+      fi
       shift # past argument=value
       ;;
       
