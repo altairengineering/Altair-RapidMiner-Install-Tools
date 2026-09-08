@@ -1,4 +1,6 @@
 <powershell>​
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\' -Name "fDenyTSConnections" -Value 0
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 netsh advfirewall firewall set rule name="File and Printer Sharing (Echo Request - ICMPv4-In)" new enable=yes
 [System.Net.ServicePointManager]::SecurityProtocol = 'TLS12'
 $progressPreference = 'silentlyContinue'
