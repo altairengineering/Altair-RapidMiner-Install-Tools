@@ -240,11 +240,6 @@ chown "${AIHUBUSER}":"${AIHUBUSER}" "${HOMEDIRECTORY}"
 OperatingSystem=$(grep '^NAME=' /etc/os-release | cut -f 2 -d '"' | tr '[:lower:]' '[:upper:]')
 $echolog "${OperatingSystem} detected"
 
-#collect networking data
-MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
-FunctionalAddress=$(ip addr show "${MainAdapter}" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
-$echolog "Network data"
-$echolog "${MainAdapter} ${FunctionalAddress}"
 
 #execute docker install with case
 { #try
@@ -254,7 +249,7 @@ case $OperatingSystem in
     $echolog "Detected Red Hat operating system"    
     dnf update -y
     dnf upgrade -y
-    dnf install -y curl wget vim unzip openssl git haveged
+    dnf install -y curl wget vim unzip openssl git haveged net-tools
     if [ "${SKIPDOCKER}" = 0 ]; then     
       $echolog "Attempting to install docker"
       dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
@@ -439,6 +434,12 @@ $echolog "Finished AI-Hub file staging"
 
 #creating certificate authority
 $echolog "Creating cryptography setup"
+
+#collect networking data
+MainAdapter=$(route | grep default | tr -s ' ' | cut -f 8 -d ' ')
+FunctionalAddress=$(ip addr show "${MainAdapter}" | grep -w inet | awk '{print $2}' | sed "s%\/.*%%g")
+$echolog "Network data"
+$echolog "${MainAdapter} ${FunctionalAddress}"
 
 #create ca cert and key
 CASharedSubject="/C=US/O=RapidMiner/OU=${PREFIXHOSTNAME}/CN=${CombinedHostname}"
