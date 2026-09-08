@@ -249,13 +249,13 @@ case $OperatingSystem in
     $echolog "Detected Red Hat operating system"    
     dnf update -y
     dnf upgrade -y
+    dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
     dnf install -y curl wget vim unzip openssl git haveged net-tools
     if [ "${SKIPDOCKER}" = 0 ]; then     
       $echolog "Attempting to install docker"
       dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
       dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
       sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
-      dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
       dnf update -y
       dnf install -y docker-ce docker-ce-cli containerd.io
       $echolog "Installed docker compose on RHEL"
