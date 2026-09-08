@@ -250,7 +250,7 @@ $echolog "${MainAdapter} ${FunctionalAddress}"
 { #try
 case $OperatingSystem in
 
-  "RED HAT ENTERPRIZE LINUX")
+  "RED HAT ENTERPRISE LINUX")
     $echolog "Detected Red Hat operating system"    
     dnf update -y
     dnf upgrade -y
