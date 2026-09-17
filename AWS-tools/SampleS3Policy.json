@@ -1,0 +1,50 @@
+{
+    "Version": "2008-10-17",
+    "Statement": [
+        {
+            "Sid": "MustBeEncryptedInTransit",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an",
+                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an/*"
+            ],
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        },
+        {
+            "Sid": "DenyInsecureConnections",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an",
+                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an/*"
+            ],
+            "Condition": {
+                "NumericLessThan": {
+                    "s3:TlsVersion": "1.3"
+                }
+            }
+        },
+        {
+            "Sid": "RestrictToTLSRequestsOnly",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an",
+                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an/*"
+            ],
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}
