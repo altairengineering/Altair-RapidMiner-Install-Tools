@@ -7,8 +7,8 @@
             "Principal": "*",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an",
-                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an/*"
+                "arn:aws:s3:::<BUCKET_ARN>",
+                "arn:aws:s3:::<BUCKET_ARN>/*"
             ],
             "Condition": {
                 "Bool": {
@@ -22,8 +22,8 @@
             "Principal": "*",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an",
-                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an/*"
+                "<BUCKET_ARN>",
+                "<BUCKET_ARN>/*"
             ],
             "Condition": {
                 "NumericLessThan": {
@@ -37,8 +37,8 @@
             "Principal": "*",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an",
-                "arn:aws:s3:::rm-smb-p792-gp-s3-647949735328-us-east-1-an/*"
+                "<BUCKET_ARN>",
+                "<BUCKET_ARN>/*"
             ],
             "Condition": {
                 "Bool": {
