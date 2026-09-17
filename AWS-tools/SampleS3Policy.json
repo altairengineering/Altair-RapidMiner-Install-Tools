@@ -7,8 +7,8 @@
             "Principal": "*",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::<BUCKET_ARN>",
-                "arn:aws:s3:::<BUCKET_ARN>/*"
+                "<BUCKET_ARN>",
+                "<BUCKET_ARN>/*"
             ],
             "Condition": {
                 "Bool": {
