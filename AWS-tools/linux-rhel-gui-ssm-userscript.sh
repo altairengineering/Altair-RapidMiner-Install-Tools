@@ -32,6 +32,13 @@ if (which firewall-offline-cmd); then
   sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 8443/tcp
   sudo firewall-offline-cmd --add-port 8443/udp
+  sudo firewall-offline-cmd --add-port 22/tcp
+  sudo firewall-offline-cmd --add-port 80/udp
+  sudo firewall-offline-cmd --add-port 80/tcp
+  sudo firewall-offline-cmd --add-port 443/udp
+  sudo firewall-offline-cmd --add-port 443/tcp
+  sudo firewall-offline-cmd --add-port 53/udp
+  sudo firewall-offline-cmd --add-port 53/tcp
   sudo systemctl start firewalld
 fi
 
