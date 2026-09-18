@@ -250,7 +250,7 @@ case $OperatingSystem in
     dnf update -y
     dnf upgrade -y
     dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
-    dnf install -y curl wget vim unzip openssl git haveged net-tools
+    dnf install -y curl wget vim unzip openssl git haveged net-tools openssl
     if [ "${SKIPDOCKER}" = 0 ]; then     
       $echolog "Attempting to install docker"
       dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
@@ -286,7 +286,7 @@ case $OperatingSystem in
     $echolog "Detected Ubuntu operating system"    
     DEBIAN_FRONTEND=noninteractive apt-get update -y
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-    DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl wget vim ca-certificates net-tools gnupg lsb-release haveged openssl git
+    DEBIAN_FRONTEND=noninteractive apt-get install -y unzip curl wget net-tools vim ca-certificates net-tools gnupg lsb-release haveged openssl git
     if [ "${SKIPDOCKER}" = 0 ]; then 
       $echolog "Attempting to install docker"
       DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker.io containerd runc
