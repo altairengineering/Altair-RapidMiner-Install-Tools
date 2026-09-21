@@ -36,12 +36,12 @@ fi
 dnf update -y
 dnf upgrade -y
 { #try
+dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc
-dnf install -y curl wget vim unzip openssl certbot git
+dnf install -y curl wget vim unzip openssl certbot git unzip openssl haveged net-tools
 #yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 sed -i 's/rhel/centos/g' /etc/yum.repos.d/docker-ce.repo
-dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 dnf update -y
 dnf install -y haveged
 dnf install -y docker-ce docker-ce-cli containerd.io
