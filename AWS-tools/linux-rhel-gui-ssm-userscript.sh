@@ -22,13 +22,6 @@ sudo tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && sudo rm eksctl_$PLATFORM.tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 
 #install wayvnc
-dnf install -y meson gcc ninja-build pkg-config egl-wayland egl-wayland-devel \
-	mesa-libEGL-devel mesa-libEGL libwayland-egl libglvnd-devel \
-	libglvnd-core-devel libglvnd mesa-libGLES-devel mesa-libGLES \
-	libxkbcommon-devel libxkbcommon libwayland-client \
-	pam-devel pixman-devel libgbm-devel libdrm-devel scdoc \
-	libavcodec-free-devel libavfilter-free-devel libavutil-free-devel \
-	turbojpeg-devel	wayland-devel gnutls-devel jansson-devel
 sudo dnf install -y wayvnc
 sudo systemctl isolate multi-user.target && sudo systemctl isolate graphical.target
 
