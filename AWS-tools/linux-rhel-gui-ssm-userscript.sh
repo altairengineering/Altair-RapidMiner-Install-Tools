@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo dnf install -y epel-release
+dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
 sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm || sudo dnf install –y amazon-ssm-agent
 sudo dnf update -y
 sudo dnf install firewalld -y
