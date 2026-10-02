@@ -6,11 +6,8 @@ sudo dnf update -y
 sudo dnf install firewalld -y
 sudo systemctl enable --now firewalld
 sudo dnf install --assumeyes unzip groff less btop
-
 sudo dnf groupinstall -y 'Server with GUI'
 sudo dnf groupinstall -y GNOME
-#sudo sed -i '/^\[daemon\]/a WaylandEnable=false' /etc/gdm/custom.conf
-sudo systemctl set-default graphical.target
 
 #install awscli
 curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
@@ -22,9 +19,9 @@ curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$
 sudo tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && sudo rm eksctl_$PLATFORM.tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 
-#install wayvnc
-sudo dnf install -y wayvnc
-sudo systemctl isolate multi-user.target && sudo systemctl isolate graphical.target
+#install gnome remote desktop
+sudo dnf install -y gnome-remote-desktop
+mkdir -p /home/ssm-user/.local/share/gnome-remote-desktop/
 
 
 #configure firewall rules
@@ -32,6 +29,8 @@ if (which firewall-offline-cmd); then
   sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 5901/tcp
   sudo firewall-offline-cmd --add-port 5901/udp
+  sudo firewall-offline-cmd --add-port 3389/udp
+  sudo firewall-offline-cmd --add-port 3389/tcp
   sudo firewall-offline-cmd --add-port 8443/tcp
   sudo firewall-offline-cmd --add-port 8443/udp
   sudo firewall-offline-cmd --add-port 22/tcp
