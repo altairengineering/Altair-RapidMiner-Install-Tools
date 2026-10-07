@@ -14,4 +14,8 @@ sudo systemctl start haveged
 sudo systemctl enable haveged
 sudo usermod -a -G docker ssm-user
 sudo usermod -a -G docker ec2-user
+awstimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
+if [awstimezone -eq 'n/a']; then
+   timedatectl set-timezone Etc/UTC
+fi
 exit 0
