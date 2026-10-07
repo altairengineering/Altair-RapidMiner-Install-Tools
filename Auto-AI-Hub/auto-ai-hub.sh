@@ -267,11 +267,16 @@ case $OperatingSystem in
 
 
 "AMAZON LINUX")
-    $echolog "Detected Amazon Linux operating system"    
+    $echolog "Detected Amazon Linux operating system"   
+    awstimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
+    if [awstimezone -eq 'n/a']; then
+        timedatectl set-timezone Etc/UTC
+    fi
     dnf update -y
     dnf upgrade -y
     dnf install -y spal-release
     dnf install -y wget vim unzip openssl certbot git unzip openssl haveged net-tools   
+    Etc/UTC
     if [ "${SKIPDOCKER}" = 0 ]; then     
       $echolog "Attempting to install docker"
       dnf install -y docker
