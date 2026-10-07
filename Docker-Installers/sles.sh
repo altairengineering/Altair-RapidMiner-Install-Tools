@@ -55,7 +55,9 @@ systemctl enable docker
 systemctl start haveged
 systemctl enable haveged
 #the arguement is the username of the rapidminer linux user
+sudo systemctl start certbot-renew.timer
 usermod -aG rapidminer rapidminer
+usermod -aG docker rapidminer
 setfacl -m "user:$1:rw" /var/run/docker.sock
 mkdir -p /usr/local/lib/docker/cli-plugins
 curl -SL https://github.com/docker/compose/releases/download/$docker_Version/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
