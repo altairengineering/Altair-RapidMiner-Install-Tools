@@ -7,6 +7,7 @@ sudo dnf install -y wget vim unzip openssl certbot git unzip openssl haveged net
 sudo systemctl start certbot-renew.timer
 sudo dnf update -y
 sudo dnf install -y docker
+sudo dnf install -y docker-compose.x86_64 --allowerasing
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo systemctl start haveged
