@@ -50,6 +50,7 @@ systemctl start docker
 systemctl enable docker
 systemctl start haveged
 systemctl enable haveged
+sudo systemctl start certbot-renew.timer
 #the arguement is the username of the rapidminer linux user
 usermod -G docker -a $1
 #follows fixes for compatibility of SUSE and RHEL/Debian distros on the ai-hub installer
