@@ -3,7 +3,6 @@
 sudo dnf update -y
 sudo dnf upgrade -y
 sudo dnf install -y spal-release
-sudo sudo dnf -y install dnf-plugins-core
 sudo dnf install -y wget vim unzip openssl certbot git unzip openssl haveged net-tools
 sudo systemctl start certbot-renew.timer
 sudo dnf update -y
