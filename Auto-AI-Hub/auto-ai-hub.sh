@@ -276,7 +276,6 @@ case $OperatingSystem in
     dnf upgrade -y
     dnf install -y spal-release
     dnf install -y wget vim unzip openssl certbot git unzip openssl haveged net-tools   
-    Etc/UTC
     if [ "${SKIPDOCKER}" = 0 ]; then     
       $echolog "Attempting to install docker"
       dnf install -y docker
