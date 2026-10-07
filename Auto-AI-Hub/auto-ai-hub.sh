@@ -264,6 +264,24 @@ case $OperatingSystem in
     fi
   ;;
 
+
+
+"AMAZON LINUX")
+    $echolog "Detected Amazon Linux operating system"    
+    dnf update -y
+    dnf upgrade -y
+    dnf install -y spal-release
+    dnf install -y wget vim unzip openssl certbot git unzip openssl haveged net-tools   
+    if [ "${SKIPDOCKER}" = 0 ]; then     
+      $echolog "Attempting to install docker"
+      dnf install -y docker
+      $echolog "Installed docker compose on Rocky Linux"
+    else
+     $echolog "Docker was not reinstalled because SKIPDOCKER was set"
+    fi
+  ;;
+
+
   "ROCKY LINUX")
     $echolog "Detected Rocky operating system"    
     dnf update -y
@@ -314,7 +332,8 @@ exit 1
 $echolog "Enabling services"
 systemctl enable --now docker
 systemctl enable --now haveged
-usermod -aG docker "${AIHUBUSER}"
+systemctl start certbot-renew.timer
+usermod -a -G docker "${AIHUBUSER}"
 
 dockerver=$(docker --version | cut -d " " -f 3 | sed 's/,$//')
 $echolog "Docker version $dockerver"
