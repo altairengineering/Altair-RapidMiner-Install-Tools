@@ -275,6 +275,7 @@ case $OperatingSystem in
     if [ "${SKIPDOCKER}" = 0 ]; then     
       $echolog "Attempting to install docker"
       dnf install -y docker
+      dnf install -y docker-compose.x86_64 --allowerasing
       $echolog "Installed docker compose on Rocky Linux"
     else
      $echolog "Docker was not reinstalled because SKIPDOCKER was set"
