@@ -1,5 +1,6 @@
 #!/bin/bash
 # Amazon Linux 2023 docker install script by anthony kiehl
+# can be deployed as userscript
 sudo dnf update -y
 sudo dnf upgrade -y
 sudo dnf install -y spal-release
