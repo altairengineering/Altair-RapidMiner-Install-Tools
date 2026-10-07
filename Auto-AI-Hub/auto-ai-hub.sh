@@ -269,7 +269,7 @@ case $OperatingSystem in
 "AMAZON LINUX")
     $echolog "Detected Amazon Linux operating system"   
     awstimezone=$(timedatectl | grep "Time zone" | tr -s " " | cut -f 4 -d ' ')
-    if ["${awstimezone}" -eq 'n/a']; then
+    if [ "${awstimezone}" = 'n/a' ]; then
         timedatectl set-timezone Etc/UTC
     fi
     dnf update -y
