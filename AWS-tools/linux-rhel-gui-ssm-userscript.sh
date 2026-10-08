@@ -4,7 +4,6 @@ sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10
 sudo crb enable
 sudo dnf upgrade -y
 sudo dnf install firewalld -y
-sudo systemctl enable --now firewalld
 sudo dnf install --assumeyes unzip groff less btop gnutls-utils certbot git
 
 #install ssm agent
@@ -25,31 +24,41 @@ sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 sudo dnf groupinstall -y 'Server with GUI'
 sudo dnf groupinstall -y GNOME
 sudo dnf install -y wayvnc
-
 sudo systemctl set-default graphical.target
-mkdir -p /home/ssm-user/.config/wayvnc
-mkdir -p /home/ec2-user/.config/wayvnc
 
+
+#install wayvnc
+mkdir -p /home/ssm-user/.config/wayvnc
 cat >> /home/ssm-user/.config/wayvnc/config << 'END'
 enable_auth=true
 password=rapidminer
 relax_encryption=true
 allow_broken_crypto=true
 END
-cp /home/ssm-user/.config/wayvnc/config /home/ec2-user/.config/wayvnc/config
 
 sudo cat >> /etc/systemd/system/wayvnc.service << 'END'
 [Unit]
 Description=WayVNC service
+After=network.target
+After=systemd-user-sessions.service
+After=network-online.target
 
 [Service]
+User=ssm-user
 ExecStart='/usr/bin/wayvnc 0.0.0.0'
+
 
 [Install]
 WantedBy=multi-user.target
 END
-sudo systemctl enable --now wayvnc
 
+
+
+
+#start services
+sudo systemctl enable --now amazon-ssm-agent
+sudo systemctl enable --now wayvnc
+sudo systemctl enable --now firewalld
 
 
 #configure firewall rules
@@ -70,5 +79,4 @@ if (which firewall-offline-cmd); then
   sudo firewall-offline-cmd --add-port 53/tcp
   sudo systemctl start firewalld
 fi
-systemctl enable --now amazon-ssm-agent
 exit 0
