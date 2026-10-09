@@ -4,54 +4,32 @@
 sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm || sudo dnf install –y amazon-ssm-agent
 sudo systemctl enable --now amazon-ssm-agent
 
+
 #install awscli
+sudo dnf install -y unzip
 curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
 
+
 #install eksctl
-ARCH=amd64
-PLATFORM=$(uname -s)_$ARCH
+PLATFORM=$(uname -s)_amd64
 curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
 sudo tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && sudo rm eksctl_$PLATFORM.tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 
-#install software
-sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
-sudo crb enable
-sudo dnf upgrade -y
-sudo dnf install firewalld -y
+#install expanded repos and updatee
+sudo dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+sudo dnf install firewalld --assumeyes
 sudo systemctl enable --now firewalld
-sudo dnf install --assumeyes unzip groff less btop gnutls-utils certbot git
+sudo dnf install --assumeyes groff less btop gnutls-utils certbot git vim
+sudo dnf upgrade --assumeyes
+
+
 
 #install gnome
-sudo dnf groupinstall -y 'Server with GUI'
-sudo dnf groupinstall -y GNOME
+sudo dnf groupinstall --assumeyes 'Server with GUI'
 sudo systemctl set-default graphical.target
 
 
-#install wayvnc
-sudo dnf install -y wayvnc
-mkdir -p /home/ssm-user/.config/wayvnc
-cat >> /home/ssm-user/.config/wayvnc/config << 'END'
-enable_auth=true
-password=rapidminer
-relax_encryption=true
-allow_broken_crypto=true
-END
-sudo cat >> /etc/systemd/system/wayvnc.service << 'END'
-[Unit]
-Description=WayVNC service
-After=network.target
-After=systemd-user-sessions.service
-After=network-online.target
-
-[Service]
-User=ssm-user
-ExecStart='/usr/bin/wayvnc 0.0.0.0'
-
-[Install]
-WantedBy=multi-user.target
-END
-sudo systemctl enable --now wayvnc
 
 #configure firewall rules
 if (which firewall-offline-cmd); then
