@@ -30,14 +30,20 @@ sudo dnf groupinstall --assumeyes 'Server with GUI'
 sudo systemctl set-default graphical.target
 
 
+#install VNC server
+sudo dnf install --assumeyes tigervnc-server
+sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
+echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
+echo 'session=gnome' >> /home/ssm-user/.vnc/config
+echo 'securitytypes=vncauth,tlsvnc' >> /home/ssm-user/.vnc/config
+echo 'geometry=1024x768' >> /home/ssm-user/.vnc/config
+sudo systemctl enable --now vncserver@:3.service
 
 #configure firewall rules
 if (which firewall-offline-cmd); then
   sudo systemctl stop firewalld
-  sudo firewall-offline-cmd --add-port 5900/tcp
-  sudo firewall-offline-cmd --add-port 5900/udp
-  sudo firewall-offline-cmd --add-port 5901/tcp
-  sudo firewall-offline-cmd --add-port 5901/udp
+  sudo firewall-offline-cmd --add-port 5902/tcp
+  sudo firewall-offline-cmd --add-port 5902/udp
   sudo firewall-offline-cmd --add-port 3389/udp
   sudo firewall-offline-cmd --add-port 3389/tcp
   sudo firewall-offline-cmd --add-port 22/tcp
