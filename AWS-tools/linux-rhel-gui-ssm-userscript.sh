@@ -52,6 +52,7 @@ session=gnome
 securitytypes=vncauth,tlsvnc
 geometry=1024x768
 EOF
+
   sudo systemctl enable --now vncserver@:3.service
   sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 5902/tcp
