@@ -12,8 +12,8 @@ curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
 
 #install eksctl
 PLATFORM=$(uname -s)_amd64
-curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
-sudo tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && sudo rm eksctl_$PLATFORM.tar.gz
+curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_"${PLATFORM}".tar.gz"
+sudo tar -xzf eksctl_"${PLATFORM}".tar.gz -C /tmp && sudo rm eksctl_"${PLATFORM}".tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 
 #install expanded repos and updatee
@@ -41,7 +41,7 @@ sudo firewall-offline-cmd --add-port 53/tcp
 sudo systemctl start firewalld
 
 #install VNC server
-RHELTYPE=$(cat /etc/os-release  | grep VERSION_ID | cut -d '"' -f 2)
+RHELTYPE=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)
 if [ "${RHELTYPE}" -lt 10 ]; then
   sudo dnf install --assumeyes tigervnc-server
   sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
