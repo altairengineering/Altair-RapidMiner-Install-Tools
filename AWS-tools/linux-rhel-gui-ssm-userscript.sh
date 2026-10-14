@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #install ssm agent
-sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm || sudo dnf install –y amazon-ssm-agent
+sudo dnf install --assumeyes https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm || sudo dnf install –y amazon-ssm-agent
 sudo systemctl enable --now amazon-ssm-agent
 
 
 #install awscli
-sudo dnf install -y unzip
+sudo dnf install --assumeyes unzip
 curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
 
 
@@ -31,28 +31,35 @@ sudo systemctl set-default graphical.target
 
 
 #install VNC server
-sudo dnf install --assumeyes tigervnc-server
-sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
-echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
-echo 'session=gnome' >> /home/ssm-user/.vnc/config
-echo 'securitytypes=vncauth,tlsvnc' >> /home/ssm-user/.vnc/config
-echo 'geometry=1024x768' >> /home/ssm-user/.vnc/config
-sudo systemctl enable --now vncserver@:3.service
-
-#configure firewall rules
-if (which firewall-offline-cmd); then
+RHELTYPE=$(cat /etc/os-release  | grep VERSION_ID | cut -d '"' -f 2)
+if [ "${RHELTYPE}" -lt 10 ]; then
+  sudo dnf install --assumeyes tigervnc-server
+  sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
+  echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
+  echo 'session=gnome' >> /home/ssm-user/.vnc/config
+  echo 'securitytypes=vncauth,tlsvnc' >> /home/ssm-user/.vnc/config
+  echo 'geometry=1024x768' >> /home/ssm-user/.vnc/config
+  sudo systemctl enable --now vncserver@:3.service
   sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 5902/tcp
   sudo firewall-offline-cmd --add-port 5902/udp
+  sudo systemctl start firewalld
+else
+  sudo dnf install --assumeyes freerdp
+  sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 3389/udp
   sudo firewall-offline-cmd --add-port 3389/tcp
-  sudo firewall-offline-cmd --add-port 22/tcp
-  sudo firewall-offline-cmd --add-port 80/udp
-  sudo firewall-offline-cmd --add-port 80/tcp
-  sudo firewall-offline-cmd --add-port 443/udp
-  sudo firewall-offline-cmd --add-port 443/tcp
-  sudo firewall-offline-cmd --add-port 53/udp
-  sudo firewall-offline-cmd --add-port 53/tcp
   sudo systemctl start firewalld
 fi
+
+#configure firewall rules
+sudo systemctl stop firewalld
+sudo firewall-offline-cmd --add-port 22/tcp
+sudo firewall-offline-cmd --add-port 80/udp
+sudo firewall-offline-cmd --add-port 80/tcp
+sudo firewall-offline-cmd --add-port 443/udp
+sudo firewall-offline-cmd --add-port 443/tcp
+sudo firewall-offline-cmd --add-port 53/udp
+sudo firewall-offline-cmd --add-port 53/tcp
+sudo systemctl start firewalld
 exit 0
