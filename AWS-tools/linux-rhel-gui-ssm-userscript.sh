@@ -29,6 +29,16 @@ sudo dnf upgrade --assumeyes
 sudo dnf groupinstall --assumeyes 'Server with GUI'
 sudo systemctl set-default graphical.target
 
+#configure firewall rules
+sudo systemctl stop firewalld
+sudo firewall-offline-cmd --add-port 22/tcp
+sudo firewall-offline-cmd --add-port 80/udp
+sudo firewall-offline-cmd --add-port 80/tcp
+sudo firewall-offline-cmd --add-port 443/udp
+sudo firewall-offline-cmd --add-port 443/tcp
+sudo firewall-offline-cmd --add-port 53/udp
+sudo firewall-offline-cmd --add-port 53/tcp
+sudo systemctl start firewalld
 
 #install VNC server
 RHELTYPE=$(cat /etc/os-release  | grep VERSION_ID | cut -d '"' -f 2)
@@ -44,22 +54,16 @@ if [ "${RHELTYPE}" -lt 10 ]; then
   sudo firewall-offline-cmd --add-port 5902/tcp
   sudo firewall-offline-cmd --add-port 5902/udp
   sudo systemctl start firewalld
+  echo "Please run command(s):\n vncpasswd" > /home/ssm-user/README.txt
 else
   sudo dnf install --assumeyes freerdp
   sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 3389/udp
   sudo firewall-offline-cmd --add-port 3389/tcp
   sudo systemctl start firewalld
+  sudo systemctl enable --now gdm
+  sudo systemctl enable --now gnome-remote-desktop.service
+  echo "Please run command(s):\n grdctl --system rdp set-credentials" > /home/ssm-user/README.txt
 fi
 
-#configure firewall rules
-sudo systemctl stop firewalld
-sudo firewall-offline-cmd --add-port 22/tcp
-sudo firewall-offline-cmd --add-port 80/udp
-sudo firewall-offline-cmd --add-port 80/tcp
-sudo firewall-offline-cmd --add-port 443/udp
-sudo firewall-offline-cmd --add-port 443/tcp
-sudo firewall-offline-cmd --add-port 53/udp
-sudo firewall-offline-cmd --add-port 53/tcp
-sudo systemctl start firewalld
 exit 0
