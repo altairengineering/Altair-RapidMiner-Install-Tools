@@ -62,8 +62,34 @@ else
   sudo firewall-offline-cmd --add-port 3389/tcp
   sudo systemctl start firewalld
   sudo systemctl enable --now gdm
-  sudo systemctl enable --now gnome-remote-desktop.service
+  dbus-launch gsettings set org.gnome.login-screen enable-fingerprint-authentication false
   echo "Please run command: grdctl --system rdp set-credentials" > /home/ssm-user/README.txt
+  sudo cat >> /etc/gdm/custom.conf << 'END'
+[daemon]
+TimedLoginEnable=true
+TimedLogin=ssm-user
+TimedLoginDelay=1
+END
+  sudo cat >> /var/lib/AccountsService/users/ssm-user << 'END'
+[User]
+XSession=gnome-xorg  
+END
+  sudo systemctl edit --stdin gnome-remote-desktop.service << 'EOF'
+[Unit]
+Description=GNOME Remote Desktop
+After=gdm.service
+
+[Service]
+Type=dbus
+User=gnome-remote-desktop
+BusName=org.gnome.RemoteDesktop
+ExecStart=/usr/libexec/gnome-remote-desktop-daemon --system
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target
+EOF
+  sudo systemctl enable --now gnome-remote-desktop.service
 fi
 
 exit 0
