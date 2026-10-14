@@ -12,7 +12,7 @@ curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
 
 #install eksctl
 PLATFORM=$(uname -s)_amd64
-curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_"${PLATFORM}".tar.gz"
+curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_${PLATFORM}.tar.gz"
 sudo tar -xzf eksctl_"${PLATFORM}".tar.gz -C /tmp && sudo rm eksctl_"${PLATFORM}".tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 
