@@ -47,9 +47,11 @@ if [ "${RHELTYPE}" -lt 10 ]; then
   sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
   echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
   touch /home/ssm-user/.vnc/config
-  echo 'session=gnome' >> /home/ssm-user/.vnc/config
-  echo 'securitytypes=vncauth,tlsvnc' >> /home/ssm-user/.vnc/config
-  echo 'geometry=1024x768' >> /home/ssm-user/.vnc/config
+  systemctl edit --stdin /home/ssm-user/.vnc/config << 'EOF'
+session=gnome
+securitytypes=vncauth,tlsvnc
+geometry=1024x768
+EOF
   sudo systemctl enable --now vncserver@:3.service
   sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 5902/tcp
@@ -66,7 +68,7 @@ else
   sudo dbus-launch gsettings set org.gnome.login-screen enable-fingerprint-authentication false
   echo "Please run command: grdctl --system rdp set-credentials" > /home/ssm-user/README.txt
   sudo touch /etc/gdm/custom.conf
-  sudo systemctl edit --stdin  /etc/gdm/custom.conf << 'EOF'
+  sudo systemctl edit --stdin /etc/gdm/custom.conf << 'EOF'
 [daemon]
 TimedLoginEnable=true
 TimedLogin=ssm-user
