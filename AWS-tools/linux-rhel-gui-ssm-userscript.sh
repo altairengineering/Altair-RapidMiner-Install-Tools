@@ -46,6 +46,7 @@ if [ "${RHELTYPE}" -lt 10 ]; then
   sudo dnf install --assumeyes tigervnc-server
   sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
   echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
+  touch /home/ssm-user/.vnc/config
   echo 'session=gnome' >> /home/ssm-user/.vnc/config
   echo 'securitytypes=vncauth,tlsvnc' >> /home/ssm-user/.vnc/config
   echo 'geometry=1024x768' >> /home/ssm-user/.vnc/config
@@ -62,18 +63,22 @@ else
   sudo firewall-offline-cmd --add-port 3389/tcp
   sudo systemctl start firewalld
   sudo systemctl enable --now gdm
-  dbus-launch gsettings set org.gnome.login-screen enable-fingerprint-authentication false
+  sudo dbus-launch gsettings set org.gnome.login-screen enable-fingerprint-authentication false
   echo "Please run command: grdctl --system rdp set-credentials" > /home/ssm-user/README.txt
-  sudo cat >> /etc/gdm/custom.conf << 'END'
+  sudo touch /etc/gdm/custom.conf
+  sudo systemctl edit --stdin  /etc/gdm/custom.conf << 'EOF'
 [daemon]
 TimedLoginEnable=true
 TimedLogin=ssm-user
 TimedLoginDelay=1
-END
-  sudo cat >> /var/lib/AccountsService/users/ssm-user << 'END'
+EOF
+
+  sudo touch /var/lib/AccountsService/users/ssm-user
+  sudo systemctl edit --stdin /var/lib/AccountsService/users/ssm-user << 'EOF'
 [User]
 XSession=gnome-xorg  
-END
+EOF
+
   sudo systemctl edit --stdin gnome-remote-desktop.service << 'EOF'
 [Unit]
 Description=GNOME Remote Desktop
@@ -89,6 +94,7 @@ Restart=on-failure
 [Install]
 WantedBy=graphical.target
 EOF
+
   sudo systemctl enable --now gnome-remote-desktop.service
 fi
 
