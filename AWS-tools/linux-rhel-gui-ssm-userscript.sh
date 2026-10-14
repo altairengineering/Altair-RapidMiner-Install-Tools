@@ -54,7 +54,7 @@ if [ "${RHELTYPE}" -lt 10 ]; then
   sudo firewall-offline-cmd --add-port 5902/tcp
   sudo firewall-offline-cmd --add-port 5902/udp
   sudo systemctl start firewalld
-  echo "Please run command(s):\n vncpasswd" > /home/ssm-user/README.txt
+  echo "Please run command: vncpasswd" > /home/ssm-user/README.txt
 else
   sudo dnf install --assumeyes freerdp
   sudo systemctl stop firewalld
@@ -63,7 +63,7 @@ else
   sudo systemctl start firewalld
   sudo systemctl enable --now gdm
   sudo systemctl enable --now gnome-remote-desktop.service
-  echo "Please run command(s):\n grdctl --system rdp set-credentials" > /home/ssm-user/README.txt
+  echo "Please run command: grdctl --system rdp set-credentials" > /home/ssm-user/README.txt
 fi
 
 exit 0
