@@ -49,20 +49,16 @@ touch /home/ssm-user/README.txt
   sudo systemctl start firewalld
   sudo systemctl enable --now gdm
   sudo dbus-launch gsettings set org.gnome.login-screen enable-fingerprint-authentication false
-  echo "Please run command: grdctl --system rdp set-credentials" > /home/ssm-user/README.txt
-  sudo touch /etc/gdm/custom.conf
-  sudo systemctl edit --stdin /etc/gdm/custom.conf << 'EOF'
-[daemon]
-TimedLoginEnable=true
-TimedLogin=ssm-user
-TimedLoginDelay=1
-EOF
+  echo "Please run command: grdctl --system rdp set-credentials" | sudo tee /home/ssm-user/README.txt
+  echo '[daemon]' | sudo tee -a /etc/gdm/custom.conf
+  echo 'TimedLoginEnable=true' | sudo tee -a /etc/gdm/custom.conf
+  echo 'TimedLogin=ssm-user' | sudo tee -a /etc/gdm/custom.conf
+  echo 'TimedLoginDelay=1' | sudo tee -a /etc/gdm/custom.conf
 
   sudo touch /var/lib/AccountsService/users/ssm-user
-  sudo systemctl edit --stdin /var/lib/AccountsService/users/ssm-user << 'EOF'
-[User]
-XSession=gnome-xorg  
-EOF
+  echo '[User]' | sudo tee -a /var/lib/AccountsService/users/ssm-user
+  echo 'XSession=gnome-xorg' | sudo tee -a /var/lib/AccountsService/users/ssm-user
+  echo 'EOF' | sudo tee -a /var/lib/AccountsService/users/ssm-user
 
   sudo systemctl edit --stdin gnome-remote-desktop.service << 'EOF'
 [Unit]
