@@ -42,6 +42,7 @@ sudo systemctl start firewalld
 
 #install VNC server
 RHELTYPE=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)
+touch /home/ssm-user/README.txt
 if [ "${RHELTYPE}" -lt 10 ]; then
   sudo dnf install --assumeyes tigervnc-server
   sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
