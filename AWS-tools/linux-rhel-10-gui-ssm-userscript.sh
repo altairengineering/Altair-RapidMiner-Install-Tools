@@ -49,7 +49,7 @@ touch /home/ssm-user/README.txt
   sudo systemctl start firewalld
   sudo systemctl enable --now gdm
   sudo dbus-launch gsettings set org.gnome.login-screen enable-fingerprint-authentication false
-  echo "Please run command: grdctl --system rdp set-credentials" | sudo tee /home/ssm-user/README.txt
+  echo "Please run command: grdctl --system rdp set-credentials" | sudo tee -a /home/ssm-user/README.txt
   echo '[daemon]' | sudo tee -a /etc/gdm/custom.conf
   echo 'TimedLoginEnable=true' | sudo tee -a /etc/gdm/custom.conf
   echo 'TimedLogin=ssm-user' | sudo tee -a /etc/gdm/custom.conf
@@ -60,6 +60,7 @@ touch /home/ssm-user/README.txt
   echo 'EOF' | sudo tee -a /var/lib/AccountsService/users/ssm-user
   sudo sed -i 's%Description=GNOME Remote Desktop%Description=GNOME Remote Desktop\nAfter=gdm.service%g' /home/"${aihubuser}"/prod/docker-compose.yml
   sudo systemctl edit --stdin gnome-remote-desktop.service << 'EOF'
+[Unit]
 After=gdm.service
 EOF
 
