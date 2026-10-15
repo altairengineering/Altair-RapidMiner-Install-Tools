@@ -40,27 +40,8 @@ sudo firewall-offline-cmd --add-port 53/udp
 sudo firewall-offline-cmd --add-port 53/tcp
 sudo systemctl start firewalld
 
-#install VNC server
-RHELTYPE=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)
+#install RDP server
 touch /home/ssm-user/README.txt
-if (( $(echo "$RHELTYPE > 10" | bc -l )); then
-  sudo dnf install --assumeyes tigervnc-server
-  sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
-  echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
-  touch /home/ssm-user/.vnc/config
-  systemctl edit --stdin /home/ssm-user/.vnc/config << 'EOF'
-session=gnome
-securitytypes=vncauth,tlsvnc
-geometry=1024x768
-EOF
-
-  sudo systemctl enable --now vncserver@:3.service
-  sudo systemctl stop firewalld
-  sudo firewall-offline-cmd --add-port 5902/tcp
-  sudo firewall-offline-cmd --add-port 5902/udp
-  sudo systemctl start firewalld
-  echo "Please run command: vncpasswd" > /home/ssm-user/README.txt
-else
   sudo dnf install --assumeyes freerdp
   sudo systemctl stop firewalld
   sudo firewall-offline-cmd --add-port 3389/udp
