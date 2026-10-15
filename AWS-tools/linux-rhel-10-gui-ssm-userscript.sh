@@ -54,26 +54,13 @@ touch /home/ssm-user/README.txt
   echo 'TimedLoginEnable=true' | sudo tee -a /etc/gdm/custom.conf
   echo 'TimedLogin=ssm-user' | sudo tee -a /etc/gdm/custom.conf
   echo 'TimedLoginDelay=1' | sudo tee -a /etc/gdm/custom.conf
-
   sudo touch /var/lib/AccountsService/users/ssm-user
   echo '[User]' | sudo tee -a /var/lib/AccountsService/users/ssm-user
   echo 'XSession=gnome-xorg' | sudo tee -a /var/lib/AccountsService/users/ssm-user
   echo 'EOF' | sudo tee -a /var/lib/AccountsService/users/ssm-user
-
+  sudo sed -i 's%Description=GNOME Remote Desktop%Description=GNOME Remote Desktop\nAfter=gdm.service%g' /home/"${aihubuser}"/prod/docker-compose.yml
   sudo systemctl edit --stdin gnome-remote-desktop.service << 'EOF'
-[Unit]
-Description=GNOME Remote Desktop
 After=gdm.service
-
-[Service]
-Type=dbus
-User=gnome-remote-desktop
-BusName=org.gnome.RemoteDesktop
-ExecStart=/usr/libexec/gnome-remote-desktop-daemon --system
-Restart=on-failure
-
-[Install]
-WantedBy=graphical.target
 EOF
 
   sudo systemctl enable --now gnome-remote-desktop.service
