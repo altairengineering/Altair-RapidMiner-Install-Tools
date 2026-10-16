@@ -85,4 +85,5 @@ sudo systemctl enable --now gnome-remote-desktop.service
 #documentation
 touch /home/"${TARGET_USER}"/README.txt
 echo "Please run command: grdctl --system rdp set-credentials" | sudo tee -a /home/"${TARGET_USER}"/README.txt
+sudo reboot now
 exit 0
