@@ -1,6 +1,6 @@
 #!/bin/bash
 #config
-TARGET_USER="${TARGET_USER}"
+TARGET_USER=ssm-user
 PLATFORM=$(uname -s)_amd64
 
 #install ssm agent
@@ -80,7 +80,7 @@ EOF
 #
 
 sudo systemctl enable --now gnome-remote-desktop.service
-fi
+
 
 #documentation
 touch /home/"${TARGET_USER}"/README.txt
