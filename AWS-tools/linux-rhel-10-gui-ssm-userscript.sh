@@ -20,8 +20,8 @@ sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 
 #install expanded repos and updatee
 sudo dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
-sudo dnf update --asumeyes
-sudo dnf upgrade --assumeyes
+sudo dnf update -y
+sudo dnf upgrade -y
 
 
 #install firewall
