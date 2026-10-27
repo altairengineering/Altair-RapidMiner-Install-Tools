@@ -4,7 +4,7 @@
 sudo dnf update -y
 sudo dnf upgrade -y
 sudo dnf install -y spal-release
-sudo dnf install -y wget vim unzip openssl certbot git unzip openssl haveged net-tools
+sudo dnf install -y wget vim unzip openssl certbot git unzip openssl haveged net-tools git
 sudo systemctl start certbot-renew.timer
 sudo dnf update -y
 sudo dnf install -y docker
