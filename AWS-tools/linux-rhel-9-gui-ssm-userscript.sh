@@ -16,11 +16,12 @@ curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$
 sudo tar -xzf eksctl_"${PLATFORM}".tar.gz -C /tmp && sudo rm eksctl_"${PLATFORM}".tar.gz
 sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 
+
 #install expanded repos and updatee
 sudo dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
 sudo dnf install firewalld --assumeyes
 sudo systemctl enable --now firewalld
-sudo dnf install --assumeyes groff less btop gnutls-utils certbot git vim
+sudo dnf install --assumeyes groff less btop gnutls-utils certbot git vim kubectl
 sudo dnf upgrade --assumeyes
 
 
@@ -38,6 +39,8 @@ sudo firewall-offline-cmd --add-port 443/udp
 sudo firewall-offline-cmd --add-port 443/tcp
 sudo firewall-offline-cmd --add-port 53/udp
 sudo firewall-offline-cmd --add-port 53/tcp
+sudo firewall-offline-cmd --add-port 5903/tcp
+sudo firewall-offline-cmd --add-port 5903/tcp
 sudo systemctl start firewalld
 
 #install VNC server
@@ -49,14 +52,10 @@ touch /home/ssm-user/README.txt
   systemctl edit --stdin /home/ssm-user/.vnc/config << 'EOF'
 session=gnome
 securitytypes=vncauth,tlsvnc
-geometry=1024x768
+geometry=1440x900
 EOF
 
   sudo systemctl enable --now vncserver@:3.service
-  sudo systemctl stop firewalld
-  sudo firewall-offline-cmd --add-port 5902/tcp
-  sudo firewall-offline-cmd --add-port 5902/udp
-  sudo systemctl start firewalld
   echo "Please run command: vncpasswd" > /home/ssm-user/README.txt
 
 exit 0
