@@ -50,7 +50,7 @@ touch /home/ssm-user/README.txt
   echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
   mkdir -p /home/ssm-user/.vnc
   touch /home/ssm-user/.vnc/config
-  systemctl edit --stdin /home/ssm-user/.vnc/config << 'EOF'
+  sudo tee -a /home/ssm-user/.vnc/config > /dev/null << 'EOF'
 session=gnome
 securitytypes=vncauth,tlsvnc
 geometry=1440x900
