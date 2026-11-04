@@ -48,6 +48,7 @@ touch /home/ssm-user/README.txt
   sudo dnf install --assumeyes tigervnc-server
   sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:3.service
   echo ':3=ssm-user' >> /etc/tigervnc/vncserver.users
+  mkdir -p /home/ssm-user/.vnc
   touch /home/ssm-user/.vnc/config
   systemctl edit --stdin /home/ssm-user/.vnc/config << 'EOF'
 session=gnome
