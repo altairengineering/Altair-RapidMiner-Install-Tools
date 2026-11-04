@@ -21,7 +21,7 @@ sudo install -m 0755 /tmp/eksctl /usr/local/bin && sudo rm /tmp/eksctl
 sudo dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
 sudo dnf install firewalld --assumeyes
 sudo systemctl enable --now firewalld
-sudo dnf install --assumeyes groff less btop gnutls-utils certbot git vim kubectl
+sudo dnf install --assumeyes groff less btop gnutls-utils certbot git vim kubectl haveged
 sudo dnf upgrade --assumeyes
 
 
