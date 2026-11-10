@@ -21,3 +21,10 @@ if [ $(ps -e | grep -ic "falcon-sensor" -gt 0); then
 else
   echo "Falcon-sensor already installed, skipping."
 fi
+
+#confirm the installations
+echo "Falcon Sensor Status"
+ps -e | grep falcon-sensor
+/opt/CrowdStrike/falconctl -g --aid
+
+
