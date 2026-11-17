@@ -3,14 +3,14 @@
 If (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { Write-Host 'Not running as admin' } Else { Write-Host 'Running as admin' }
 
 #uninstall Sentinel One
-try {
-$s1_version = (Get-Item "C:\Program Files\SentinelOne\Sentinel Agent *\SentinelAgent.exe").VersionInfo.ProductVersion
-cd "C:\Program Files\SentinelOne\Sentinel Agent $s1_version\"
-.\uninstall.exe /uninstall /norestart /q 
-Start-Sleep -Seconds 2
-} catch {
-  "An error occurred while attempting to uninstall Sentinel One, perhaps it was never installed"
-  }
+#try {
+#$s1_version = (Get-Item "C:\Program Files\SentinelOne\Sentinel Agent *\SentinelAgent.exe").VersionInfo.ProductVersion
+#cd "C:\Program Files\SentinelOne\Sentinel Agent $s1_version\"
+#.\uninstall.exe /uninstall /norestart /q 
+#Start-Sleep -Seconds 2
+#} catch {
+#  "An error occurred while attempting to uninstall Sentinel One, perhaps it was never installed"
+#  }
 
 try {
 cd C:\Windows\Temp
