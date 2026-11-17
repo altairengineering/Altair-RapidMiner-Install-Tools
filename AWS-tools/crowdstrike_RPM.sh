@@ -17,7 +17,7 @@ if [ "$(sudo ps -e | grep -ic falcon-sensor)" -lt 1 ]; then
   sudo yum install crowdstrike_installer.rpm
   TOKEN=$(aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-1:887563472458:secret:crowdstrike/install_token-61v6Nq --region us-east-1 --query SecretString --output text | jq -r '.CrowdStrike_Install_Token')
   CID=$(aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-1:887563472458:secret:crowdstrike/cid-iAuBMG --region us-east-1 --query SecretString --output text | jq -r '.CrowdStrike_CID')
-  sudo /opt/CrowdStrike/falconctl -s --cid="$CID" --provisioning-token=$TOKEN
+  sudo /opt/CrowdStrike/falconctl -s --cid="${CID}" --provisioning-token="${TOKEN}"
   sudo systemctl start falcon-sensor
 else
   echo "Falcon-sensor already installed, skipping."
