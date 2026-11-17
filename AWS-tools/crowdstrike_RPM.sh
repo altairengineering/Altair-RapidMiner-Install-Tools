@@ -5,7 +5,11 @@ CID=""
 
 #check for root
 [ "$(whoami)" = root ] || { echo 'You must first become root with sudo su - '; exit 1; }
-
+{ #try
+sudo /opt/sentinelone/bin/sentinelctl control uninstall
+} || { #catch
+echo "Error Uninstalling sentinelctl"
+} 
 
 #install falcon sensor
 if [ $(sudo ps -e | grep -ic "falcon-sensor") -lt 1 ]; then
