@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 
 #install ssm agent
 sudo dnf install --assumeyes https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm || sudo dnf install –y amazon-ssm-agent
@@ -7,8 +7,8 @@ sudo systemctl enable --now amazon-ssm-agent
 
 #install awscli
 sudo dnf install --assumeyes unzip
-curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
-
+curl -o /tmp/install.sh -fsSL https://awscli.amazonaws.com/v2/install.sh
+sudo bash /tmp/install.sh --system 
 
 #install eksctl
 PLATFORM=$(uname -s)_amd64
