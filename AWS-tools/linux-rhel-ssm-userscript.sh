@@ -7,6 +7,11 @@ systemctl start amazon-ssm-agent
 echo "Agent installed"
 
 
+#install awscli
+sudo dnf install --assumeyes unzip
+curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
+
+
 #crowdstrike
 sudo aws s3 cp s3://cso-edr-agent-installers/Linux/64bit/falcon-sensor-7.35.0-18803.amzn2023.x86_64.rpm crowdstrike_installer.rpm --region us-east-1
 sudo yum install crowdstrike_installer.rpm
