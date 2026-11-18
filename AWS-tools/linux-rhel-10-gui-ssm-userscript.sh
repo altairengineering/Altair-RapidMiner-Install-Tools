@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #config
 TARGET_USER=ssm-user
 PLATFORM=$(uname -s)_amd64
@@ -10,7 +10,8 @@ sudo systemctl enable --now amazon-ssm-agent
 
 #install awscli
 sudo dnf install --assumeyes unzip
-curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
+curl -o /tmp/install.sh -fsSL https://awscli.amazonaws.com/v2/install.sh
+sudo bash /tmp/install.sh --system 
 
 
 #install eksctl
