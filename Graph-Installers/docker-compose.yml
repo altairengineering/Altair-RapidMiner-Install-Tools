@@ -1,5 +1,3 @@
-[root@di2inpun7009lv0 ~]# cat /structuresai/rmgs-stack/docker-compose.yml
-
 services:
   anzograph:
     image: gitlab.industrysoftware.automation.siemens.com:4567/bom-ai/ibom/ibom-extension/anzograph-db:3.5.0-tc
