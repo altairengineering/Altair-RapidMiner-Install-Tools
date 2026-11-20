@@ -1,0 +1,64 @@
+[root@di2inpun7009lv0 ~]# cat /structuresai/rmgs-stack/docker-compose.yml
+
+services:
+  anzograph:
+    image: gitlab.industrysoftware.automation.siemens.com:4567/bom-ai/ibom/ibom-extension/anzograph-db:3.5.0-tc
+    container_name: anzograph_local
+    ports:
+      - "${AZG_HTTP_PORT:-7070}:7070"
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      - /apps/ags-stack/lh/spill:/opt/anzograph/spill
+      - anzograph_data:/opt/anzograph/data
+      - /apps/ags-stack/lh/data:/opt/anzograph/shared/local
+      - ${SHARED_DATA_DIR:-/apps/ags-stack/shared_graphstudio_data}:/opt/graphstudio/shared
+    networks:
+      - graphstudio
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+          /opt/anzograph/tools/bin/curl -sf
+          'http://localhost:7070/sparql?query=SELECT+%281+AS+%3Fx%29+WHERE+%7B%7D'
+          -H 'Accept: application/sparql-results+json'
+          || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+    extra_hosts:
+      - "vc6s015:10.16.78.28"
+      - "vc6s015.net.plm.eds.com:10.16.78.28"
+
+
+  anzo:
+    image: gitlab.industrysoftware.automation.siemens.com:4567/bom-ai/ibom/ibom-extension/test-anzo:6.3.3-integration-3
+
+    container_name: anzo_local
+    profiles: ["full-stack"]
+    depends_on:
+      - anzograph
+    ports:
+      - "0.0.0.0:${ANZO_HTTP_PORT:-18080}:8080"
+      - "0.0.0.0:${ANZO_HTTPS_PORT:-18443}:8443"
+      - "0.0.0.0:${ANZO_PROTOCOL_PORT:-18945}:8945"
+      - "0.0.0.0:${ANZO_MGMT_PORT:-18946}:8946"
+    restart: unless-stopped
+    volumes:
+      - ${SHARED_DATA_DIR:-/apps/ags-stack/shared_graphstudio_data}:/opt/graphstudio/shared
+      - ${GRAPHSTUDIO_DATA_DIR:-/apps/ags-stack/gs/graphstudio_server_data}:/opt/graphstudio/Server/data
+    networks:
+      - graphstudio
+    extra_hosts:
+      - "vc6s015:10.16.78.28"
+      - "vc6s015.net.plm.eds.com:10.16.78.28"
+
+
+volumes:
+  anzograph_data:
+
+networks:
+  graphstudio:
+    driver: bridge
